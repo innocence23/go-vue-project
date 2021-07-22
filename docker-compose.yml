@@ -1,0 +1,70 @@
+version: "3.7"
+services:
+  reverse-proxy:
+    image: traefik:v2.2
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker"
+      - "--providers.docker.exposedByDefault=false"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  server:
+    build:
+      context: ./server
+      target: builder
+    image: project-server
+    restart: always  #解决mysql启动后，还没创建完数据库，程序报错问题
+    expose:
+      - "8080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.project-server.rule=Host(`project.test`) && PathPrefix(`/api`)"
+    environment:
+      - ENV=dev
+    # env_file: server/.env.dev
+    depends_on: 
+      - mysql
+    volumes:
+      - ./server:/go/src/app
+    command: reflex -r "\.go$$" -s -- sh -c "go run ."
+  client:
+    build:
+      context: ./client
+    image: project-client # if we don't give image name, traefik won't create router 🤷‍♂️
+    expose:
+      - "3000"
+    ports:
+      - "3000:3000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.project-client.rule=Host(`project.test`) && PathPrefix(`/`)"
+    volumes:
+      - ./client:/app
+      - /app/node_modules #avoid overwriting node_modules
+    depends_on: 
+      - reverse-proxy    
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: secret
+    ports:
+      - 33060:3306
+    volumes:
+      # - ./server/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysqldataz:/var/lib/mysql  #不能加一加就错
+  redis:
+    image: redis:alpine
+    ports:
+      - 63790:6379
+    volumes:
+      - redisdataz:/data
+
+volumes:
+  mysqldataz:
+  redisdataz:
