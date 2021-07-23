@@ -2,7 +2,7 @@ package captcha
 
 import (
 	"context"
-	"project/global"
+	"project/zvar"
 	"time"
 
 	"github.com/mojocn/base64Captcha"
@@ -22,22 +22,22 @@ type RedisStore struct {
 }
 
 func (rs *RedisStore) Set(id string, value string) {
-	err := global.GVA_REDIS.Set(context.Background(), rs.PreKey+id, value, rs.Expiration).Err()
+	err := zvar.Redis.Set(context.Background(), rs.PreKey+id, value, rs.Expiration).Err()
 	if err != nil {
-		global.GVA_LOG.Error("RedisStoreSetError!", zap.Error(err))
+		zvar.Log.Error("RedisStoreSetError!", zap.Error(err))
 	}
 }
 
 func (rs *RedisStore) Get(key string, clear bool) string {
-	val, err := global.GVA_REDIS.Get(context.Background(), key).Result()
+	val, err := zvar.Redis.Get(context.Background(), key).Result()
 	if err != nil {
-		global.GVA_LOG.Error("RedisStoreGetError!", zap.Error(err))
+		zvar.Log.Error("RedisStoreGetError!", zap.Error(err))
 		return ""
 	}
 	if clear {
-		err := global.GVA_REDIS.Del(context.Background(), key).Err()
+		err := zvar.Redis.Del(context.Background(), key).Err()
 		if err != nil {
-			global.GVA_LOG.Error("RedisStoreClearError!", zap.Error(err))
+			zvar.Log.Error("RedisStoreClearError!", zap.Error(err))
 			return ""
 		}
 	}

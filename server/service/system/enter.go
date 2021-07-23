@@ -11,7 +11,6 @@ type ServiceGroup struct {
 	DictionaryService
 	DictionaryDetailService
 	EmailService
-	InitDBService
 	MenuService
 	OperationRecordService
 	SystemConfigService

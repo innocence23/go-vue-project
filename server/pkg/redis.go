@@ -1,15 +1,15 @@
-package core
+package pkg
 
 import (
 	"context"
-	"project/global"
+	"project/zvar"
 
 	"github.com/go-redis/redis/v8"
 	"go.uber.org/zap"
 )
 
-func Redis() *redis.Client {
-	redisCfg := global.GVA_CONFIG.Redis
+func InitRedis() *redis.Client {
+	redisCfg := zvar.Config.Redis
 	client := redis.NewClient(&redis.Options{
 		Addr:     redisCfg.Addr,
 		Password: redisCfg.Password, // no password set
@@ -17,7 +17,7 @@ func Redis() *redis.Client {
 	})
 	_, err := client.Ping(context.Background()).Result()
 	if err != nil {
-		global.GVA_LOG.Error("redis connect ping failed, err:", zap.Any("err", err))
+		zvar.Log.Error("redis connect ping failed, err:", zap.Any("err", err))
 	}
 	return client
 }

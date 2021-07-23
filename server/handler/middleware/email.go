@@ -1,16 +1,17 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 	"io/ioutil"
-	"project/global"
 	"project/model/system"
 	"project/model/system/request"
 	"project/service"
 	"project/utils"
+	"project/zvar"
 	"strconv"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 var userService = service.ServiceGroupApp.SystemServiceGroup.UserService
@@ -48,7 +49,7 @@ func ErrorToEmail() gin.HandlerFunc {
 		if status != 200 {
 			subject := username + "" + record.Ip + "调用了" + record.Path + "报错了"
 			if err := utils.ErrorToEmail(subject, str); err != nil {
-				global.GVA_LOG.Error("ErrorToEmail Failed, err:", zap.Any("err", err))
+				zvar.Log.Error("ErrorToEmail Failed, err:", zap.Any("err", err))
 			}
 		}
 	}

@@ -2,7 +2,6 @@ package upload
 
 import (
 	"mime/multipart"
-	"project/global"
 )
 
 //@author: [ccfish86](https://github.com/ccfish86)
@@ -23,7 +22,7 @@ type OSS interface {
 //@return: OSS
 
 func NewOss() OSS {
-	switch global.GVA_CONFIG.System.OssType {
+	switch zvar.Config.System.OssType {
 	case "local":
 		return &Local{}
 	case "qiniu":

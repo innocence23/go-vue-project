@@ -11,7 +11,6 @@ var autoCodeHistoryService = service.ServiceGroupApp.SystemServiceGroup.AutoCode
 var dictionaryService = service.ServiceGroupApp.SystemServiceGroup.DictionaryService
 var dictionaryDetailService = service.ServiceGroupApp.SystemServiceGroup.DictionaryDetailService
 var emailService = service.ServiceGroupApp.SystemServiceGroup.EmailService
-var initDBService = service.ServiceGroupApp.SystemServiceGroup.InitDBService
 var jwtService = service.ServiceGroupApp.SystemServiceGroup.JwtService
 var baseMenuService = service.ServiceGroupApp.SystemServiceGroup.BaseMenuService
 var operationRecordService = service.ServiceGroupApp.SystemServiceGroup.OperationRecordService

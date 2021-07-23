@@ -2,12 +2,13 @@ package system
 
 import (
 	"errors"
-	"gorm.io/gorm"
-	"project/global"
 	"project/model/common/request"
 	"project/model/system"
 	"project/model/system/response"
+	"project/zvar"
 	"strconv"
+
+	"gorm.io/gorm"
 )
 
 //@author: [piexlmax](https://github.com/piexlmax)
@@ -23,10 +24,10 @@ var AuthorityServiceApp = new(AuthorityService)
 
 func (authorityService *AuthorityService) CreateAuthority(auth system.SysAuthority) (err error, authority system.SysAuthority) {
 	var authorityBox system.SysAuthority
-	if !errors.Is(global.GVA_DB.Where("authority_id = ?", auth.AuthorityId).First(&authorityBox).Error, gorm.ErrRecordNotFound) {
+	if !errors.Is(zvar.DB.Where("authority_id = ?", auth.AuthorityId).First(&authorityBox).Error, gorm.ErrRecordNotFound) {
 		return errors.New("存在相同角色id"), auth
 	}
-	err = global.GVA_DB.Create(&auth).Error
+	err = zvar.DB.Create(&auth).Error
 	return err, auth
 }
 
@@ -38,7 +39,7 @@ func (authorityService *AuthorityService) CreateAuthority(auth system.SysAuthori
 
 func (authorityService *AuthorityService) CopyAuthority(copyInfo response.SysAuthorityCopyResponse) (err error, authority system.SysAuthority) {
 	var authorityBox system.SysAuthority
-	if !errors.Is(global.GVA_DB.Where("authority_id = ?", copyInfo.Authority.AuthorityId).First(&authorityBox).Error, gorm.ErrRecordNotFound) {
+	if !errors.Is(zvar.DB.Where("authority_id = ?", copyInfo.Authority.AuthorityId).First(&authorityBox).Error, gorm.ErrRecordNotFound) {
 		return errors.New("存在相同角色id"), authority
 	}
 	copyInfo.Authority.Children = []system.SysAuthority{}
@@ -50,7 +51,7 @@ func (authorityService *AuthorityService) CopyAuthority(copyInfo response.SysAut
 		baseMenu = append(baseMenu, v.SysBaseMenu)
 	}
 	copyInfo.Authority.SysBaseMenus = baseMenu
-	err = global.GVA_DB.Create(&copyInfo.Authority).Error
+	err = zvar.DB.Create(&copyInfo.Authority).Error
 
 	paths := CasbinServiceApp.GetPolicyPathByAuthorityId(copyInfo.OldAuthorityId)
 	err = CasbinServiceApp.UpdateCasbin(copyInfo.Authority.AuthorityId, paths)
@@ -67,7 +68,7 @@ func (authorityService *AuthorityService) CopyAuthority(copyInfo response.SysAut
 //@return: err error, authority model.SysAuthority
 
 func (authorityService *AuthorityService) UpdateAuthority(auth system.SysAuthority) (err error, authority system.SysAuthority) {
-	err = global.GVA_DB.Where("authority_id = ?", auth.AuthorityId).First(&system.SysAuthority{}).Updates(&auth).Error
+	err = zvar.DB.Where("authority_id = ?", auth.AuthorityId).First(&system.SysAuthority{}).Updates(&auth).Error
 	return err, auth
 }
 
@@ -78,16 +79,16 @@ func (authorityService *AuthorityService) UpdateAuthority(auth system.SysAuthori
 //@return: err error
 
 func (authorityService *AuthorityService) DeleteAuthority(auth *system.SysAuthority) (err error) {
-	if !errors.Is(global.GVA_DB.Where("authority_id = ?", auth.AuthorityId).First(&system.SysUser{}).Error, gorm.ErrRecordNotFound) {
+	if !errors.Is(zvar.DB.Where("authority_id = ?", auth.AuthorityId).First(&system.SysUser{}).Error, gorm.ErrRecordNotFound) {
 		return errors.New("此角色有用户正在使用禁止删除")
 	}
-	if !errors.Is(global.GVA_DB.Where("parent_id = ?", auth.AuthorityId).First(&system.SysAuthority{}).Error, gorm.ErrRecordNotFound) {
+	if !errors.Is(zvar.DB.Where("parent_id = ?", auth.AuthorityId).First(&system.SysAuthority{}).Error, gorm.ErrRecordNotFound) {
 		return errors.New("此角色存在子角色不允许删除")
 	}
-	db := global.GVA_DB.Preload("SysBaseMenus").Where("authority_id = ?", auth.AuthorityId).First(auth)
+	db := zvar.DB.Preload("SysBaseMenus").Where("authority_id = ?", auth.AuthorityId).First(auth)
 	err = db.Unscoped().Delete(auth).Error
 	if len(auth.SysBaseMenus) > 0 {
-		err = global.GVA_DB.Model(auth).Association("SysBaseMenus").Delete(auth.SysBaseMenus)
+		err = zvar.DB.Model(auth).Association("SysBaseMenus").Delete(auth.SysBaseMenus)
 		//err = db.Association("SysBaseMenus").Delete(&auth)
 	} else {
 		err = db.Error
@@ -105,7 +106,7 @@ func (authorityService *AuthorityService) DeleteAuthority(auth *system.SysAuthor
 func (authorityService *AuthorityService) GetAuthorityInfoList(info request.PageInfo) (err error, list interface{}, total int64) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
-	db := global.GVA_DB
+	db := zvar.DB
 	var authority []system.SysAuthority
 	err = db.Limit(limit).Offset(offset).Preload("DataAuthorityId").Where("parent_id = 0").Find(&authority).Error
 	if len(authority) > 0 {
@@ -123,7 +124,7 @@ func (authorityService *AuthorityService) GetAuthorityInfoList(info request.Page
 //@return: err error, sa model.SysAuthority
 
 func (authorityService *AuthorityService) GetAuthorityInfo(auth system.SysAuthority) (err error, sa system.SysAuthority) {
-	err = global.GVA_DB.Preload("DataAuthorityId").Where("authority_id = ?", auth.AuthorityId).First(&sa).Error
+	err = zvar.DB.Preload("DataAuthorityId").Where("authority_id = ?", auth.AuthorityId).First(&sa).Error
 	return err, sa
 }
 
@@ -135,8 +136,8 @@ func (authorityService *AuthorityService) GetAuthorityInfo(auth system.SysAuthor
 
 func (authorityService *AuthorityService) SetDataAuthority(auth system.SysAuthority) error {
 	var s system.SysAuthority
-	global.GVA_DB.Preload("DataAuthorityId").First(&s, "authority_id = ?", auth.AuthorityId)
-	err := global.GVA_DB.Model(&s).Association("DataAuthorityId").Replace(&auth.DataAuthorityId)
+	zvar.DB.Preload("DataAuthorityId").First(&s, "authority_id = ?", auth.AuthorityId)
+	err := zvar.DB.Model(&s).Association("DataAuthorityId").Replace(&auth.DataAuthorityId)
 	return err
 }
 
@@ -148,8 +149,8 @@ func (authorityService *AuthorityService) SetDataAuthority(auth system.SysAuthor
 
 func (authorityService *AuthorityService) SetMenuAuthority(auth *system.SysAuthority) error {
 	var s system.SysAuthority
-	global.GVA_DB.Preload("SysBaseMenus").First(&s, "authority_id = ?", auth.AuthorityId)
-	err := global.GVA_DB.Model(&s).Association("SysBaseMenus").Replace(&auth.SysBaseMenus)
+	zvar.DB.Preload("SysBaseMenus").First(&s, "authority_id = ?", auth.AuthorityId)
+	err := zvar.DB.Model(&s).Association("SysBaseMenus").Replace(&auth.SysBaseMenus)
 	return err
 }
 
@@ -160,7 +161,7 @@ func (authorityService *AuthorityService) SetMenuAuthority(auth *system.SysAutho
 //@return: err error
 
 func (authorityService *AuthorityService) findChildrenAuthority(authority *system.SysAuthority) (err error) {
-	err = global.GVA_DB.Preload("DataAuthorityId").Where("parent_id = ?", authority.AuthorityId).Find(&authority.Children).Error
+	err = zvar.DB.Preload("DataAuthorityId").Where("parent_id = ?", authority.AuthorityId).Find(&authority.Children).Error
 	if len(authority.Children) > 0 {
 		for k := range authority.Children {
 			err = authorityService.findChildrenAuthority(&authority.Children[k])

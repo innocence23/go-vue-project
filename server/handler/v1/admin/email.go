@@ -1,9 +1,9 @@
 package admin
 
 import (
-	"project/global"
 	"project/handler/middleware"
 	"project/model/common/response"
+	"project/zvar"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -29,7 +29,7 @@ func (e *emailHandler) Router(router *gin.RouterGroup) {
 // @Router /email/emailTest [post]
 func (e *emailHandler) EmailTest(c *gin.Context) {
 	if err := emailService.EmailTest(); err != nil {
-		global.GVA_LOG.Error("发送失败!", zap.Any("err", err))
+		zvar.Log.Error("发送失败!", zap.Any("err", err))
 		response.FailWithMessage("发送失败", c)
 	} else {
 		response.OkWithData("发送成功", c)

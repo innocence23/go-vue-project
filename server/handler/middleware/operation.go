@@ -2,16 +2,17 @@ package middleware
 
 import (
 	"bytes"
-	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 	"io/ioutil"
 	"net/http"
-	"project/global"
 	"project/model/system"
 	"project/model/system/request"
 	"project/service"
+	"project/zvar"
 	"strconv"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 var operationRecordService = service.ServiceGroupApp.SystemServiceGroup.OperationRecordService
@@ -24,7 +25,7 @@ func OperationRecord() gin.HandlerFunc {
 			var err error
 			body, err = ioutil.ReadAll(c.Request.Body)
 			if err != nil {
-				global.GVA_LOG.Error("read body from request error:", zap.Any("err", err))
+				zvar.Log.Error("read body from request error:", zap.Any("err", err))
 			} else {
 				c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 			}
@@ -68,7 +69,7 @@ func OperationRecord() gin.HandlerFunc {
 		record.Resp = writer.body.String()
 
 		if err := operationRecordService.CreateSysOperationRecord(record); err != nil {
-			global.GVA_LOG.Error("create operation record error:", zap.Any("err", err))
+			zvar.Log.Error("create operation record error:", zap.Any("err", err))
 		}
 	}
 }

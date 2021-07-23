@@ -2,13 +2,13 @@
 package autocode
 
 import (
-	"project/global"
+	"project/glo"
 )
 
 // {{.StructName}} 结构体
 // 如果含有time.Time 请自行import time包
 type {{.StructName}} struct {
-      global.GVA_MODEL {{- range .Fields}}
+      zvar.Model {{- range .Fields}}
             {{- if ne .FieldType "string" }}
       {{.FieldName}}  *{{.FieldType}} `json:"{{.FieldJson}}" form:"{{.FieldJson}}" gorm:"column:{{.ColumnName}};comment:{{.Comment}}{{- if .DataType -}};type:{{.DataType}}{{- end }}"`
             {{- else }}

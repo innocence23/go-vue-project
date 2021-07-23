@@ -1,10 +1,10 @@
 package system
 
 import (
-	"project/global"
 	"project/model/common/request"
 	"project/model/system"
 	"project/utils"
+	"project/zvar"
 	"strings"
 
 	"go.uber.org/zap"
@@ -17,7 +17,7 @@ var AutoCodeHistoryServiceApp = new(AutoCodeHistoryService)
 
 // CreateAutoCodeHistory RouterPath : RouterPath@RouterString;RouterPath2@RouterString2
 func (autoCodeHistoryService *AutoCodeHistoryService) CreateAutoCodeHistory(meta, structName, structCNName, autoCodePath string, injectionMeta string, tableName string, apiIds string) error {
-	return global.GVA_DB.Create(&system.SysAutoCodeHistory{
+	return zvar.DB.Create(&system.SysAutoCodeHistory{
 		RequestMeta:   meta,
 		AutoCodePath:  autoCodePath,
 		InjectionMeta: injectionMeta,
@@ -31,25 +31,25 @@ func (autoCodeHistoryService *AutoCodeHistoryService) CreateAutoCodeHistory(meta
 // RollBack 回滚
 func (autoCodeHistoryService *AutoCodeHistoryService) RollBack(id uint) error {
 	md := system.SysAutoCodeHistory{}
-	if err := global.GVA_DB.First(&md, id).Error; err != nil {
+	if err := zvar.DB.First(&md, id).Error; err != nil {
 		return err
 	}
 	// 清除API表
 	err := ApiServiceApp.DeleteApiByIds(strings.Split(md.ApiIDs, ";"))
 	if err != nil {
-		global.GVA_LOG.Error("ClearTag DeleteApiByIds:", zap.Error(err))
+		zvar.Log.Error("ClearTag DeleteApiByIds:", zap.Error(err))
 	}
 	// 获取全部表名
-	err, dbNames := AutoCodeServiceApp.GetTables(global.GVA_CONFIG.Mysql.Dbname)
+	err, dbNames := AutoCodeServiceApp.GetTables(zvar.Config.Mysql.Dbname)
 	if err != nil {
-		global.GVA_LOG.Error("ClearTag GetTables:", zap.Error(err))
+		zvar.Log.Error("ClearTag GetTables:", zap.Error(err))
 	}
 	// 删除表
 	for _, name := range dbNames {
 		if strings.Contains(strings.ToUpper(strings.Replace(name.TableName, "_", "", -1)), strings.ToUpper(md.TableName)) {
 			// 删除表
 			if err = AutoCodeServiceApp.DropTable(name.TableName); err != nil {
-				global.GVA_LOG.Error("ClearTag DropTable:", zap.Error(err))
+				zvar.Log.Error("ClearTag DropTable:", zap.Error(err))
 
 			}
 		}
@@ -67,19 +67,19 @@ func (autoCodeHistoryService *AutoCodeHistoryService) RollBack(id uint) error {
 		}
 	}
 	md.Flag = 1
-	return global.GVA_DB.Save(&md).Error
+	return zvar.DB.Save(&md).Error
 }
 
 func (autoCodeHistoryService *AutoCodeHistoryService) GetMeta(id uint) (string, error) {
 	var meta string
-	return meta, global.GVA_DB.Model(system.SysAutoCodeHistory{}).Select("request_meta").First(&meta, id).Error
+	return meta, zvar.DB.Model(system.SysAutoCodeHistory{}).Select("request_meta").First(&meta, id).Error
 }
 
 // GetSysHistoryPage  获取系统历史数据
 func (autoCodeHistoryService *AutoCodeHistoryService) GetSysHistoryPage(info request.PageInfo) (err error, list interface{}, total int64) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
-	db := global.GVA_DB
+	db := zvar.DB
 	var fileLists []system.SysAutoCodeHistory
 	err = db.Find(&fileLists).Count(&total).Error
 	err = db.Limit(limit).Offset(offset).Order("updated_at desc").Select("id,created_at,updated_at,struct_name,struct_cn_name,flag,table_name").Find(&fileLists).Error
@@ -88,5 +88,5 @@ func (autoCodeHistoryService *AutoCodeHistoryService) GetSysHistoryPage(info req
 
 // DeletePage 删除历史数据
 func (autoCodeHistoryService *AutoCodeHistoryService) DeletePage(id uint) error {
-	return global.GVA_DB.Delete(system.SysAutoCodeHistory{}, id).Error
+	return zvar.DB.Delete(system.SysAutoCodeHistory{}, id).Error
 }

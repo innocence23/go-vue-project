@@ -3,8 +3,8 @@ package system
 import (
 	"context"
 	"errors"
-	"project/global"
 	"project/model/system"
+	"project/zvar"
 	"time"
 
 	"gorm.io/gorm"
@@ -20,7 +20,7 @@ type JwtService struct {
 //@return: err error
 
 func (jwtService *JwtService) JsonInBlacklist(jwtList system.JwtBlacklist) (err error) {
-	err = global.GVA_DB.Create(&jwtList).Error
+	err = zvar.DB.Create(&jwtList).Error
 	return
 }
 
@@ -31,7 +31,7 @@ func (jwtService *JwtService) JsonInBlacklist(jwtList system.JwtBlacklist) (err 
 //@return: bool
 
 func (jwtService *JwtService) IsBlacklist(jwt string) bool {
-	err := global.GVA_DB.Where("jwt = ?", jwt).First(&system.JwtBlacklist{}).Error
+	err := zvar.DB.Where("jwt = ?", jwt).First(&system.JwtBlacklist{}).Error
 	isNotFound := errors.Is(err, gorm.ErrRecordNotFound)
 	return !isNotFound
 }
@@ -43,7 +43,7 @@ func (jwtService *JwtService) IsBlacklist(jwt string) bool {
 //@return: err error, redisJWT string
 
 func (jwtService *JwtService) GetRedisJWT(userName string) (err error, redisJWT string) {
-	redisJWT, err = global.GVA_REDIS.Get(context.Background(), userName).Result()
+	redisJWT, err = zvar.Redis.Get(context.Background(), userName).Result()
 	return err, redisJWT
 }
 
@@ -55,7 +55,7 @@ func (jwtService *JwtService) GetRedisJWT(userName string) (err error, redisJWT 
 
 func (jwtService *JwtService) SetRedisJWT(jwt string, userName string) (err error) {
 	// 此处过期时间等于jwt过期时间
-	timer := time.Duration(global.GVA_CONFIG.JWT.ExpiresTime) * time.Second
-	err = global.GVA_REDIS.Set(context.Background(), userName, jwt, timer).Err()
+	timer := time.Duration(zvar.Config.JWT.ExpiresTime) * time.Second
+	err = zvar.Redis.Set(context.Background(), userName, jwt, timer).Err()
 	return err
 }

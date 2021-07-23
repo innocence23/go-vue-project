@@ -1,11 +1,11 @@
 package system
 
-import "project/global"
+import "project/zvar"
 
 // 自动迁移代码记录,用于回滚,重放使用
 
 type SysAutoCodeHistory struct {
-	global.GVA_MODEL
+	zvar.Model
 	TableName     string `json:"tableName"`
 	RequestMeta   string `gorm:"type:text" json:"requestMeta,omitempty"`   // 前端传入的结构化信息
 	AutoCodePath  string `gorm:"type:text" json:"autoCodePath,omitempty"`  // 其他meta信息 path;path

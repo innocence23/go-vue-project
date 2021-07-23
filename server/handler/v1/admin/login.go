@@ -1,7 +1,6 @@
 package admin
 
 import (
-	"project/global"
 	"project/handler/middleware"
 	"project/model/common/request"
 	"project/model/common/response"
@@ -9,6 +8,7 @@ import (
 	systemReq "project/model/system/request"
 	systemRes "project/model/system/response"
 	"project/utils"
+	"project/zvar"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -65,7 +65,7 @@ func (b *baseHandler) Login(c *gin.Context) {
 	if store.Verify(l.CaptchaId, l.Captcha, true) {
 		u := &system.SysUser{Username: l.Username, Password: l.Password}
 		if err, user := userService.Login(u); err != nil {
-			global.GVA_LOG.Error("登陆失败! 用户名不存在或者密码错误!", zap.Any("err", err))
+			zvar.Log.Error("登陆失败! 用户名不存在或者密码错误!", zap.Any("err", err))
 			response.FailWithMessage("用户名不存在或者密码错误", c)
 		} else {
 			b.tokenNext(c, *user)
@@ -77,27 +77,27 @@ func (b *baseHandler) Login(c *gin.Context) {
 
 // 登录以后签发jwt
 func (b *baseHandler) tokenNext(c *gin.Context, user system.SysUser) {
-	j := &middleware.JWT{SigningKey: []byte(global.GVA_CONFIG.JWT.SigningKey)} // 唯一签名
+	j := &middleware.JWT{SigningKey: []byte(zvar.Config.JWT.SigningKey)} // 唯一签名
 	claims := systemReq.CustomClaims{
 		UUID:        user.UUID,
 		ID:          user.ID,
 		NickName:    user.NickName,
 		Username:    user.Username,
 		AuthorityId: user.AuthorityId,
-		BufferTime:  global.GVA_CONFIG.JWT.BufferTime, // 缓冲时间1天 缓冲时间内会获得新的token刷新令牌 此时一个用户会存在两个有效令牌 但是前端只留一个 另一个会丢失
+		BufferTime:  zvar.Config.JWT.BufferTime, // 缓冲时间1天 缓冲时间内会获得新的token刷新令牌 此时一个用户会存在两个有效令牌 但是前端只留一个 另一个会丢失
 		StandardClaims: jwt.StandardClaims{
-			NotBefore: time.Now().Unix() - 1000,                              // 签名生效时间
-			ExpiresAt: time.Now().Unix() + global.GVA_CONFIG.JWT.ExpiresTime, // 过期时间 7天  配置文件
-			Issuer:    "qmPlus",                                              // 签名的发行者
+			NotBefore: time.Now().Unix() - 1000,                        // 签名生效时间
+			ExpiresAt: time.Now().Unix() + zvar.Config.JWT.ExpiresTime, // 过期时间 7天  配置文件
+			Issuer:    "qmPlus",                                        // 签名的发行者
 		},
 	}
 	token, err := j.CreateToken(claims)
 	if err != nil {
-		global.GVA_LOG.Error("获取token失败!", zap.Any("err", err))
+		zvar.Log.Error("获取token失败!", zap.Any("err", err))
 		response.FailWithMessage("获取token失败", c)
 		return
 	}
-	if !global.GVA_CONFIG.System.UseMultipoint {
+	if !zvar.Config.System.UseMultipoint {
 		response.OkWithDetailed(systemRes.LoginResponse{
 			User:      user,
 			Token:     token,
@@ -107,7 +107,7 @@ func (b *baseHandler) tokenNext(c *gin.Context, user system.SysUser) {
 	}
 	if err, jwtStr := jwtService.GetRedisJWT(user.Username); err == redis.Nil {
 		if err := jwtService.SetRedisJWT(token, user.Username); err != nil {
-			global.GVA_LOG.Error("设置登录状态失败!", zap.Any("err", err))
+			zvar.Log.Error("设置登录状态失败!", zap.Any("err", err))
 			response.FailWithMessage("设置登录状态失败", c)
 			return
 		}
@@ -117,7 +117,7 @@ func (b *baseHandler) tokenNext(c *gin.Context, user system.SysUser) {
 			ExpiresAt: claims.StandardClaims.ExpiresAt * 1000,
 		}, "登录成功", c)
 	} else if err != nil {
-		global.GVA_LOG.Error("设置登录状态失败!", zap.Any("err", err))
+		zvar.Log.Error("设置登录状态失败!", zap.Any("err", err))
 		response.FailWithMessage("设置登录状态失败", c)
 	} else {
 		var blackJWT system.JwtBlacklist
@@ -154,7 +154,7 @@ func (b *baseHandler) Register(c *gin.Context) {
 	user := &system.SysUser{Username: r.Username, NickName: r.NickName, Password: r.Password, HeaderImg: r.HeaderImg, AuthorityId: r.AuthorityId}
 	err, userReturn := userService.Register(*user)
 	if err != nil {
-		global.GVA_LOG.Error("注册失败!", zap.Any("err", err))
+		zvar.Log.Error("注册失败!", zap.Any("err", err))
 		response.FailWithDetailed(systemRes.SysUserResponse{User: userReturn}, "注册失败", c)
 	} else {
 		response.OkWithDetailed(systemRes.SysUserResponse{User: userReturn}, "注册成功", c)
@@ -177,7 +177,7 @@ func (b *baseHandler) ChangePassword(c *gin.Context) {
 	}
 	u := &system.SysUser{Username: user.Username, Password: user.Password}
 	if err, _ := userService.ChangePassword(u, user.NewPassword); err != nil {
-		global.GVA_LOG.Error("修改失败!", zap.Any("err", err))
+		zvar.Log.Error("修改失败!", zap.Any("err", err))
 		response.FailWithMessage("修改失败，原密码与当前账户不符", c)
 	} else {
 		response.OkWithMessage("修改成功", c)
@@ -200,7 +200,7 @@ func (b *baseHandler) GetUserList(c *gin.Context) {
 		return
 	}
 	if err, list, total := userService.GetUserInfoList(pageInfo); err != nil {
-		global.GVA_LOG.Error("获取失败!", zap.Any("err", err))
+		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败", c)
 	} else {
 		response.OkWithDetailed(response.PageResult{
@@ -228,7 +228,7 @@ func (b *baseHandler) SetUserAuthority(c *gin.Context) {
 		return
 	}
 	if err := userService.SetUserAuthority(sua.UUID, sua.AuthorityId); err != nil {
-		global.GVA_LOG.Error("修改失败!", zap.Any("err", err))
+		zvar.Log.Error("修改失败!", zap.Any("err", err))
 		response.FailWithMessage("修改失败", c)
 	} else {
 		response.OkWithMessage("修改成功", c)
@@ -256,7 +256,7 @@ func (b *baseHandler) DeleteUser(c *gin.Context) {
 		return
 	}
 	if err := userService.DeleteUser(reqId.ID); err != nil {
-		global.GVA_LOG.Error("删除失败!", zap.Any("err", err))
+		zvar.Log.Error("删除失败!", zap.Any("err", err))
 		response.FailWithMessage("删除失败", c)
 	} else {
 		response.OkWithMessage("删除成功", c)
@@ -279,7 +279,7 @@ func (b *baseHandler) SetUserInfo(c *gin.Context) {
 		return
 	}
 	if err, ReqUser := userService.SetUserInfo(user); err != nil {
-		global.GVA_LOG.Error("设置失败!", zap.Any("err", err))
+		zvar.Log.Error("设置失败!", zap.Any("err", err))
 		response.FailWithMessage("设置失败", c)
 	} else {
 		response.OkWithDetailed(gin.H{"userInfo": ReqUser}, "设置成功", c)
@@ -296,10 +296,10 @@ func (b *baseHandler) SetUserInfo(c *gin.Context) {
 func (b *baseHandler) Captcha(c *gin.Context) {
 	// 字符,公式,验证码配置
 	// 生成默认数字的driver
-	driver := base64Captcha.NewDriverDigit(global.GVA_CONFIG.Captcha.ImgHeight, global.GVA_CONFIG.Captcha.ImgWidth, global.GVA_CONFIG.Captcha.KeyLong, 0.7, 80)
+	driver := base64Captcha.NewDriverDigit(zvar.Config.Captcha.ImgHeight, zvar.Config.Captcha.ImgWidth, zvar.Config.Captcha.KeyLong, 0.7, 80)
 	cp := base64Captcha.NewCaptcha(driver, store)
 	if id, b64s, err := cp.Generate(); err != nil {
-		global.GVA_LOG.Error("验证码获取失败!", zap.Any("err", err))
+		zvar.Log.Error("验证码获取失败!", zap.Any("err", err))
 		response.FailWithMessage("验证码获取失败", c)
 	} else {
 		response.OkWithDetailed(systemRes.SysCaptchaResponse{

@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"net/url"
 	"os"
-	"project/global"
 	"project/model/common/response"
 	"project/model/system"
 	systemReq "project/model/system/request"
 	"project/utils"
+	"project/zvar"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -50,7 +50,7 @@ func (a *autoHandler) DelSysHistory(c *gin.Context) {
 	_ = c.ShouldBindJSON(&id)
 	err := autoCodeHistoryService.DeletePage(id.ID)
 	if err != nil {
-		global.GVA_LOG.Error("获取失败!", zap.Any("err", err))
+		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败", c)
 	}
 	response.OkWithMessage("删除成功", c)
@@ -70,7 +70,7 @@ func (a *autoHandler) GetSysHistory(c *gin.Context) {
 	_ = c.ShouldBindJSON(&search)
 	err, list, total := autoCodeHistoryService.GetSysHistoryPage(search.PageInfo)
 	if err != nil {
-		global.GVA_LOG.Error("获取失败!", zap.Any("err", err))
+		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败", c)
 	} else {
 		response.OkWithDetailed(response.PageResult{
@@ -137,7 +137,7 @@ func (a *autoHandler) PreviewTemp(c *gin.Context) {
 	}
 	autoCode, err := autoCodeService.PreviewTemp(ac)
 	if err != nil {
-		global.GVA_LOG.Error("预览失败!", zap.Any("err", err))
+		zvar.Log.Error("预览失败!", zap.Any("err", err))
 		response.FailWithMessage("预览失败", c)
 	} else {
 		response.OkWithDetailed(gin.H{"autoCode": autoCode}, "预览成功", c)
@@ -162,7 +162,7 @@ func (a *autoHandler) CreateTemp(c *gin.Context) {
 	var apiIds []uint
 	if ac.AutoCreateApiToSql {
 		if ids, err := autoCodeService.AutoCreateApi(&ac); err != nil {
-			global.GVA_LOG.Error("自动化创建失败!请自行清空垃圾数据!", zap.Any("err", err))
+			zvar.Log.Error("自动化创建失败!请自行清空垃圾数据!", zap.Any("err", err))
 			c.Writer.Header().Add("success", "false")
 			c.Writer.Header().Add("msg", url.QueryEscape("自动化创建失败!请自行清空垃圾数据!"))
 			return
@@ -198,10 +198,10 @@ func (a *autoHandler) CreateTemp(c *gin.Context) {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /autoCode/getTables [get]
 func (a *autoHandler) GetTables(c *gin.Context) {
-	dbName := c.DefaultQuery("dbName", global.GVA_CONFIG.Mysql.Dbname)
+	dbName := c.DefaultQuery("dbName", zvar.Config.Mysql.Dbname)
 	err, tables := autoCodeService.GetTables(dbName)
 	if err != nil {
-		global.GVA_LOG.Error("查询table失败!", zap.Any("err", err))
+		zvar.Log.Error("查询table失败!", zap.Any("err", err))
 		response.FailWithMessage("查询table失败", c)
 	} else {
 		response.OkWithDetailed(gin.H{"tables": tables}, "获取成功", c)
@@ -217,7 +217,7 @@ func (a *autoHandler) GetTables(c *gin.Context) {
 // @Router /autoCode/getDatabase [get]
 func (a *autoHandler) GetDB(c *gin.Context) {
 	if err, dbs := autoCodeService.GetDB(); err != nil {
-		global.GVA_LOG.Error("获取失败!", zap.Any("err", err))
+		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败", c)
 	} else {
 		response.OkWithDetailed(gin.H{"dbs": dbs}, "获取成功", c)
@@ -232,10 +232,10 @@ func (a *autoHandler) GetDB(c *gin.Context) {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /autoCode/getColumn [get]
 func (a *autoHandler) GetColumn(c *gin.Context) {
-	dbName := c.DefaultQuery("dbName", global.GVA_CONFIG.Mysql.Dbname)
+	dbName := c.DefaultQuery("dbName", zvar.Config.Mysql.Dbname)
 	tableName := c.Query("tableName")
 	if err, columns := autoCodeService.GetColumn(tableName, dbName); err != nil {
-		global.GVA_LOG.Error("获取失败!", zap.Any("err", err))
+		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败", c)
 	} else {
 		response.OkWithDetailed(gin.H{"columns": columns}, "获取成功", c)

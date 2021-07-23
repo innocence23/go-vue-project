@@ -1,10 +1,10 @@
 package admin
 
 import (
-	"project/global"
 	"project/handler/middleware"
 	"project/model/common/response"
 	"project/model/system"
+	"project/zvar"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -34,7 +34,7 @@ func (j *jwtHandler) JsonInBlacklist(c *gin.Context) {
 	token := c.Request.Header.Get("x-token")
 	jwt := system.JwtBlacklist{Jwt: token}
 	if err := jwtService.JsonInBlacklist(jwt); err != nil {
-		global.GVA_LOG.Error("jwt作废失败!", zap.Any("err", err))
+		zvar.Log.Error("jwt作废失败!", zap.Any("err", err))
 		response.FailWithMessage("jwt作废失败", c)
 	} else {
 		response.OkWithMessage("jwt作废成功", c)

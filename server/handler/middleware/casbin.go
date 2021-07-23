@@ -24,7 +24,7 @@ func CasbinHandler() gin.HandlerFunc {
 		// 判断策略中是否存在
 		success, _ := e.Enforce(sub, obj, act)
 		_ = success
-		//if global.GVA_CONFIG.System.Env == "develop" || success {
+		//if zvar.Config.System.Env == "develop" || success {
 		c.Next()
 		// } else {
 		// 	response.FailWithDetailed(gin.H{}, "权限不足", c)

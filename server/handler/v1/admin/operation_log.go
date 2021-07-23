@@ -1,13 +1,13 @@
 package admin
 
 import (
-	"project/global"
 	"project/handler/middleware"
 	"project/model/common/request"
 	"project/model/common/response"
 	"project/model/system"
 	systemReq "project/model/system/request"
 	"project/utils"
+	"project/zvar"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -43,7 +43,7 @@ func (s *operationRecordHandler) CreateSysOperationRecord(c *gin.Context) {
 	var sysOperationRecord system.SysOperationRecord
 	_ = c.ShouldBindJSON(&sysOperationRecord)
 	if err := operationRecordService.CreateSysOperationRecord(sysOperationRecord); err != nil {
-		global.GVA_LOG.Error("创建失败!", zap.Any("err", err))
+		zvar.Log.Error("创建失败!", zap.Any("err", err))
 		response.FailWithMessage("创建失败", c)
 	} else {
 		response.OkWithMessage("创建成功", c)
@@ -62,7 +62,7 @@ func (s *operationRecordHandler) DeleteSysOperationRecord(c *gin.Context) {
 	var sysOperationRecord system.SysOperationRecord
 	_ = c.ShouldBindJSON(&sysOperationRecord)
 	if err := operationRecordService.DeleteSysOperationRecord(sysOperationRecord); err != nil {
-		global.GVA_LOG.Error("删除失败!", zap.Any("err", err))
+		zvar.Log.Error("删除失败!", zap.Any("err", err))
 		response.FailWithMessage("删除失败", c)
 	} else {
 		response.OkWithMessage("删除成功", c)
@@ -81,7 +81,7 @@ func (s *operationRecordHandler) DeleteSysOperationRecordByIds(c *gin.Context) {
 	var IDS request.IdsReq
 	_ = c.ShouldBindJSON(&IDS)
 	if err := operationRecordService.DeleteSysOperationRecordByIds(IDS); err != nil {
-		global.GVA_LOG.Error("批量删除失败!", zap.Any("err", err))
+		zvar.Log.Error("批量删除失败!", zap.Any("err", err))
 		response.FailWithMessage("批量删除失败", c)
 	} else {
 		response.OkWithMessage("批量删除成功", c)
@@ -104,7 +104,7 @@ func (s *operationRecordHandler) FindSysOperationRecord(c *gin.Context) {
 		return
 	}
 	if err, resysOperationRecord := operationRecordService.GetSysOperationRecord(sysOperationRecord.ID); err != nil {
-		global.GVA_LOG.Error("查询失败!", zap.Any("err", err))
+		zvar.Log.Error("查询失败!", zap.Any("err", err))
 		response.FailWithMessage("查询失败", c)
 	} else {
 		response.OkWithDetailed(gin.H{"resysOperationRecord": resysOperationRecord}, "查询成功", c)
@@ -123,7 +123,7 @@ func (s *operationRecordHandler) GetSysOperationRecordList(c *gin.Context) {
 	var pageInfo systemReq.SysOperationRecordSearch
 	_ = c.ShouldBindQuery(&pageInfo)
 	if err, list, total := operationRecordService.GetSysOperationRecordInfoList(pageInfo); err != nil {
-		global.GVA_LOG.Error("获取失败!", zap.Any("err", err))
+		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败", c)
 	} else {
 		response.OkWithDetailed(response.PageResult{

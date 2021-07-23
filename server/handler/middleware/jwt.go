@@ -2,11 +2,11 @@ package middleware
 
 import (
 	"errors"
-	"project/global"
 	"project/model/common/response"
 	"project/model/system"
 	"project/model/system/request"
 	"project/service"
+	"project/zvar"
 	"strconv"
 	"time"
 
@@ -50,15 +50,15 @@ func JWTAuth() gin.HandlerFunc {
 			c.Abort()
 		}
 		if claims.ExpiresAt-time.Now().Unix() < claims.BufferTime {
-			claims.ExpiresAt = time.Now().Unix() + global.GVA_CONFIG.JWT.ExpiresTime
+			claims.ExpiresAt = time.Now().Unix() + zvar.Config.JWT.ExpiresTime
 			newToken, _ := j.CreateTokenByOldToken(token, *claims)
 			newClaims, _ := j.ParseToken(newToken)
 			c.Header("new-token", newToken)
 			c.Header("new-expires-at", strconv.FormatInt(newClaims.ExpiresAt, 10))
-			if global.GVA_CONFIG.System.UseMultipoint {
+			if zvar.Config.System.UseMultipoint {
 				err, RedisJwtToken := jwtService.GetRedisJWT(newClaims.Username)
 				if err != nil {
-					global.GVA_LOG.Error("get redis jwt failed", zap.Any("err", err))
+					zvar.Log.Error("get redis jwt failed", zap.Any("err", err))
 				} else { // 当之前的取成功时才进行拉黑操作
 					_ = jwtService.JsonInBlacklist(system.JwtBlacklist{Jwt: RedisJwtToken})
 				}
@@ -84,7 +84,7 @@ var (
 
 func NewJWT() *JWT {
 	return &JWT{
-		[]byte(global.GVA_CONFIG.JWT.SigningKey),
+		[]byte(zvar.Config.JWT.SigningKey),
 	}
 }
 
@@ -96,7 +96,7 @@ func (j *JWT) CreateToken(claims request.CustomClaims) (string, error) {
 
 // CreateTokenByOldToken 旧token 换新token 使用归并回源避免并发问题
 func (j *JWT) CreateTokenByOldToken(oldToken string, claims request.CustomClaims) (string, error) {
-	v, err, _ := global.GVA_Concurrency_Control.Do("JWT:"+oldToken, func() (interface{}, error) {
+	v, err, _ := zvar.ConcurrencyControl.Do("JWT:"+oldToken, func() (interface{}, error) {
 		return j.CreateToken(claims)
 	})
 	return v.(string), err

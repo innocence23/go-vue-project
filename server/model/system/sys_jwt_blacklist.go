@@ -1,10 +1,8 @@
 package system
 
-import (
-	"project/global"
-)
+import "project/zvar"
 
 type JwtBlacklist struct {
-	global.GVA_MODEL
+	zvar.Model
 	Jwt string `gorm:"type:text;comment:jwt"`
 }

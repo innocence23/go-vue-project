@@ -1,9 +1,10 @@
 package utils
 
 import (
-	"go.uber.org/zap"
 	"os"
-	"project/global"
+	"project/zvar"
+
+	"go.uber.org/zap"
 )
 
 //@author: [piexlmax](https://github.com/piexlmax)
@@ -36,9 +37,9 @@ func CreateDir(dirs ...string) (err error) {
 			return err
 		}
 		if !exist {
-			global.GVA_LOG.Debug("create directory" + v)
+			zvar.Log.Debug("create directory" + v)
 			if err := os.MkdirAll(v, os.ModePerm); err != nil {
-				global.GVA_LOG.Error("create directory"+v, zap.Any(" error:", err))
+				zvar.Log.Error("create directory"+v, zap.Any(" error:", err))
 				return err
 			}
 		}

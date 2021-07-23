@@ -1,10 +1,10 @@
 package system
 
 import (
-	"project/global"
 	"project/model/common/request"
 	"project/model/system"
 	systemReq "project/model/system/request"
+	"project/zvar"
 )
 
 //@author: [granty1](https://github.com/granty1)
@@ -17,7 +17,7 @@ type OperationRecordService struct {
 }
 
 func (operationRecordService *OperationRecordService) CreateSysOperationRecord(sysOperationRecord system.SysOperationRecord) (err error) {
-	err = global.GVA_DB.Create(&sysOperationRecord).Error
+	err = zvar.DB.Create(&sysOperationRecord).Error
 	return err
 }
 
@@ -29,7 +29,7 @@ func (operationRecordService *OperationRecordService) CreateSysOperationRecord(s
 //@return: err error
 
 func (operationRecordService *OperationRecordService) DeleteSysOperationRecordByIds(ids request.IdsReq) (err error) {
-	err = global.GVA_DB.Delete(&[]system.SysOperationRecord{}, "id in (?)", ids.Ids).Error
+	err = zvar.DB.Delete(&[]system.SysOperationRecord{}, "id in (?)", ids.Ids).Error
 	return err
 }
 
@@ -40,7 +40,7 @@ func (operationRecordService *OperationRecordService) DeleteSysOperationRecordBy
 //@return: err error
 
 func (operationRecordService *OperationRecordService) DeleteSysOperationRecord(sysOperationRecord system.SysOperationRecord) (err error) {
-	err = global.GVA_DB.Delete(&sysOperationRecord).Error
+	err = zvar.DB.Delete(&sysOperationRecord).Error
 	return err
 }
 
@@ -51,7 +51,7 @@ func (operationRecordService *OperationRecordService) DeleteSysOperationRecord(s
 //@return: err error, sysOperationRecord model.SysOperationRecord
 
 func (operationRecordService *OperationRecordService) GetSysOperationRecord(id uint) (err error, sysOperationRecord system.SysOperationRecord) {
-	err = global.GVA_DB.Where("id = ?", id).First(&sysOperationRecord).Error
+	err = zvar.DB.Where("id = ?", id).First(&sysOperationRecord).Error
 	return
 }
 
@@ -66,7 +66,7 @@ func (operationRecordService *OperationRecordService) GetSysOperationRecordInfoL
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
-	db := global.GVA_DB.Model(&system.SysOperationRecord{})
+	db := zvar.DB.Model(&system.SysOperationRecord{})
 	var sysOperationRecords []system.SysOperationRecord
 	// 如果有条件搜索 下方会自动创建搜索语句
 	if info.Method != "" {

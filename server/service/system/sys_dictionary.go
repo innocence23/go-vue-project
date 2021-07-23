@@ -2,10 +2,11 @@ package system
 
 import (
 	"errors"
-	"gorm.io/gorm"
-	"project/global"
 	"project/model/system"
 	"project/model/system/request"
+	"project/zvar"
+
+	"gorm.io/gorm"
 )
 
 //@author: [piexlmax](https://github.com/piexlmax)
@@ -18,10 +19,10 @@ type DictionaryService struct {
 }
 
 func (dictionaryService *DictionaryService) CreateSysDictionary(sysDictionary system.SysDictionary) (err error) {
-	if (!errors.Is(global.GVA_DB.First(&system.SysDictionary{}, "type = ?", sysDictionary.Type).Error, gorm.ErrRecordNotFound)) {
+	if (!errors.Is(zvar.DB.First(&system.SysDictionary{}, "type = ?", sysDictionary.Type).Error, gorm.ErrRecordNotFound)) {
 		return errors.New("存在相同的type，不允许创建")
 	}
-	err = global.GVA_DB.Create(&sysDictionary).Error
+	err = zvar.DB.Create(&sysDictionary).Error
 	return err
 }
 
@@ -32,7 +33,7 @@ func (dictionaryService *DictionaryService) CreateSysDictionary(sysDictionary sy
 //@return: err error
 
 func (dictionaryService *DictionaryService) DeleteSysDictionary(sysDictionary system.SysDictionary) (err error) {
-	err = global.GVA_DB.Delete(&sysDictionary).Delete(&sysDictionary.SysDictionaryDetails).Error
+	err = zvar.DB.Delete(&sysDictionary).Delete(&sysDictionary.SysDictionaryDetails).Error
 	return err
 }
 
@@ -50,11 +51,11 @@ func (dictionaryService *DictionaryService) UpdateSysDictionary(sysDictionary *s
 		"Status": sysDictionary.Status,
 		"Desc":   sysDictionary.Desc,
 	}
-	db := global.GVA_DB.Where("id = ?", sysDictionary.ID).First(&dict)
+	db := zvar.DB.Where("id = ?", sysDictionary.ID).First(&dict)
 	if dict.Type == sysDictionary.Type {
 		err = db.Updates(sysDictionaryMap).Error
 	} else {
-		if (!errors.Is(global.GVA_DB.First(&system.SysDictionary{}, "type = ?", sysDictionary.Type).Error, gorm.ErrRecordNotFound)) {
+		if (!errors.Is(zvar.DB.First(&system.SysDictionary{}, "type = ?", sysDictionary.Type).Error, gorm.ErrRecordNotFound)) {
 			return errors.New("存在相同的type，不允许创建")
 		}
 		err = db.Updates(sysDictionaryMap).Error
@@ -70,7 +71,7 @@ func (dictionaryService *DictionaryService) UpdateSysDictionary(sysDictionary *s
 //@return: err error, sysDictionary model.SysDictionary
 
 func (dictionaryService *DictionaryService) GetSysDictionary(Type string, Id uint) (err error, sysDictionary system.SysDictionary) {
-	err = global.GVA_DB.Where("type = ? OR id = ?", Type, Id).Preload("SysDictionaryDetails").First(&sysDictionary).Error
+	err = zvar.DB.Where("type = ? OR id = ?", Type, Id).Preload("SysDictionaryDetails").First(&sysDictionary).Error
 	return
 }
 
@@ -85,7 +86,7 @@ func (dictionaryService *DictionaryService) GetSysDictionaryInfoList(info reques
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
-	db := global.GVA_DB.Model(&system.SysDictionary{})
+	db := zvar.DB.Model(&system.SysDictionary{})
 	var sysDictionarys []system.SysDictionary
 	// 如果有条件搜索 下方会自动创建搜索语句
 	if info.Name != "" {

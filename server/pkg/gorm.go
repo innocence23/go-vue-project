@@ -1,15 +1,15 @@
-package core
+package pkg
 
 import (
 	"fmt"
-	"project/global"
+	"project/zvar"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-func initDB() *gorm.DB {
-	m := global.GVA_CONFIG.Mysql
+func InitDB() *gorm.DB {
+	m := zvar.Config.Mysql
 
 	user := m.Username
 	pwd := m.Password

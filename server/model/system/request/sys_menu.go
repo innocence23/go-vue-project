@@ -1,8 +1,8 @@
 package request
 
 import (
-	"project/global"
 	"project/model/system"
+	"project/zvar"
 )
 
 // Add menu authority info structure
@@ -13,7 +13,7 @@ type AddMenuAuthorityInfo struct {
 
 func DefaultMenu() []system.SysBaseMenu {
 	return []system.SysBaseMenu{{
-		GVA_MODEL: global.GVA_MODEL{ID: 1},
+		Model:     zvar.Model{ID: 1},
 		ParentId:  "0",
 		Path:      "dashboard",
 		Name:      "dashboard",
