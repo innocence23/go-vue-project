@@ -2,7 +2,6 @@ package admin
 
 import (
 	"project/dto/response"
-	"project/handler/middleware"
 	"project/service"
 	"project/zvar"
 
@@ -11,18 +10,18 @@ import (
 )
 
 type emailHandler struct {
-	service *service.EmailService
+	emailService *service.EmailService
 }
 
 func NewEmailHandler() *emailHandler {
 	return &emailHandler{
-		service: &service.EmailService{},
+		emailService: &service.EmailService{},
 	}
 }
 
 func (h *emailHandler) Router(router *gin.RouterGroup) {
-	apiRouter := router.Group("email").Use(middleware.OperationRecord())
-	apiRouter.POST("emailTest", h.EmailTest) // 发送测试邮件
+	apiRouter := router.Group("email")
+	apiRouter.POST("test", h.emailTest) // 发送测试邮件
 }
 
 // @Tags System
@@ -30,9 +29,9 @@ func (h *emailHandler) Router(router *gin.RouterGroup) {
 // @Security ApiKeyAuth
 // @Produce  application/json
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"发送成功"}"
-// @Router /email/emailTest [post]
-func (h *emailHandler) EmailTest(c *gin.Context) {
-	if err := h.service.EmailTest(); err != nil {
+// @Router /email/test [post]
+func (h *emailHandler) emailTest(c *gin.Context) {
+	if err := h.emailService.EmailTest(); err != nil {
 		zvar.Log.Error("发送失败!", zap.Any("err", err))
 		response.FailWithMessage("发送失败", c)
 	} else {
