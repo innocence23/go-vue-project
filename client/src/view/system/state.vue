@@ -133,7 +133,7 @@
 </template>
 
 <script>
-import { getSystemState } from '@/api/system'
+import { getSystemState } from '@/api/machine'
 export default {
   name: 'State',
   data() {

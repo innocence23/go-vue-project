@@ -208,12 +208,6 @@ func (autoCodeService *AutoCodeService) CreateTemp(autoCode system.AutoCodeStruc
 				bf.WriteString(";")
 			}
 		}
-
-		if zvar.Config.AutoCode.TransferRestart {
-			go func() {
-				_ = utils.Reload()
-			}()
-		}
 	} else { // 打包
 		if err = utils.ZipFiles("./ginvueadmin.zip", fileList, ".", "."); err != nil {
 			return err

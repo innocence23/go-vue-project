@@ -1,6 +1,5 @@
 import service from '@/utils/request'
 
-
 export const getApiList = (data) => {
   return service({
     url: '/permission/list',
@@ -9,7 +8,6 @@ export const getApiList = (data) => {
   })
 }
 
-
 export const createApi = (data) => {
   return service({
     url: '/permission/create',
@@ -17,7 +15,6 @@ export const createApi = (data) => {
     data
   })
 }
-
 
 export const getApiById = (data) => {
   return service({
@@ -35,7 +32,6 @@ export const updateApi = (data) => {
   })
 }
 
-
 export const getAllApis = (data) => {
   return service({
     url: '/permission/listAll',
@@ -44,7 +40,6 @@ export const getAllApis = (data) => {
   })
 }
 
-
 export const deleteApi = (data) => {
   return service({
     url: '/permission/delete',
@@ -52,7 +47,6 @@ export const deleteApi = (data) => {
     data
   })
 }
-
 
 export const deleteApisByIds = (data) => {
   return service({

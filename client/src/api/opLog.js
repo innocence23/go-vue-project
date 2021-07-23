@@ -1,6 +1,5 @@
 import service from '@/utils/request'
 
-
 export const deleteSysOperationRecord = (data) => {
   return service({
     url: '/opLog/delete',
@@ -16,7 +15,6 @@ export const deleteSysOperationRecordByIds = (data) => {
     data
   })
 }
-
 
 export const getSysOperationRecordList = (params) => {
   return service({
