@@ -126,7 +126,7 @@ func (h *baseHandler) tokenNext(c *gin.Context, user system.SysUser) {
 	} else {
 		var blackJWT system.JwtBlacklist
 		blackJWT.Jwt = jwtStr
-		if err := h.serviceJWT.JsonInBlacklist(blackJWT); err != nil {
+		if err := h.serviceJWT.InBlacklist(blackJWT); err != nil {
 			response.FailWithMessage("jwt作废失败", c)
 			return
 		}

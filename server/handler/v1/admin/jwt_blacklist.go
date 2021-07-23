@@ -2,7 +2,6 @@ package admin
 
 import (
 	"project/dto/response"
-	"project/handler/middleware"
 	"project/model/system"
 	"project/service"
 	"project/zvar"
@@ -12,18 +11,18 @@ import (
 )
 
 type jwtHandler struct {
-	service *service.JwtService
+	jwtService *service.JwtService
 }
 
 func NewJwtHandler() *jwtHandler {
 	return &jwtHandler{
-		service: &service.JwtService{},
+		jwtService: &service.JwtService{},
 	}
 }
 
 func (h *jwtHandler) Router(router *gin.RouterGroup) {
-	apiRouter := router.Group("jwt").Use(middleware.OperationRecord())
-	apiRouter.POST("jsonInBlacklist", h.JsonInBlacklist) // jwt加入黑名单
+	apiRouter := router.Group("jwt")
+	apiRouter.POST("inBlacklist", h.inBlacklist) // jwt加入黑名单
 
 }
 
@@ -33,11 +32,11 @@ func (h *jwtHandler) Router(router *gin.RouterGroup) {
 // @accept application/json
 // @Produce application/json
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"拉黑成功"}"
-// @Router /jwt/jsonInBlacklist [post]
-func (h *jwtHandler) JsonInBlacklist(c *gin.Context) {
+// @Router /jwt/inBlacklist [post]
+func (h *jwtHandler) inBlacklist(c *gin.Context) {
 	token := c.Request.Header.Get("x-token")
 	jwt := system.JwtBlacklist{Jwt: token}
-	if err := h.service.JsonInBlacklist(jwt); err != nil {
+	if err := h.jwtService.InBlacklist(jwt); err != nil {
 		zvar.Log.Error("jwt作废失败!", zap.Any("err", err))
 		response.FailWithMessage("jwt作废失败", c)
 	} else {
