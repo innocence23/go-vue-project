@@ -2,7 +2,7 @@ package request
 
 import (
 	"project/model/autocode"
-	"project/model/common/request"
+	"project/dto/request"
 )
 
 type {{.StructName}}Search struct{

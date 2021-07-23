@@ -1,12 +1,11 @@
 package admin
 
 import (
+	"project/dto/request"
+	"project/dto/response"
 	"project/handler/middleware"
-	"project/model/common/request"
-	"project/model/common/response"
 	"project/model/system"
-	systemReq "project/model/system/request"
-	systemRes "project/model/system/response"
+	"project/service"
 	"project/utils"
 	"project/zvar"
 
@@ -15,22 +14,25 @@ import (
 )
 
 type permissionHandler struct {
+	service *service.ApiService
 }
 
 func NewPermissionHandler() *permissionHandler {
-	return &permissionHandler{}
+	return &permissionHandler{
+		service: &service.ApiService{},
+	}
 }
 
-func (s *permissionHandler) Router(router *gin.RouterGroup) {
+func (h *permissionHandler) Router(router *gin.RouterGroup) {
 	apiRouter := router.Group("api").Use(middleware.OperationRecord())
 	{
-		apiRouter.POST("createApi", s.CreateApi)               // 创建Api
-		apiRouter.POST("deleteApi", s.DeleteApi)               // 删除Api
-		apiRouter.POST("getApiList", s.GetApiList)             // 获取Api列表
-		apiRouter.POST("getApiById", s.GetApiById)             // 获取单条Api消息
-		apiRouter.POST("updateApi", s.UpdateApi)               // 更新api
-		apiRouter.POST("getAllApis", s.GetAllApis)             // 获取所有api
-		apiRouter.DELETE("deleteApisByIds", s.DeleteApisByIds) // 删除选中api
+		apiRouter.POST("createApi", h.CreateApi)               // 创建Api
+		apiRouter.POST("deleteApi", h.DeleteApi)               // 删除Api
+		apiRouter.POST("getApiList", h.GetApiList)             // 获取Api列表
+		apiRouter.POST("getApiById", h.GetApiById)             // 获取单条Api消息
+		apiRouter.POST("updateApi", h.UpdateApi)               // 更新api
+		apiRouter.POST("getAllApis", h.GetAllApis)             // 获取所有api
+		apiRouter.DELETE("deleteApisByIds", h.DeleteApisByIds) // 删除选中api
 	}
 }
 
@@ -42,14 +44,14 @@ func (s *permissionHandler) Router(router *gin.RouterGroup) {
 // @Param data body system.SysApi true "api路径, api中文描述, api组, 方法"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"创建成功"}"
 // @Router /api/createApi [post]
-func (s *permissionHandler) CreateApi(c *gin.Context) {
+func (h *permissionHandler) CreateApi(c *gin.Context) {
 	var api system.SysApi
 	_ = c.ShouldBindJSON(&api)
 	if err := utils.Verify(api, utils.ApiVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err := apiService.CreateApi(api); err != nil {
+	if err := h.service.CreateApi(api); err != nil {
 		zvar.Log.Error("创建失败!", zap.Any("err", err))
 		response.FailWithMessage("创建失败", c)
 	} else {
@@ -65,14 +67,14 @@ func (s *permissionHandler) CreateApi(c *gin.Context) {
 // @Param data body system.SysApi true "ID"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"删除成功"}"
 // @Router /api/deleteApi [post]
-func (s *permissionHandler) DeleteApi(c *gin.Context) {
+func (h *permissionHandler) DeleteApi(c *gin.Context) {
 	var api system.SysApi
 	_ = c.ShouldBindJSON(&api)
 	if err := utils.Verify(api.Method, utils.IdVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err := apiService.DeleteApi(api); err != nil {
+	if err := h.service.DeleteApi(api); err != nil {
 		zvar.Log.Error("删除失败!", zap.Any("err", err))
 		response.FailWithMessage("删除失败", c)
 	} else {
@@ -85,17 +87,17 @@ func (s *permissionHandler) DeleteApi(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body systemReq.SearchApiParams true "分页获取API列表"
+// @Param data body request.SearchApiParams true "分页获取API列表"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /api/getApiList [post]
-func (s *permissionHandler) GetApiList(c *gin.Context) {
-	var pageInfo systemReq.SearchApiParams
+func (h *permissionHandler) GetApiList(c *gin.Context) {
+	var pageInfo request.SearchApiParams
 	_ = c.ShouldBindJSON(&pageInfo)
 	if err := utils.Verify(pageInfo.PageInfo, utils.PageInfoVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err, list, total := apiService.GetAPIInfoList(pageInfo.SysApi, pageInfo.PageInfo, pageInfo.OrderKey, pageInfo.Desc); err != nil {
+	if err, list, total := h.service.GetAPIInfoList(pageInfo.SysApi, pageInfo.PageInfo, pageInfo.OrderKey, pageInfo.Desc); err != nil {
 		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败", c)
 	} else {
@@ -116,19 +118,19 @@ func (s *permissionHandler) GetApiList(c *gin.Context) {
 // @Param data body request.GetById true "根据id获取api"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /api/getApiById [post]
-func (s *permissionHandler) GetApiById(c *gin.Context) {
+func (h *permissionHandler) GetApiById(c *gin.Context) {
 	var idInfo request.GetById
 	_ = c.ShouldBindJSON(&idInfo)
 	if err := utils.Verify(idInfo, utils.IdVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	err, api := apiService.GetApiById(idInfo.ID)
+	err, api := h.service.GetApiById(idInfo.ID)
 	if err != nil {
 		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败", c)
 	} else {
-		response.OkWithData(systemRes.SysAPIResponse{Api: api}, c)
+		response.OkWithData(response.SysAPIResponse{Api: api}, c)
 	}
 }
 
@@ -140,14 +142,14 @@ func (s *permissionHandler) GetApiById(c *gin.Context) {
 // @Param data body system.SysApi true "api路径, api中文描述, api组, 方法"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"修改成功"}"
 // @Router /api/updateApi [post]
-func (s *permissionHandler) UpdateApi(c *gin.Context) {
+func (h *permissionHandler) UpdateApi(c *gin.Context) {
 	var api system.SysApi
 	_ = c.ShouldBindJSON(&api)
 	if err := utils.Verify(api, utils.ApiVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err := apiService.UpdateApi(api); err != nil {
+	if err := h.service.UpdateApi(api); err != nil {
 		zvar.Log.Error("修改失败!", zap.Any("err", err))
 		response.FailWithMessage("修改失败", c)
 	} else {
@@ -162,12 +164,12 @@ func (s *permissionHandler) UpdateApi(c *gin.Context) {
 // @Produce application/json
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /api/getAllApis [post]
-func (s *permissionHandler) GetAllApis(c *gin.Context) {
-	if err, apis := apiService.GetAllApis(); err != nil {
+func (h *permissionHandler) GetAllApis(c *gin.Context) {
+	if err, apis := h.service.GetAllApis(); err != nil {
 		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败", c)
 	} else {
-		response.OkWithDetailed(systemRes.SysAPIListResponse{Apis: apis}, "获取成功", c)
+		response.OkWithDetailed(response.SysAPIListResponse{Apis: apis}, "获取成功", c)
 	}
 }
 
@@ -179,10 +181,10 @@ func (s *permissionHandler) GetAllApis(c *gin.Context) {
 // @Param data body request.IdsReq true "ID"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"删除成功"}"
 // @Router /api/deleteApisByIds [delete]
-func (s *permissionHandler) DeleteApisByIds(c *gin.Context) {
+func (h *permissionHandler) DeleteApisByIds(c *gin.Context) {
 	var ids request.IdsReq
 	_ = c.ShouldBindJSON(&ids)
-	if err := apiService.DeleteApisByIds(ids); err != nil {
+	if err := h.service.DeleteApisByIds(ids); err != nil {
 		zvar.Log.Error("删除失败!", zap.Any("err", err))
 		response.FailWithMessage("删除失败", c)
 	} else {

@@ -1,12 +1,11 @@
 package admin
 
 import (
+	"project/dto/request"
+	"project/dto/response"
 	"project/handler/middleware"
-	"project/model/common/request"
-	"project/model/common/response"
 	"project/model/system"
-	systemReq "project/model/system/request"
-	systemRes "project/model/system/response"
+	"project/service"
 	"project/utils"
 	"project/zvar"
 
@@ -15,21 +14,28 @@ import (
 )
 
 type roleHandler struct {
+	service       *service.AuthorityService
+	serviceMenu   *service.MenuService
+	serviceCasbin *service.CasbinService
 }
 
 func NewRoleHandler() *roleHandler {
-	return &roleHandler{}
+	return &roleHandler{
+		service:       &service.AuthorityService{},
+		serviceMenu:   &service.MenuService{},
+		serviceCasbin: &service.CasbinService{},
+	}
 }
 
-func (a *roleHandler) Router(router *gin.RouterGroup) {
+func (h *roleHandler) Router(router *gin.RouterGroup) {
 	apiRouter := router.Group("authority").Use(middleware.OperationRecord())
 	{
-		apiRouter.POST("createAuthority", a.CreateAuthority)   // 创建角色
-		apiRouter.POST("deleteAuthority", a.DeleteAuthority)   // 删除角色
-		apiRouter.PUT("updateAuthority", a.UpdateAuthority)    // 更新角色
-		apiRouter.POST("copyAuthority", a.CopyAuthority)       // 更新角色
-		apiRouter.POST("getAuthorityList", a.GetAuthorityList) // 获取角色列表
-		apiRouter.POST("setDataAuthority", a.SetDataAuthority) // 设置角色资源权限
+		apiRouter.POST("createAuthority", h.CreateAuthority)   // 创建角色
+		apiRouter.POST("deleteAuthority", h.DeleteAuthority)   // 删除角色
+		apiRouter.PUT("updateAuthority", h.UpdateAuthority)    // 更新角色
+		apiRouter.POST("copyAuthority", h.CopyAuthority)       // 更新角色
+		apiRouter.POST("getAuthorityList", h.GetAuthorityList) // 获取角色列表
+		apiRouter.POST("setDataAuthority", h.SetDataAuthority) // 设置角色资源权限
 	}
 }
 
@@ -41,20 +47,20 @@ func (a *roleHandler) Router(router *gin.RouterGroup) {
 // @Param data body system.SysAuthority true "权限id, 权限名, 父角色id"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"创建成功"}"
 // @Router /authority/createAuthority [post]
-func (a *roleHandler) CreateAuthority(c *gin.Context) {
+func (h *roleHandler) CreateAuthority(c *gin.Context) {
 	var authority system.SysAuthority
 	_ = c.ShouldBindJSON(&authority)
 	if err := utils.Verify(authority, utils.AuthorityVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err, authBack := authorityService.CreateAuthority(authority); err != nil {
+	if err, authBack := h.service.CreateAuthority(authority); err != nil {
 		zvar.Log.Error("创建失败!", zap.Any("err", err))
 		response.FailWithMessage("创建失败"+err.Error(), c)
 	} else {
-		_ = menuService.AddMenuAuthority(systemReq.DefaultMenu(), authority.AuthorityId)
-		_ = casbinService.UpdateCasbin(authority.AuthorityId, systemReq.DefaultCasbin())
-		response.OkWithDetailed(systemRes.SysAuthorityResponse{Authority: authBack}, "创建成功", c)
+		_ = h.serviceMenu.AddMenuAuthority(request.DefaultMenu(), authority.AuthorityId)
+		_ = h.serviceCasbin.UpdateCasbin(authority.AuthorityId, request.DefaultCasbin())
+		response.OkWithDetailed(response.SysAuthorityResponse{Authority: authBack}, "创建成功", c)
 	}
 }
 
@@ -66,8 +72,8 @@ func (a *roleHandler) CreateAuthority(c *gin.Context) {
 // @Param data body response.SysAuthorityCopyResponse true "旧角色id, 新权限id, 新权限名, 新父角色id"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"拷贝成功"}"
 // @Router /authority/copyAuthority [post]
-func (a *roleHandler) CopyAuthority(c *gin.Context) {
-	var copyInfo systemRes.SysAuthorityCopyResponse
+func (h *roleHandler) CopyAuthority(c *gin.Context) {
+	var copyInfo response.SysAuthorityCopyResponse
 	_ = c.ShouldBindJSON(&copyInfo)
 	if err := utils.Verify(copyInfo, utils.OldAuthorityVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
@@ -77,11 +83,11 @@ func (a *roleHandler) CopyAuthority(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err, authBack := authorityService.CopyAuthority(copyInfo); err != nil {
+	if err, authBack := h.service.CopyAuthority(copyInfo); err != nil {
 		zvar.Log.Error("拷贝失败!", zap.Any("err", err))
 		response.FailWithMessage("拷贝失败"+err.Error(), c)
 	} else {
-		response.OkWithDetailed(systemRes.SysAuthorityResponse{Authority: authBack}, "拷贝成功", c)
+		response.OkWithDetailed(response.SysAuthorityResponse{Authority: authBack}, "拷贝成功", c)
 	}
 }
 
@@ -93,14 +99,14 @@ func (a *roleHandler) CopyAuthority(c *gin.Context) {
 // @Param data body system.SysAuthority true "删除角色"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"删除成功"}"
 // @Router /authority/deleteAuthority [post]
-func (a *roleHandler) DeleteAuthority(c *gin.Context) {
+func (h *roleHandler) DeleteAuthority(c *gin.Context) {
 	var authority system.SysAuthority
 	_ = c.ShouldBindJSON(&authority)
 	if err := utils.Verify(authority, utils.AuthorityIdVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err := authorityService.DeleteAuthority(&authority); err != nil { // 删除角色之前需要判断是否有用户正在使用此角色
+	if err := h.service.DeleteAuthority(&authority); err != nil { // 删除角色之前需要判断是否有用户正在使用此角色
 		zvar.Log.Error("删除失败!", zap.Any("err", err))
 		response.FailWithMessage("删除失败"+err.Error(), c)
 	} else {
@@ -116,18 +122,18 @@ func (a *roleHandler) DeleteAuthority(c *gin.Context) {
 // @Param data body system.SysAuthority true "权限id, 权限名, 父角色id"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"更新成功"}"
 // @Router /authority/updateAuthority [post]
-func (a *roleHandler) UpdateAuthority(c *gin.Context) {
+func (h *roleHandler) UpdateAuthority(c *gin.Context) {
 	var auth system.SysAuthority
 	_ = c.ShouldBindJSON(&auth)
 	if err := utils.Verify(auth, utils.AuthorityVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err, authority := authorityService.UpdateAuthority(auth); err != nil {
+	if err, authority := h.service.UpdateAuthority(auth); err != nil {
 		zvar.Log.Error("更新失败!", zap.Any("err", err))
 		response.FailWithMessage("更新失败"+err.Error(), c)
 	} else {
-		response.OkWithDetailed(systemRes.SysAuthorityResponse{Authority: authority}, "更新成功", c)
+		response.OkWithDetailed(response.SysAuthorityResponse{Authority: authority}, "更新成功", c)
 	}
 }
 
@@ -139,14 +145,14 @@ func (a *roleHandler) UpdateAuthority(c *gin.Context) {
 // @Param data body request.PageInfo true "页码, 每页大小"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /authority/getAuthorityList [post]
-func (a *roleHandler) GetAuthorityList(c *gin.Context) {
+func (h *roleHandler) GetAuthorityList(c *gin.Context) {
 	var pageInfo request.PageInfo
 	_ = c.ShouldBindJSON(&pageInfo)
 	if err := utils.Verify(pageInfo, utils.PageInfoVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err, list, total := authorityService.GetAuthorityInfoList(pageInfo); err != nil {
+	if err, list, total := h.service.GetAuthorityInfoList(pageInfo); err != nil {
 		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败"+err.Error(), c)
 	} else {
@@ -167,14 +173,14 @@ func (a *roleHandler) GetAuthorityList(c *gin.Context) {
 // @Param data body system.SysAuthority true "设置角色资源权限"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"设置成功"}"
 // @Router /authority/setDataAuthority [post]
-func (a *roleHandler) SetDataAuthority(c *gin.Context) {
+func (h *roleHandler) SetDataAuthority(c *gin.Context) {
 	var auth system.SysAuthority
 	_ = c.ShouldBindJSON(&auth)
 	if err := utils.Verify(auth, utils.AuthorityIdVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err := authorityService.SetDataAuthority(auth); err != nil {
+	if err := h.service.SetDataAuthority(auth); err != nil {
 		zvar.Log.Error("设置失败!", zap.Any("err", err))
 		response.FailWithMessage("设置失败"+err.Error(), c)
 	} else {

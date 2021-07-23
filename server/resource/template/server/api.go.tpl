@@ -3,9 +3,9 @@ package autocode
 import (
 	"project/glo"
     "project/model/autocode"
-    "project/model/common/request"
+    "project/dto/request"
     autocodeReq "project/model/autocode/request"
-    "project/model/common/response"
+    "project/dto/response"
     "project/service"
     "github.com/gin-gonic/gin"
     "go.uber.org/zap"

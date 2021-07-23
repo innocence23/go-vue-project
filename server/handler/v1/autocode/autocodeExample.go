@@ -1,10 +1,10 @@
 package autocode
 
 import (
+	"project/dto/request"
+	"project/dto/response"
 	"project/handler/middleware"
 	"project/model/autocode"
-	autocodeReq "project/model/autocode/request"
-	"project/model/common/response"
 	"project/service"
 	"project/utils"
 	"project/zvar"
@@ -13,13 +13,15 @@ import (
 	"go.uber.org/zap"
 )
 
-var autoCodeExampleService = service.ServiceGroupApp.AutoCodeServiceGroup.AutoCodeExampleService
-
 type autoCodeExampleHandler struct {
+	service *service.AutoCodeExampleService
 }
 
 func NewAutoCodeExampleHandler() *autoCodeExampleHandler {
-	return &autoCodeExampleHandler{}
+	s := &service.AutoCodeExampleService{}
+	return &autoCodeExampleHandler{
+		service: s,
+	}
 }
 
 func (h *autoCodeExampleHandler) Router(router *gin.RouterGroup) {
@@ -44,7 +46,7 @@ func (h *autoCodeExampleHandler) Router(router *gin.RouterGroup) {
 func (h *autoCodeExampleHandler) CreateAutoCodeExample(c *gin.Context) {
 	var autoCodeExample autocode.AutoCodeExample
 	_ = c.ShouldBindJSON(&autoCodeExample)
-	if err := autoCodeExampleService.CreateAutoCodeExample(autoCodeExample); err != nil {
+	if err := h.service.CreateAutoCodeExample(autoCodeExample); err != nil {
 		zvar.Log.Error("创建失败!", zap.Any("err", err))
 		response.FailWithMessage("创建失败", c)
 	} else {
@@ -63,7 +65,7 @@ func (h *autoCodeExampleHandler) CreateAutoCodeExample(c *gin.Context) {
 func (h *autoCodeExampleHandler) DeleteAutoCodeExample(c *gin.Context) {
 	var autoCodeExample autocode.AutoCodeExample
 	_ = c.ShouldBindJSON(&autoCodeExample)
-	if err := autoCodeExampleService.DeleteAutoCodeExample(autoCodeExample); err != nil {
+	if err := h.service.DeleteAutoCodeExample(autoCodeExample); err != nil {
 		zvar.Log.Error("删除失败!", zap.Any("err", err))
 		response.FailWithMessage("删除失败", c)
 	} else {
@@ -82,7 +84,7 @@ func (h *autoCodeExampleHandler) DeleteAutoCodeExample(c *gin.Context) {
 func (h *autoCodeExampleHandler) UpdateAutoCodeExample(c *gin.Context) {
 	var autoCodeExample autocode.AutoCodeExample
 	_ = c.ShouldBindJSON(&autoCodeExample)
-	if err := autoCodeExampleService.UpdateAutoCodeExample(&autoCodeExample); err != nil {
+	if err := h.service.UpdateAutoCodeExample(&autoCodeExample); err != nil {
 		zvar.Log.Error("更新失败!", zap.Any("err", err))
 		response.FailWithMessage("更新失败", c)
 	} else {
@@ -105,7 +107,7 @@ func (h *autoCodeExampleHandler) FindAutoCodeExample(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err, reAutoCodeExample := autoCodeExampleService.GetAutoCodeExample(autoCodeExample.ID); err != nil {
+	if err, reAutoCodeExample := h.service.GetAutoCodeExample(autoCodeExample.ID); err != nil {
 		zvar.Log.Error("查询失败!", zap.Any("err", err))
 		response.FailWithMessage("查询失败", c)
 	} else {
@@ -118,13 +120,13 @@ func (h *autoCodeExampleHandler) FindAutoCodeExample(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body autocodeReq.AutoCodeExampleSearch true "页码, 每页大小, 搜索条件"
+// @Param data body request.AutoCodeExampleSearch true "页码, 每页大小, 搜索条件"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /autoCodeExample/getAutoCodeExampleList [get]
 func (h *autoCodeExampleHandler) GetAutoCodeExampleList(c *gin.Context) {
-	var pageInfo autocodeReq.AutoCodeExampleSearch
+	var pageInfo request.AutoCodeExampleSearch
 	_ = c.ShouldBindQuery(&pageInfo)
-	if err, list, total := autoCodeExampleService.GetAutoCodeExampleInfoList(pageInfo); err != nil {
+	if err, list, total := h.service.GetAutoCodeExampleInfoList(pageInfo); err != nil {
 		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败", c)
 	} else {

@@ -7,6 +7,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/url"
+	"project/zvar"
 	"time"
 
 	"github.com/tencentyun/cos-go-sdk-v5"

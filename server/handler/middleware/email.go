@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"io/ioutil"
+	"project/dto/request"
 	"project/model/system"
-	"project/model/system/request"
 	"project/service"
 	"project/utils"
 	"project/zvar"
@@ -14,7 +14,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var userService = service.ServiceGroupApp.SystemServiceGroup.UserService
+var userService = &service.UserService{}
 
 func ErrorToEmail() gin.HandlerFunc {
 	return func(c *gin.Context) {

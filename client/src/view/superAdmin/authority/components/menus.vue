@@ -36,7 +36,7 @@
 import { getBaseMenuTree, getMenuAuthority, addMenuAuthority } from '@/api/menu'
 import {
   updateAuthority
-} from '@/api/authority'
+} from '@/api/role'
 export default {
   name: 'Menus',
   props: {

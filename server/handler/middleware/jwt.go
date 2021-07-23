@@ -2,9 +2,9 @@ package middleware
 
 import (
 	"errors"
-	"project/model/common/response"
+	"project/dto/request"
+	"project/dto/response"
 	"project/model/system"
-	"project/model/system/request"
 	"project/service"
 	"project/zvar"
 	"strconv"
@@ -15,11 +15,10 @@ import (
 	"go.uber.org/zap"
 )
 
-var jwtService = service.ServiceGroupApp.SystemServiceGroup.JwtService
+var jwtService = &service.JwtService{}
 
 func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 我们这里jwt鉴权取头部信息 x-token 登录时回返回token信息 这里前端需要把token存储到cookie或者本地localStorage中 不过需要跟后端协商过期时间 可以约定刷新令牌或者重新登录
 		token := c.Request.Header.Get("x-token")
 		if token == "" {
 			response.FailWithDetailed(gin.H{"reload": true}, "未登录或非法访问", c)
@@ -32,7 +31,6 @@ func JWTAuth() gin.HandlerFunc {
 			return
 		}
 		j := NewJWT()
-		// parseToken 解析token包含的信息
 		claims, err := j.ParseToken(token)
 		if err != nil {
 			if err == TokenExpired {
@@ -131,24 +129,4 @@ func (j *JWT) ParseToken(tokenString string) (*request.CustomClaims, error) {
 		return nil, TokenInvalid
 
 	}
-
 }
-
-// 更新token
-//func (j *JWT) RefreshToken(tokenString string) (string, error) {
-//	jwt.TimeFunc = func() time.Time {
-//		return time.Unix(0, 0)
-//	}
-//	token, err := jwt.ParseWithClaims(tokenString, &request.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
-//		return j.SigningKey, nil
-//	})
-//	if err != nil {
-//		return "", err
-//	}
-//	if claims, ok := token.Claims.(*request.CustomClaims); ok && token.Valid {
-//		jwt.TimeFunc = time.Now
-//		claims.StandardClaims.ExpiresAt = time.Now().Unix() + 60*60*24*7
-//		return j.CreateToken(*claims)
-//	}
-//	return "", TokenInvalid
-//}

@@ -123,7 +123,7 @@ import {
   updateApi,
   deleteApi,
   deleteApisByIds
-} from '@/api/api'
+} from '@/api/permission'
 import infoList from '@/mixins/infoList'
 import { toSQLLine } from '@/utils/stringFun'
 const methodOptions = [

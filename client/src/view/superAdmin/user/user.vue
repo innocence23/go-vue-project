@@ -95,7 +95,7 @@ import {
   register,
   deleteUser
 } from '@/api/user'
-import { getAuthorityList } from '@/api/authority'
+import { getAuthorityList } from '@/api/role'
 import infoList from '@/mixins/infoList'
 import { mapGetters } from 'vuex'
 import CustomPic from '@/components/customPic'

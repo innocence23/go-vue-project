@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"io/ioutil"
 	"net/http"
+	"project/dto/request"
 	"project/model/system"
-	"project/model/system/request"
 	"project/service"
 	"project/zvar"
 	"strconv"
@@ -15,7 +15,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var operationRecordService = service.ServiceGroupApp.SystemServiceGroup.OperationRecordService
+var operationRecordService = &service.OperationRecordService{}
 
 func OperationRecord() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -48,11 +48,6 @@ func OperationRecord() gin.HandlerFunc {
 			Body:   string(body),
 			UserID: userId,
 		}
-		// 存在某些未知错误 TODO
-		//values := c.Request.Header.Values("content-type")
-		//if len(values) >0 && strings.Contains(values[0], "boundary") {
-		//	record.Body = "file"
-		//}
 		writer := responseBodyWriter{
 			ResponseWriter: c.Writer,
 			body:           &bytes.Buffer{},

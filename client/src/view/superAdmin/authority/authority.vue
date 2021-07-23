@@ -94,7 +94,7 @@ import {
   createAuthority,
   updateAuthority,
   copyAuthority
-} from '@/api/authority'
+} from '@/api/role'
 
 import Menus from '@/view/superAdmin/authority/components/menus'
 import Apis from '@/view/superAdmin/authority/components/apis'

@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { setDataAuthority } from '@/api/authority'
+import { setDataAuthority } from '@/api/role'
 export default {
   name: 'Datas',
   props: {

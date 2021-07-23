@@ -3,7 +3,7 @@ package autocode
 import (
 	"project/glo"
 	"project/model/autocode"
-	"project/model/common/request"
+	"project/dto/request"
     autoCodeReq "project/model/autocode/request"
 )
 

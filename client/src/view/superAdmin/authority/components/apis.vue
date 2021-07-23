@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { getAllApis } from '@/api/api'
+import { getAllApis } from '@/api/permission'
 import { UpdateCasbin, getPolicyPathByAuthorityId } from '@/api/casbin'
 export default {
   name: 'Apis',

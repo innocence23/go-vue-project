@@ -3,6 +3,7 @@ package upload
 import (
 	"errors"
 	"mime/multipart"
+	"project/zvar"
 	"time"
 
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
