@@ -1,4 +1,3 @@
-// 自动生成模板SysOperationRecord
 package system
 
 import (
@@ -7,7 +6,7 @@ import (
 )
 
 // 如果含有time.Time 请自行import time包
-type SysOperationRecord struct {
+type OperationLog struct {
 	zvar.Model
 	Ip           string        `json:"ip" form:"ip" gorm:"column:ip;comment:请求ip"`                                   // 请求ip
 	Method       string        `json:"method" form:"method" gorm:"column:method;comment:请求方法"`                       // 请求方法

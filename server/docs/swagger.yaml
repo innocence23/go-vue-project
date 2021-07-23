@@ -2604,7 +2604,7 @@ paths:
       summary: 更新SysDictionaryDetail
       tags:
       - SysDictionaryDetail
-  /sysOperationRecord/createSysOperationRecord:
+  /opLog/createSysOperationRecord:
     post:
       consumes:
       - application/json
@@ -2627,7 +2627,7 @@ paths:
       summary: 创建SysOperationRecord
       tags:
       - SysOperationRecord
-  /sysOperationRecord/deleteSysOperationRecord:
+  /opLog/deleteSysOperationRecord:
     delete:
       consumes:
       - application/json
@@ -2650,7 +2650,7 @@ paths:
       summary: 删除SysOperationRecord
       tags:
       - SysOperationRecord
-  /sysOperationRecord/deleteSysOperationRecordByIds:
+  /opLog/deleteSysOperationRecordByIds:
     delete:
       consumes:
       - application/json
@@ -2673,7 +2673,7 @@ paths:
       summary: 批量删除SysOperationRecord
       tags:
       - SysOperationRecord
-  /sysOperationRecord/findSysOperationRecord:
+  /opLog/findSysOperationRecord:
     get:
       consumes:
       - application/json
@@ -2696,7 +2696,7 @@ paths:
       summary: 用id查询SysOperationRecord
       tags:
       - SysOperationRecord
-  /sysOperationRecord/getSysOperationRecordList:
+  /opLog/getSysOperationRecordList:
     get:
       consumes:
       - application/json

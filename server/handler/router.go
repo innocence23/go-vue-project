@@ -28,7 +28,7 @@ func InitRouter() *gin.Engine {
 	gRouter := Router.Group("api")
 	admin.NewBaseHandler().Router(gRouter) // 登陆及验证码
 
-	gRouter.Use(middleware.JWTAuth()).Use(middleware.CasbinHandler())
+	gRouter.Use(middleware.JWTAuth()).Use(middleware.CasbinHandler()).Use(middleware.OperationRecord())
 	{
 		admin.NewBaseHandler().RouterMw(gRouter)           // 用户路由
 		admin.NewPermissionHandler().Router(gRouter)       // 注册功能api路由

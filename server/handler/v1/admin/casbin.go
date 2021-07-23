@@ -37,13 +37,13 @@ func (h *casbinHandler) Router(router *gin.RouterGroup) {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"更新成功"}"
 // @Router /casbin/UpdateCasbin [post]
 func (h *casbinHandler) UpdateCasbin(c *gin.Context) {
-	var cmr request.CasbinInReceive
-	_ = c.ShouldBindJSON(&cmr)
-	if err := utils.Verify(cmr, utils.AuthorityIdVerify); err != nil {
+	var req request.CasbinInReceive
+	_ = c.ShouldBindJSON(&req)
+	if err := utils.Verify(req, utils.AuthorityIdVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err := h.service.UpdateCasbin(cmr.AuthorityId, cmr.CasbinInfos); err != nil {
+	if err := h.service.UpdateCasbin(req.AuthorityId, req.CasbinInfos); err != nil {
 		zvar.Log.Error("更新失败!", zap.Any("err", err))
 		response.FailWithMessage("更新失败", c)
 	} else {
@@ -51,7 +51,7 @@ func (h *casbinHandler) UpdateCasbin(c *gin.Context) {
 	}
 }
 
-// @Tags Casbin
+// @Tags req
 // @Summary 获取权限列表
 // @Security ApiKeyAuth
 // @accept application/json
@@ -60,12 +60,12 @@ func (h *casbinHandler) UpdateCasbin(c *gin.Context) {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /casbin/getPolicyPathByAuthorityId [post]
 func (h *casbinHandler) GetPolicyPathByAuthorityId(c *gin.Context) {
-	var casbin request.CasbinInReceive
-	_ = c.ShouldBindJSON(&casbin)
-	if err := utils.Verify(casbin, utils.AuthorityIdVerify); err != nil {
+	var req request.CasbinInReceive
+	_ = c.ShouldBindJSON(&req)
+	if err := utils.Verify(req, utils.AuthorityIdVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	paths := h.service.GetPolicyPathByAuthorityId(casbin.AuthorityId)
+	paths := h.service.GetPolicyPathByAuthorityId(req.AuthorityId)
 	response.OkWithDetailed(response.PolicyPathResponse{Paths: paths}, "获取成功", c)
 }

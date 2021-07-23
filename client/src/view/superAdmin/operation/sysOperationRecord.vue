@@ -110,7 +110,7 @@ import {
   deleteSysOperationRecord,
   getSysOperationRecordList,
   deleteSysOperationRecordByIds
-} from '@/api/sysOperationRecord' // 此处请自行替换地址
+} from '@/api/opLog' // 此处请自行替换地址
 import { formatTimeToStr } from '@/utils/date'
 import infoList from '@/mixins/infoList'
 

@@ -2586,7 +2586,7 @@ var doc = `{
                 }
             }
         },
-        "/sysOperationRecord/createSysOperationRecord": {
+        "/opLog/createSysOperationRecord": {
             "post": {
                 "security": [
                     {
@@ -2624,7 +2624,7 @@ var doc = `{
                 }
             }
         },
-        "/sysOperationRecord/deleteSysOperationRecord": {
+        "/opLog/deleteSysOperationRecord": {
             "delete": {
                 "security": [
                     {
@@ -2662,7 +2662,7 @@ var doc = `{
                 }
             }
         },
-        "/sysOperationRecord/deleteSysOperationRecordByIds": {
+        "/opLog/deleteSysOperationRecordByIds": {
             "delete": {
                 "security": [
                     {
@@ -2700,7 +2700,7 @@ var doc = `{
                 }
             }
         },
-        "/sysOperationRecord/findSysOperationRecord": {
+        "/opLog/findSysOperationRecord": {
             "get": {
                 "security": [
                     {
@@ -2738,7 +2738,7 @@ var doc = `{
                 }
             }
         },
-        "/sysOperationRecord/getSysOperationRecordList": {
+        "/opLog/getSysOperationRecordList": {
             "get": {
                 "security": [
                     {

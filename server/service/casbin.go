@@ -17,7 +17,7 @@ import (
 //@author: [piexlmax](https://github.com/piexlmax)
 //@function: UpdateCasbin
 //@description: 更新casbin权限
-//@param: authorityId string, casbinInfos []request.CasbinInfo
+//@param: roleId string, casbinInfos []request.CasbinInfo
 //@return: error
 
 type CasbinService struct {
@@ -25,13 +25,13 @@ type CasbinService struct {
 
 var CasbinServiceApp = new(CasbinService)
 
-func (casbinService *CasbinService) UpdateCasbin(authorityId string, casbinInfos []request.CasbinInfo) error {
-	casbinService.ClearCasbin(0, authorityId)
+func (casbinService *CasbinService) UpdateCasbin(roleId string, casbinInfos []request.CasbinInfo) error {
+	casbinService.ClearCasbin(0, roleId)
 	rules := [][]string{}
 	for _, v := range casbinInfos {
 		cm := system.CasbinModel{
 			Ptype:       "p",
-			AuthorityId: authorityId,
+			AuthorityId: roleId,
 			Path:        v.Path,
 			Method:      v.Method,
 		}
@@ -62,12 +62,12 @@ func (casbinService *CasbinService) UpdateCasbinApi(oldPath string, newPath stri
 //@author: [piexlmax](https://github.com/piexlmax)
 //@function: GetPolicyPathByAuthorityId
 //@description: 获取权限列表
-//@param: authorityId string
+//@param: roleId string
 //@return: pathMaps []request.CasbinInfo
 
-func (casbinService *CasbinService) GetPolicyPathByAuthorityId(authorityId string) (pathMaps []request.CasbinInfo) {
+func (casbinService *CasbinService) GetPolicyPathByAuthorityId(roleId string) (pathMaps []request.CasbinInfo) {
 	e := casbinService.Casbin()
-	list := e.GetFilteredPolicy(0, authorityId)
+	list := e.GetFilteredPolicy(0, roleId)
 	for _, v := range list {
 		pathMaps = append(pathMaps, request.CasbinInfo{
 			Path:   v[1],

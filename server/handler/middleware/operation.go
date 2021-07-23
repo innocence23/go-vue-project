@@ -15,7 +15,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var operationRecordService = &service.OperationRecordService{}
+var operationLogService = &service.OperationLogService{}
 
 func OperationRecord() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -40,7 +40,7 @@ func OperationRecord() gin.HandlerFunc {
 			}
 			userId = id
 		}
-		record := system.SysOperationRecord{
+		record := system.OperationLog{
 			Ip:     c.ClientIP(),
 			Method: c.Request.Method,
 			Path:   c.Request.URL.Path,
@@ -63,7 +63,7 @@ func OperationRecord() gin.HandlerFunc {
 		record.Latency = latency
 		record.Resp = writer.body.String()
 
-		if err := operationRecordService.CreateSysOperationRecord(record); err != nil {
+		if err := operationLogService.Create(record); err != nil {
 			zvar.Log.Error("create operation record error:", zap.Any("err", err))
 		}
 	}
