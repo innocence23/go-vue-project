@@ -138,7 +138,7 @@ func (menuService *MenuService) GetBaseMenuTree() (err error, menus []system.Sys
 //@return: err error
 
 func (menuService *MenuService) AddMenuAuthority(menus []system.SysBaseMenu, authorityId string) (err error) {
-	var auth system.SysAuthority
+	var auth system.Role
 	auth.AuthorityId = authorityId
 	auth.SysBaseMenus = menus
 	err = AuthorityServiceApp.SetMenuAuthority(&auth)

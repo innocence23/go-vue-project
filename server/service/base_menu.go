@@ -21,10 +21,10 @@ func (baseMenuService *BaseMenuService) DeleteBaseMenu(id float64) (err error) {
 	err = zvar.DB.Preload("Parameters").Where("parent_id = ?", id).First(&system.SysBaseMenu{}).Error
 	if err != nil {
 		var menu system.SysBaseMenu
-		db := zvar.DB.Preload("SysAuthoritys").Where("id = ?", id).First(&menu).Delete(&menu)
+		db := zvar.DB.Preload("Roles").Where("id = ?", id).First(&menu).Delete(&menu)
 		err = zvar.DB.Delete(&system.SysBaseMenuParameter{}, "sys_base_menu_id = ?", id).Error
-		if len(menu.SysAuthoritys) > 0 {
-			err = zvar.DB.Model(&menu).Association("SysAuthoritys").Delete(&menu.SysAuthoritys)
+		if len(menu.Roles) > 0 {
+			err = zvar.DB.Model(&menu).Association("Roles").Delete(&menu.Roles)
 		} else {
 			err = db.Error
 		}

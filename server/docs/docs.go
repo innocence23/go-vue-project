@@ -405,7 +405,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/response.SysAuthorityCopyResponse"
+                            "$ref": "#/definitions/response.RoleCopyResponse"
                         }
                     }
                 ],
@@ -443,7 +443,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/system.SysAuthority"
+                            "$ref": "#/definitions/system.Role"
                         }
                     }
                 ],
@@ -481,7 +481,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/system.SysAuthority"
+                            "$ref": "#/definitions/system.Role"
                         }
                     }
                 ],
@@ -557,7 +557,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/system.SysAuthority"
+                            "$ref": "#/definitions/system.Role"
                         }
                     }
                 ],
@@ -595,7 +595,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/system.SysAuthority"
+                            "$ref": "#/definitions/system.Role"
                         }
                     }
                 ],
@@ -4087,11 +4087,11 @@ var doc = `{
                 }
             }
         },
-        "response.SysAuthorityCopyResponse": {
+        "response.RoleCopyResponse": {
             "type": "object",
             "properties": {
                 "authority": {
-                    "$ref": "#/definitions/system.SysAuthority"
+                    "$ref": "#/definitions/system.Role"
                 },
                 "oldAuthorityId": {
                     "description": "旧角色ID",
@@ -4220,7 +4220,7 @@ var doc = `{
                 }
             }
         },
-        "system.SysAuthority": {
+        "system.Role": {
             "type": "object",
             "properties": {
                 "authorityId": {
@@ -4234,7 +4234,7 @@ var doc = `{
                 "children": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/system.SysAuthority"
+                        "$ref": "#/definitions/system.Role"
                     }
                 },
                 "createdAt": {
@@ -4244,7 +4244,7 @@ var doc = `{
                 "dataAuthorityId": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/system.SysAuthority"
+                        "$ref": "#/definitions/system.Role"
                     }
                 },
                 "defaultRouter": {
@@ -4276,7 +4276,7 @@ var doc = `{
                 "authoritys": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/system.SysAuthority"
+                        "$ref": "#/definitions/system.Role"
                     }
                 },
                 "children": {
@@ -4525,7 +4525,7 @@ var doc = `{
                     "type": "string"
                 },
                 "authority": {
-                    "$ref": "#/definitions/system.SysAuthority"
+                    "$ref": "#/definitions/system.Role"
                 },
                 "authorityId": {
                     "description": "用户角色ID",

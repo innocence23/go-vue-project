@@ -694,10 +694,10 @@ definitions:
         description: 用户id
         type: integer
     type: object
-  response.SysAuthorityCopyResponse:
+  response.RoleCopyResponse:
     properties:
       authority:
-        $ref: '#/definitions/system.SysAuthority'
+        $ref: '#/definitions/system.Role'
       oldAuthorityId:
         description: 旧角色ID
         type: string
@@ -790,7 +790,7 @@ definitions:
         description: 更新时间
         type: string
     type: object
-  system.SysAuthority:
+  system.Role:
     properties:
       authorityId:
         description: 角色ID
@@ -800,14 +800,14 @@ definitions:
         type: string
       children:
         items:
-          $ref: '#/definitions/system.SysAuthority'
+          $ref: '#/definitions/system.Role'
         type: array
       createdAt:
         description: 创建时间
         type: string
       dataAuthorityId:
         items:
-          $ref: '#/definitions/system.SysAuthority'
+          $ref: '#/definitions/system.Role'
         type: array
       defaultRouter:
         description: 默认菜单(默认dashboard)
@@ -829,7 +829,7 @@ definitions:
     properties:
       authoritys:
         items:
-          $ref: '#/definitions/system.SysAuthority'
+          $ref: '#/definitions/system.Role'
         type: array
       children:
         items:
@@ -1010,7 +1010,7 @@ definitions:
         description: 活跃颜色
         type: string
       authority:
-        $ref: '#/definitions/system.SysAuthority'
+        $ref: '#/definitions/system.Role'
       authorityId:
         description: 用户角色ID
         type: string
@@ -1279,7 +1279,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/response.SysAuthorityCopyResponse'
+          $ref: '#/definitions/response.RoleCopyResponse'
       produces:
       - application/json
       responses:
@@ -1302,7 +1302,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/system.SysAuthority'
+          $ref: '#/definitions/system.Role'
       produces:
       - application/json
       responses:
@@ -1325,7 +1325,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/system.SysAuthority'
+          $ref: '#/definitions/system.Role'
       produces:
       - application/json
       responses:
@@ -1371,7 +1371,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/system.SysAuthority'
+          $ref: '#/definitions/system.Role'
       produces:
       - application/json
       responses:
@@ -1394,7 +1394,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/system.SysAuthority'
+          $ref: '#/definitions/system.Role'
       produces:
       - application/json
       responses:

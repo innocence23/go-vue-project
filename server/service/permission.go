@@ -21,7 +21,7 @@ func (permissionService *PermissionService) Create(perm system.Permission) (err 
 
 func (permissionService *PermissionService) Delete(perm system.Permission) (err error) {
 	err = zvar.DB.Delete(&perm).Error
-	CasbinServiceApp.ClearCasbin(1, perm.Path, perm.Method)
+	(&CasbinService{}).ClearCasbin(1, perm.Path, perm.Method)
 	return err
 }
 
@@ -89,7 +89,7 @@ func (permissionService *PermissionService) Update(perm system.Permission) (err 
 	if err != nil {
 		return err
 	} else {
-		err = CasbinServiceApp.UpdateCasbinApi(oldA.Path, perm.Path, oldA.Method, perm.Method)
+		err = (&CasbinService{}).UpdateCasbinApi(oldA.Path, perm.Path, oldA.Method, perm.Method)
 		if err != nil {
 			return err
 		} else {

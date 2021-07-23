@@ -2,11 +2,11 @@ package response
 
 import "project/model/system"
 
-type SysAuthorityResponse struct {
-	Authority system.SysAuthority `json:"authority"`
+type RoleResponse struct {
+	Authority system.Role `json:"authority"`
 }
 
-type SysAuthorityCopyResponse struct {
-	Authority      system.SysAuthority `json:"authority"`
-	OldAuthorityId string              `json:"oldAuthorityId"` // 旧角色ID
+type RoleCopyResponse struct {
+	Authority      system.Role `json:"authority"`
+	OldAuthorityId string      `json:"oldAuthorityId"` // 旧角色ID
 }

@@ -3,7 +3,6 @@ package admin
 import (
 	"project/dto/request"
 	"project/dto/response"
-	"project/handler/middleware"
 	"project/model/system"
 	"project/service"
 	"project/utils"
@@ -24,7 +23,7 @@ func NewPermissionHandler() *permissionHandler {
 }
 
 func (h *permissionHandler) Router(router *gin.RouterGroup) {
-	apiRouter := router.Group("permission").Use(middleware.OperationRecord())
+	apiRouter := router.Group("permission")
 	{
 		apiRouter.POST("create", h.create)              // 创建Api
 		apiRouter.POST("delete", h.delete)              // 删除Api

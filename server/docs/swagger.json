@@ -389,7 +389,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/response.SysAuthorityCopyResponse"
+                            "$ref": "#/definitions/response.RoleCopyResponse"
                         }
                     }
                 ],
@@ -427,7 +427,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/system.SysAuthority"
+                            "$ref": "#/definitions/system.Role"
                         }
                     }
                 ],
@@ -465,7 +465,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/system.SysAuthority"
+                            "$ref": "#/definitions/system.Role"
                         }
                     }
                 ],
@@ -541,7 +541,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/system.SysAuthority"
+                            "$ref": "#/definitions/system.Role"
                         }
                     }
                 ],
@@ -579,7 +579,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/system.SysAuthority"
+                            "$ref": "#/definitions/system.Role"
                         }
                     }
                 ],
@@ -4071,11 +4071,11 @@
                 }
             }
         },
-        "response.SysAuthorityCopyResponse": {
+        "response.RoleCopyResponse": {
             "type": "object",
             "properties": {
                 "authority": {
-                    "$ref": "#/definitions/system.SysAuthority"
+                    "$ref": "#/definitions/system.Role"
                 },
                 "oldAuthorityId": {
                     "description": "旧角色ID",
@@ -4204,7 +4204,7 @@
                 }
             }
         },
-        "system.SysAuthority": {
+        "system.Role": {
             "type": "object",
             "properties": {
                 "authorityId": {
@@ -4218,7 +4218,7 @@
                 "children": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/system.SysAuthority"
+                        "$ref": "#/definitions/system.Role"
                     }
                 },
                 "createdAt": {
@@ -4228,7 +4228,7 @@
                 "dataAuthorityId": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/system.SysAuthority"
+                        "$ref": "#/definitions/system.Role"
                     }
                 },
                 "defaultRouter": {
@@ -4260,7 +4260,7 @@
                 "authoritys": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/system.SysAuthority"
+                        "$ref": "#/definitions/system.Role"
                     }
                 },
                 "children": {
@@ -4509,7 +4509,7 @@
                     "type": "string"
                 },
                 "authority": {
-                    "$ref": "#/definitions/system.SysAuthority"
+                    "$ref": "#/definitions/system.Role"
                 },
                 "authorityId": {
                     "description": "用户角色ID",
