@@ -24,7 +24,6 @@ const (
 )
 
 var injectionPaths []injectionMeta
-var autoCodeHistoryService = &AutoCodeHistoryService{}
 
 func Init() {
 	if len(injectionPaths) != 0 {
@@ -158,7 +157,7 @@ func (autoCodeService *AutoCodeService) CreateTemp(autoCode system.AutoCodeStruc
 	if err != nil {
 		return err
 	}
-	meta, _ := json.Marshal(autoCode)
+	_, _ = json.Marshal(autoCode)
 	// 写入文件前，先创建文件夹
 	if err = utils.CreateDir(needMkdir...); err != nil {
 		return err
@@ -218,29 +217,6 @@ func (autoCodeService *AutoCodeService) CreateTemp(autoCode system.AutoCodeStruc
 	} else { // 打包
 		if err = utils.ZipFiles("./ginvueadmin.zip", fileList, ".", "."); err != nil {
 			return err
-		}
-	}
-	if autoCode.AutoMoveFile || autoCode.AutoCreateApiToSql {
-		if autoCode.TableName != "" {
-			err = autoCodeHistoryService.CreateAutoCodeHistory(
-				string(meta),
-				autoCode.StructName,
-				autoCode.Description,
-				bf.String(),
-				injectionCodeMeta.String(),
-				autoCode.TableName,
-				idBf.String(),
-			)
-		} else {
-			err = autoCodeHistoryService.CreateAutoCodeHistory(
-				string(meta),
-				autoCode.StructName,
-				autoCode.Description,
-				bf.String(),
-				injectionCodeMeta.String(),
-				autoCode.StructName,
-				idBf.String(),
-			)
 		}
 	}
 	if err != nil {
@@ -365,7 +341,7 @@ func (autoCodeService *AutoCodeService) addAutoMoveFile(data *tplData) {
 //@return: err error
 
 func (autoCodeService *AutoCodeService) AutoCreateApi(a *system.AutoCodeStruct) (ids []uint, err error) {
-	var apiList = []system.SysApi{
+	var apiList = []system.Permission{
 		{
 			Path:        "/" + a.Abbreviation + "/" + "create" + a.StructName,
 			Description: "新增" + a.Description,
@@ -406,7 +382,7 @@ func (autoCodeService *AutoCodeService) AutoCreateApi(a *system.AutoCodeStruct) 
 	err = zvar.DB.Transaction(func(tx *gorm.DB) error {
 
 		for _, v := range apiList {
-			var api system.SysApi
+			var api system.Permission
 			if errors.Is(tx.Where("path = ? AND method = ?", v.Path, v.Method).First(&api).Error, gorm.ErrRecordNotFound) {
 				if err = tx.Create(&v).Error; err != nil { // 遇到错误时回滚事务
 					return err

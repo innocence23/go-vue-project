@@ -9,68 +9,48 @@ import (
 	"gorm.io/gorm"
 )
 
-//@author: [piexlmax](https://github.com/piexlmax)
-//@function: CreateApi
-//@description: 新增基础api
-//@param: api model.SysApi
-//@return: err error
-
-type ApiService struct {
+type PermissionService struct {
 }
 
-var ApiServiceApp = new(ApiService)
-
-func (apiService *ApiService) CreateApi(api system.SysApi) (err error) {
-	if !errors.Is(zvar.DB.Where("path = ? AND method = ?", api.Path, api.Method).First(&system.SysApi{}).Error, gorm.ErrRecordNotFound) {
-		return errors.New("存在相同api")
+func (permissionService *PermissionService) Create(perm system.Permission) (err error) {
+	if !errors.Is(zvar.DB.Where("path = ? AND method = ?", perm.Path, perm.Method).First(&system.Permission{}).Error, gorm.ErrRecordNotFound) {
+		return errors.New("存在相同perm")
 	}
-	return zvar.DB.Create(&api).Error
+	return zvar.DB.Create(&perm).Error
 }
 
-//@author: [piexlmax](https://github.com/piexlmax)
-//@function: DeleteApi
-//@description: 删除基础api
-//@param: api model.SysApi
-//@return: err error
-
-func (apiService *ApiService) DeleteApi(api system.SysApi) (err error) {
-	err = zvar.DB.Delete(&api).Error
-	CasbinServiceApp.ClearCasbin(1, api.Path, api.Method)
+func (permissionService *PermissionService) Delete(perm system.Permission) (err error) {
+	err = zvar.DB.Delete(&perm).Error
+	CasbinServiceApp.ClearCasbin(1, perm.Path, perm.Method)
 	return err
 }
 
-//@author: [piexlmax](https://github.com/piexlmax)
-//@function: GetAPIInfoList
-//@description: 分页获取数据,
-//@param: api model.SysApi, info request.PageInfo, order string, desc bool
-//@return: err error
-
-func (apiService *ApiService) GetAPIInfoList(api system.SysApi, info request.PageInfo, order string, desc bool) (err error, list interface{}, total int64) {
+func (permissionService *PermissionService) List(perm system.Permission, info request.PageInfo, order string, desc bool) (err error, list interface{}, total int64) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
-	db := zvar.DB.Model(&system.SysApi{})
-	var apiList []system.SysApi
+	db := zvar.DB.Model(&system.Permission{})
+	var permList []system.Permission
 
-	if api.Path != "" {
-		db = db.Where("path LIKE ?", "%"+api.Path+"%")
+	if perm.Path != "" {
+		db = db.Where("path LIKE ?", "%"+perm.Path+"%")
 	}
 
-	if api.Description != "" {
-		db = db.Where("description LIKE ?", "%"+api.Description+"%")
+	if perm.Description != "" {
+		db = db.Where("description LIKE ?", "%"+perm.Description+"%")
 	}
 
-	if api.Method != "" {
-		db = db.Where("method = ?", api.Method)
+	if perm.Method != "" {
+		db = db.Where("method = ?", perm.Method)
 	}
 
-	if api.ApiGroup != "" {
-		db = db.Where("api_group = ?", api.ApiGroup)
+	if perm.ApiGroup != "" {
+		db = db.Where("api_group = ?", perm.ApiGroup)
 	}
 
 	err = db.Count(&total).Error
 
 	if err != nil {
-		return err, apiList, total
+		return err, permList, total
 	} else {
 		db = db.Limit(limit).Offset(offset)
 		if order != "" {
@@ -80,73 +60,45 @@ func (apiService *ApiService) GetAPIInfoList(api system.SysApi, info request.Pag
 			} else {
 				OrderStr = order
 			}
-			err = db.Order(OrderStr).Find(&apiList).Error
+			err = db.Order(OrderStr).Find(&permList).Error
 		} else {
-			err = db.Order("api_group").Find(&apiList).Error
+			err = db.Order("api_group").Find(&permList).Error
 		}
 	}
-	return err, apiList, total
+	return err, permList, total
 }
 
-//@author: [piexlmax](https://github.com/piexlmax)
-//@function: GetAllApis
-//@description: 获取所有的api
-//@return: err error, apis []model.SysApi
-
-func (apiService *ApiService) GetAllApis() (err error, apis []system.SysApi) {
-	err = zvar.DB.Find(&apis).Error
+func (permissionService *PermissionService) ListNoLimit() (err error, perms []system.Permission) {
+	err = zvar.DB.Find(&perms).Error
 	return
 }
 
-//@author: [piexlmax](https://github.com/piexlmax)
-//@function: GetApiById
-//@description: 根据id获取api
-//@param: id float64
-//@return: err error, api model.SysApi
-
-func (apiService *ApiService) GetApiById(id float64) (err error, api system.SysApi) {
-	err = zvar.DB.Where("id = ?", id).First(&api).Error
+func (permissionService *PermissionService) Show(id float64) (err error, perm system.Permission) {
+	err = zvar.DB.Where("id = ?", id).First(&perm).Error
 	return
 }
 
-//@author: [piexlmax](https://github.com/piexlmax)
-//@function: UpdateApi
-//@description: 根据id更新api
-//@param: api model.SysApi
-//@return: err error
-
-func (apiService *ApiService) UpdateApi(api system.SysApi) (err error) {
-	var oldA system.SysApi
-	err = zvar.DB.Where("id = ?", api.ID).First(&oldA).Error
-	if oldA.Path != api.Path || oldA.Method != api.Method {
-		if !errors.Is(zvar.DB.Where("path = ? AND method = ?", api.Path, api.Method).First(&system.SysApi{}).Error, gorm.ErrRecordNotFound) {
-			return errors.New("存在相同api路径")
+func (permissionService *PermissionService) Update(perm system.Permission) (err error) {
+	var oldA system.Permission
+	err = zvar.DB.Where("id = ?", perm.ID).First(&oldA).Error
+	if oldA.Path != perm.Path || oldA.Method != perm.Method {
+		if !errors.Is(zvar.DB.Where("path = ? AND method = ?", perm.Path, perm.Method).First(&system.Permission{}).Error, gorm.ErrRecordNotFound) {
+			return errors.New("存在相同perm路径")
 		}
 	}
 	if err != nil {
 		return err
 	} else {
-		err = CasbinServiceApp.UpdateCasbinApi(oldA.Path, api.Path, oldA.Method, api.Method)
+		err = CasbinServiceApp.UpdateCasbinApi(oldA.Path, perm.Path, oldA.Method, perm.Method)
 		if err != nil {
 			return err
 		} else {
-			err = zvar.DB.Save(&api).Error
+			err = zvar.DB.Save(&perm).Error
 		}
 	}
 	return err
 }
 
-//@author: [piexlmax](https://github.com/piexlmax)
-//@function: DeleteApis
-//@description: 删除选中API
-//@param: apis []model.SysApi
-//@return: err error
-
-func (apiService *ApiService) DeleteApisByIds(ids request.IdsReq) (err error) {
-	err = zvar.DB.Delete(&[]system.SysApi{}, "id in ?", ids.Ids).Error
-	return err
-}
-
-func (apiService *ApiService) DeleteApiByIds(ids []string) (err error) {
-	return zvar.DB.Delete(system.SysApi{}, ids).Error
+func (permissionService *PermissionService) DeleteByIds(ids []int) (err error) {
+	return zvar.DB.Delete(&system.Permission{}, ids).Error
 }

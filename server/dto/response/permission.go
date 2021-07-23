@@ -2,10 +2,10 @@ package response
 
 import "project/model/system"
 
-type SysAPIResponse struct {
-	Api system.SysApi `json:"api"`
+type PermissionResponse struct {
+	Permission system.Permission `json:"permission"`
 }
 
-type SysAPIListResponse struct {
-	Apis []system.SysApi `json:"apis"`
+type PermissionListResponse struct {
+	Permissions []system.Permission `json:"permissions"`
 }

@@ -2,7 +2,7 @@ package system
 
 import "project/zvar"
 
-type SysApi struct {
+type Permission struct {
 	zvar.Model
 	Path        string `json:"path" gorm:"comment:api路径"`             // api路径
 	Description string `json:"description" gorm:"comment:api中文描述"`    // api中文描述
