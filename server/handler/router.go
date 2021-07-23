@@ -30,7 +30,7 @@ func InitRouter() *gin.Engine {
 
 	gRouter.Use(middleware.JWTAuth()).Use(middleware.CasbinHandler()).Use(middleware.OperationRecord())
 	{
-		admin.NewBaseHandler().RouterMw(gRouter)     // 用户路由
+		admin.NewUserHandler().Router(gRouter)       // 用户路由
 		admin.NewPermissionHandler().Router(gRouter) // 注册功能api路由
 		admin.NewJwtHandler().Router(gRouter)        // jwt相关路由
 		admin.NewRoleHandler().Router(gRouter)       // 注册角色路由

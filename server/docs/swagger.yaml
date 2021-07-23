@@ -331,7 +331,7 @@ definitions:
         description: 主键ID
         type: integer
       sysUser:
-        $ref: '#/definitions/system.SysUser'
+        $ref: '#/definitions/system.User'
         description: 管理详情
       sysUserAuthorityID:
         description: 管理角色ID
@@ -689,7 +689,7 @@ definitions:
         description: 更新时间
         type: string
       user:
-        $ref: '#/definitions/system.SysUser'
+        $ref: '#/definitions/system.User'
       user_id:
         description: 用户id
         type: integer
@@ -999,12 +999,12 @@ definitions:
         description: 更新时间
         type: string
       user:
-        $ref: '#/definitions/system.SysUser'
+        $ref: '#/definitions/system.User'
       user_id:
         description: 用户id
         type: integer
     type: object
-  system.SysUser:
+  system.User:
     properties:
       activeColor:
         description: 活跃颜色
@@ -2802,7 +2802,7 @@ paths:
       - ApiKeyAuth: []
       summary: 用户修改密码
       tags:
-      - SysUser
+      - User
   /user/deleteUser:
     delete:
       consumes:
@@ -2825,7 +2825,7 @@ paths:
       - ApiKeyAuth: []
       summary: 删除用户
       tags:
-      - SysUser
+      - User
   /user/getUserList:
     post:
       consumes:
@@ -2848,7 +2848,7 @@ paths:
       - ApiKeyAuth: []
       summary: 分页获取用户列表
       tags:
-      - SysUser
+      - User
   /user/register:
     post:
       parameters:
@@ -2867,7 +2867,7 @@ paths:
             type: string
       summary: 用户注册账号
       tags:
-      - SysUser
+      - User
   /user/setUserAuthority:
     post:
       consumes:
@@ -2890,7 +2890,7 @@ paths:
       - ApiKeyAuth: []
       summary: 设置用户权限
       tags:
-      - SysUser
+      - User
   /user/setUserInfo:
     put:
       consumes:
@@ -2901,7 +2901,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/system.SysUser'
+          $ref: '#/definitions/system.User'
       produces:
       - application/json
       responses:
@@ -2913,7 +2913,7 @@ paths:
       - ApiKeyAuth: []
       summary: 设置用户信息
       tags:
-      - SysUser
+      - User
 securityDefinitions:
   ApiKeyAuth:
     in: header

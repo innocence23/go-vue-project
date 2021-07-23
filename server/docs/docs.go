@@ -2894,7 +2894,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "SysUser"
+                    "User"
                 ],
                 "summary": "用户修改密码",
                 "parameters": [
@@ -2932,7 +2932,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "SysUser"
+                    "User"
                 ],
                 "summary": "删除用户",
                 "parameters": [
@@ -2970,7 +2970,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "SysUser"
+                    "User"
                 ],
                 "summary": "分页获取用户列表",
                 "parameters": [
@@ -3000,7 +3000,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "SysUser"
+                    "User"
                 ],
                 "summary": "用户注册账号",
                 "parameters": [
@@ -3038,7 +3038,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "SysUser"
+                    "User"
                 ],
                 "summary": "设置用户权限",
                 "parameters": [
@@ -3076,7 +3076,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "SysUser"
+                    "User"
                 ],
                 "summary": "设置用户信息",
                 "parameters": [
@@ -3086,7 +3086,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/system.SysUser"
+                            "$ref": "#/definitions/system.User"
                         }
                     }
                 ],
@@ -3576,7 +3576,7 @@ var doc = `{
                 },
                 "sysUser": {
                     "description": "管理详情",
-                    "$ref": "#/definitions/system.SysUser"
+                    "$ref": "#/definitions/system.User"
                 },
                 "sysUserAuthorityID": {
                     "description": "管理角色ID",
@@ -4079,7 +4079,7 @@ var doc = `{
                     "type": "string"
                 },
                 "user": {
-                    "$ref": "#/definitions/system.SysUser"
+                    "$ref": "#/definitions/system.User"
                 },
                 "user_id": {
                     "description": "用户id",
@@ -4509,7 +4509,7 @@ var doc = `{
                     "type": "string"
                 },
                 "user": {
-                    "$ref": "#/definitions/system.SysUser"
+                    "$ref": "#/definitions/system.User"
                 },
                 "user_id": {
                     "description": "用户id",
@@ -4517,7 +4517,7 @@ var doc = `{
                 }
             }
         },
-        "system.SysUser": {
+        "system.User": {
             "type": "object",
             "properties": {
                 "activeColor": {

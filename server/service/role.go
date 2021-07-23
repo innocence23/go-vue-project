@@ -79,7 +79,7 @@ func (authorityService *AuthorityService) UpdateAuthority(auth system.Role) (err
 //@return: err error
 
 func (authorityService *AuthorityService) DeleteAuthority(auth *system.Role) (err error) {
-	if !errors.Is(zvar.DB.Where("authority_id = ?", auth.AuthorityId).First(&system.SysUser{}).Error, gorm.ErrRecordNotFound) {
+	if !errors.Is(zvar.DB.Where("authority_id = ?", auth.AuthorityId).First(&system.User{}).Error, gorm.ErrRecordNotFound) {
 		return errors.New("此角色有用户正在使用禁止删除")
 	}
 	if !errors.Is(zvar.DB.Where("parent_id = ?", auth.AuthorityId).First(&system.Role{}).Error, gorm.ErrRecordNotFound) {

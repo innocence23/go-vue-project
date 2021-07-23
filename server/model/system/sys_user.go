@@ -6,7 +6,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-type SysUser struct {
+type User struct {
 	zvar.Model
 	UUID        uuid.UUID `json:"uuid" gorm:"comment:用户UUID"`                                                    // 用户UUID
 	Username    string    `json:"userName" gorm:"comment:用户登录名"`                                                 // 用户登录名

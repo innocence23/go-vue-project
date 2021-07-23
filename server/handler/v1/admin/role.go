@@ -3,7 +3,6 @@ package admin
 import (
 	"project/dto/request"
 	"project/dto/response"
-	"project/handler/middleware"
 	"project/model/system"
 	"project/service"
 	"project/utils"
@@ -28,7 +27,7 @@ func NewRoleHandler() *roleHandler {
 }
 
 func (h *roleHandler) Router(router *gin.RouterGroup) {
-	apiRouter := router.Group("authority").Use(middleware.OperationRecord())
+	apiRouter := router.Group("authority")
 	{
 		apiRouter.POST("createAuthority", h.CreateAuthority)   // 创建角色
 		apiRouter.POST("deleteAuthority", h.DeleteAuthority)   // 删除角色

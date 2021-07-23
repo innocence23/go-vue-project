@@ -14,14 +14,14 @@ import (
 //@author: [piexlmax](https://github.com/piexlmax)
 //@function: Register
 //@description: 用户注册
-//@param: u model.SysUser
-//@return: err error, userInter model.SysUser
+//@param: u model.User
+//@return: err error, userInter model.User
 
 type UserService struct {
 }
 
-func (userService *UserService) Register(u system.SysUser) (err error, userInter system.SysUser) {
-	var user system.SysUser
+func (userService *UserService) Register(u system.User) (err error, userInter system.User) {
+	var user system.User
 	if !errors.Is(zvar.DB.Where("username = ?", u.Username).First(&user).Error, gorm.ErrRecordNotFound) { // 判断用户名是否注册
 		return errors.New("用户名已注册"), userInter
 	}
@@ -35,11 +35,11 @@ func (userService *UserService) Register(u system.SysUser) (err error, userInter
 //@author: [piexlmax](https://github.com/piexlmax)
 //@function: Login
 //@description: 用户登录
-//@param: u *model.SysUser
-//@return: err error, userInter *model.SysUser
+//@param: u *model.User
+//@return: err error, userInter *model.User
 
-func (userService *UserService) Login(u *system.SysUser) (err error, userInter *system.SysUser) {
-	var user system.SysUser
+func (userService *UserService) Login(u *system.User) (err error, userInter *system.User) {
+	var user system.User
 	u.Password = utils.MD5V([]byte(u.Password))
 	err = zvar.DB.Where("username = ? AND password = ?", u.Username, u.Password).Preload("Authority").First(&user).Error
 	return err, &user
@@ -48,11 +48,11 @@ func (userService *UserService) Login(u *system.SysUser) (err error, userInter *
 //@author: [piexlmax](https://github.com/piexlmax)
 //@function: ChangePassword
 //@description: 修改用户密码
-//@param: u *model.SysUser, newPassword string
-//@return: err error, userInter *model.SysUser
+//@param: u *model.User, newPassword string
+//@return: err error, userInter *model.User
 
-func (userService *UserService) ChangePassword(u *system.SysUser, newPassword string) (err error, userInter *system.SysUser) {
-	var user system.SysUser
+func (userService *UserService) ChangePassword(u *system.User, newPassword string) (err error, userInter *system.User) {
+	var user system.User
 	u.Password = utils.MD5V([]byte(u.Password))
 	err = zvar.DB.Where("username = ? AND password = ?", u.Username, u.Password).First(&user).Update("password", utils.MD5V([]byte(newPassword))).Error
 	return err, u
@@ -67,8 +67,8 @@ func (userService *UserService) ChangePassword(u *system.SysUser, newPassword st
 func (userService *UserService) GetUserInfoList(info request.PageInfo) (err error, list interface{}, total int64) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
-	db := zvar.DB.Model(&system.SysUser{})
-	var userList []system.SysUser
+	db := zvar.DB.Model(&system.User{})
+	var userList []system.User
 	err = db.Count(&total).Error
 	err = db.Limit(limit).Offset(offset).Preload("Authority").Find(&userList).Error
 	return err, userList, total
@@ -81,7 +81,7 @@ func (userService *UserService) GetUserInfoList(info request.PageInfo) (err erro
 //@return: err error
 
 func (userService *UserService) SetUserAuthority(uuid uuid.UUID, authorityId string) (err error) {
-	err = zvar.DB.Where("uuid = ?", uuid).First(&system.SysUser{}).Update("authority_id", authorityId).Error
+	err = zvar.DB.Where("uuid = ?", uuid).First(&system.User{}).Update("authority_id", authorityId).Error
 	return err
 }
 
@@ -92,7 +92,7 @@ func (userService *UserService) SetUserAuthority(uuid uuid.UUID, authorityId str
 //@return: err error
 
 func (userService *UserService) DeleteUser(id float64) (err error) {
-	var user system.SysUser
+	var user system.User
 	err = zvar.DB.Where("id = ?", id).Delete(&user).Error
 	return err
 }
@@ -100,10 +100,10 @@ func (userService *UserService) DeleteUser(id float64) (err error) {
 //@author: [piexlmax](https://github.com/piexlmax)
 //@function: SetUserInfo
 //@description: 设置用户信息
-//@param: reqUser model.SysUser
-//@return: err error, user model.SysUser
+//@param: reqUser model.User
+//@return: err error, user model.User
 
-func (userService *UserService) SetUserInfo(reqUser system.SysUser) (err error, user system.SysUser) {
+func (userService *UserService) SetUserInfo(reqUser system.User) (err error, user system.User) {
 	err = zvar.DB.Updates(&reqUser).Error
 	return err, reqUser
 }
@@ -112,10 +112,10 @@ func (userService *UserService) SetUserInfo(reqUser system.SysUser) (err error, 
 //@function: FindUserById
 //@description: 通过id获取用户信息
 //@param: id int
-//@return: err error, user *model.SysUser
+//@return: err error, user *model.User
 
-func (userService *UserService) FindUserById(id int) (err error, user *system.SysUser) {
-	var u system.SysUser
+func (userService *UserService) FindUserById(id int) (err error, user *system.User) {
+	var u system.User
 	err = zvar.DB.Where("`id` = ?", id).First(&u).Error
 	return err, &u
 }
@@ -124,10 +124,10 @@ func (userService *UserService) FindUserById(id int) (err error, user *system.Sy
 //@function: FindUserByUuid
 //@description: 通过uuid获取用户信息
 //@param: uuid string
-//@return: err error, user *model.SysUser
+//@return: err error, user *model.User
 
-func (userService *UserService) FindUserByUuid(uuid string) (err error, user *system.SysUser) {
-	var u system.SysUser
+func (userService *UserService) FindUserByUuid(uuid string) (err error, user *system.User) {
+	var u system.User
 	if err = zvar.DB.Where("`uuid` = ?", uuid).First(&u).Error; err != nil {
 		return errors.New("用户不存在"), &u
 	}
