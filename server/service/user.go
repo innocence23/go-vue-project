@@ -60,8 +60,8 @@ func (userService *UserService) List(info request.PageInfo) (err error, list int
 	return err, userList, total
 }
 
-func (userService *UserService) SetRole(uuid uuid.UUID, authorityId string) (err error) {
-	err = zvar.DB.Where("uuid = ?", uuid).First(&system.User{}).Update("authority_id", authorityId).Error
+func (userService *UserService) SetRole(uuid uuid.UUID, roleId string) (err error) {
+	err = zvar.DB.Where("uuid = ?", uuid).First(&system.User{}).Update("authority_id", roleId).Error
 	return err
 }
 

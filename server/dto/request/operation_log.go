@@ -1,10 +1,8 @@
 package request
 
-import (
-	"project/model/system"
-)
+import "project/entity"
 
 type OperationLogSearch struct {
-	system.OperationLog
+	entity.OperationLog
 	PageInfo
 }

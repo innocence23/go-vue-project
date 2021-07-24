@@ -21,7 +21,10 @@ func NewEmailHandler() *emailHandler {
 
 func (h *emailHandler) Router(router *gin.RouterGroup) {
 	apiRouter := router.Group("email")
-	apiRouter.POST("test", h.emailTest) // 发送测试邮件
+	apiRouter.POST("test", h.emailTest)
+	zvar.RouteMap = map[string]zvar.RouteInfo{
+		"/" + zvar.UrlPrefix + "/email/test": {Group: "email", Name: "发送测试邮件"},
+	}
 }
 
 // @Tags System

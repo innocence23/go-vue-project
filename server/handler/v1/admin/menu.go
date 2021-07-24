@@ -48,7 +48,7 @@ func (h *menuHandler) Router(router *gin.RouterGroup) {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /menu/getMenu [post]
 func (h *menuHandler) GetMenu(c *gin.Context) {
-	if err, menus := h.service.GetMenuTree(utils.GetUserAuthorityId(c)); err != nil {
+	if err, menus := h.service.GetMenuTree(utils.GetUserRoleId(c)); err != nil {
 		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败", c)
 	} else {
@@ -86,11 +86,11 @@ func (h *menuHandler) GetBaseMenuTree(c *gin.Context) {
 func (h *menuHandler) AddMenuAuthority(c *gin.Context) {
 	var authorityMenu request.AddMenuAuthorityInfo
 	_ = c.ShouldBindJSON(&authorityMenu)
-	if err := utils.Verify(authorityMenu, utils.AuthorityIdVerify); err != nil {
+	if err := utils.Verify(authorityMenu, utils.RoleIdVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err := h.service.AddMenuAuthority(authorityMenu.Menus, authorityMenu.AuthorityId); err != nil {
+	if err := h.service.AddMenuAuthority(authorityMenu.Menus, authorityMenu.RoleId); err != nil {
 		zvar.Log.Error("添加失败!", zap.Any("err", err))
 		response.FailWithMessage("添加失败", c)
 	} else {
@@ -103,13 +103,13 @@ func (h *menuHandler) AddMenuAuthority(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body request.GetAuthorityId true "角色ID"
+// @Param data body request.GetRoleId true "角色ID"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /menu/GetMenuAuthority [post]
 func (h *menuHandler) GetMenuAuthority(c *gin.Context) {
-	var param request.GetAuthorityId
+	var param request.GetRoleId
 	_ = c.ShouldBindJSON(&param)
-	if err := utils.Verify(param, utils.AuthorityIdVerify); err != nil {
+	if err := utils.Verify(param, utils.RoleIdVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}

@@ -1203,7 +1203,7 @@ var doc = `{
                 }
             }
         },
-        "/casbin/getPolicyPathByAuthorityId": {
+        "/casbin/getPolicyPathByRoleId": {
             "post": {
                 "security": [
                     {
@@ -1894,7 +1894,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.GetAuthorityId"
+                            "$ref": "#/definitions/request.GetRoleId"
                         }
                     }
                 ],
@@ -3643,7 +3643,7 @@ var doc = `{
         "request.AddMenuAuthorityInfo": {
             "type": "object",
             "properties": {
-                "authorityId": {
+                "roleId": {
                     "description": "角色ID",
                     "type": "string"
                 },
@@ -3695,7 +3695,7 @@ var doc = `{
         "request.CasbinInReceive": {
             "type": "object",
             "properties": {
-                "authorityId": {
+                "roleId": {
                     "description": "权限id",
                     "type": "string"
                 },
@@ -3740,10 +3740,10 @@ var doc = `{
         "request.Empty": {
             "type": "object"
         },
-        "request.GetAuthorityId": {
+        "request.GetRoleId": {
             "type": "object",
             "properties": {
-                "authorityId": {
+                "roleId": {
                     "description": "角色ID",
                     "type": "string"
                 }
@@ -3835,7 +3835,7 @@ var doc = `{
         "request.Register": {
             "type": "object",
             "properties": {
-                "authorityId": {
+                "roleId": {
                     "type": "string"
                 },
                 "headerImg": {
@@ -3904,7 +3904,7 @@ var doc = `{
         "request.SetUserRole": {
             "type": "object",
             "properties": {
-                "authorityId": {
+                "roleId": {
                     "description": "角色ID",
                     "type": "string"
                 },
@@ -4093,7 +4093,7 @@ var doc = `{
                 "authority": {
                     "$ref": "#/definitions/system.Role"
                 },
-                "oldAuthorityId": {
+                "oldRoleId": {
                     "description": "旧角色ID",
                     "type": "string"
                 }
@@ -4223,11 +4223,11 @@ var doc = `{
         "system.Role": {
             "type": "object",
             "properties": {
-                "authorityId": {
+                "roleId": {
                     "description": "角色ID",
                     "type": "string"
                 },
-                "authorityName": {
+                "roleName": {
                     "description": "角色名",
                     "type": "string"
                 },
@@ -4241,7 +4241,7 @@ var doc = `{
                     "description": "创建时间",
                     "type": "string"
                 },
-                "dataAuthorityId": {
+                "dataRoleId": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/system.Role"
@@ -4527,7 +4527,7 @@ var doc = `{
                 "authority": {
                     "$ref": "#/definitions/system.Role"
                 },
-                "authorityId": {
+                "roleId": {
                     "description": "用户角色ID",
                     "type": "string"
                 },

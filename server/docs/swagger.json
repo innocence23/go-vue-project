@@ -1187,7 +1187,7 @@
                 }
             }
         },
-        "/casbin/getPolicyPathByAuthorityId": {
+        "/casbin/getPolicyPathByRoleId": {
             "post": {
                 "security": [
                     {
@@ -1878,7 +1878,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.GetAuthorityId"
+                            "$ref": "#/definitions/request.GetRoleId"
                         }
                     }
                 ],
@@ -3627,7 +3627,7 @@
         "request.AddMenuAuthorityInfo": {
             "type": "object",
             "properties": {
-                "authorityId": {
+                "roleId": {
                     "description": "角色ID",
                     "type": "string"
                 },
@@ -3679,7 +3679,7 @@
         "request.CasbinInReceive": {
             "type": "object",
             "properties": {
-                "authorityId": {
+                "roleId": {
                     "description": "权限id",
                     "type": "string"
                 },
@@ -3724,10 +3724,10 @@
         "request.Empty": {
             "type": "object"
         },
-        "request.GetAuthorityId": {
+        "request.GetRoleId": {
             "type": "object",
             "properties": {
-                "authorityId": {
+                "roleId": {
                     "description": "角色ID",
                     "type": "string"
                 }
@@ -3819,7 +3819,7 @@
         "request.Register": {
             "type": "object",
             "properties": {
-                "authorityId": {
+                "roleId": {
                     "type": "string"
                 },
                 "headerImg": {
@@ -3888,7 +3888,7 @@
         "request.SetUserRole": {
             "type": "object",
             "properties": {
-                "authorityId": {
+                "roleId": {
                     "description": "角色ID",
                     "type": "string"
                 },
@@ -4077,7 +4077,7 @@
                 "authority": {
                     "$ref": "#/definitions/system.Role"
                 },
-                "oldAuthorityId": {
+                "oldRoleId": {
                     "description": "旧角色ID",
                     "type": "string"
                 }
@@ -4207,11 +4207,11 @@
         "system.Role": {
             "type": "object",
             "properties": {
-                "authorityId": {
+                "roleId": {
                     "description": "角色ID",
                     "type": "string"
                 },
-                "authorityName": {
+                "roleName": {
                     "description": "角色名",
                     "type": "string"
                 },
@@ -4225,7 +4225,7 @@
                     "description": "创建时间",
                     "type": "string"
                 },
-                "dataAuthorityId": {
+                "dataRoleId": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/system.Role"
@@ -4511,7 +4511,7 @@
                 "authority": {
                     "$ref": "#/definitions/system.Role"
                 },
-                "authorityId": {
+                "roleId": {
                     "description": "用户角色ID",
                     "type": "string"
                 },

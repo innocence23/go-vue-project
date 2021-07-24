@@ -1,6 +1,7 @@
-package system
+package entity
 
 import (
+	"project/model/system"
 	"project/zvar"
 	"time"
 )
@@ -18,5 +19,5 @@ type OperationLog struct {
 	Body         string        `json:"body" form:"body" gorm:"type:longtext;column:body;comment:请求Body"`             // 请求Body
 	Resp         string        `json:"resp" form:"resp" gorm:"type:longtext;column:resp;comment:响应Body"`             // 响应Body
 	UserID       int           `json:"user_id" form:"user_id" gorm:"column:user_id;comment:用户id"`                    // 用户id
-	User         User          `json:"user"`
+	User         system.User   `json:"user"`                                                                         // 用户信息
 }

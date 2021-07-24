@@ -3,7 +3,7 @@ package admin
 import (
 	"project/dto/request"
 	"project/dto/response"
-	"project/model/system"
+	"project/entity"
 	"project/service"
 	"project/zvar"
 
@@ -24,9 +24,14 @@ func OperationRecordHandler() *operationRecordHandler {
 func (h *operationRecordHandler) Router(router *gin.RouterGroup) {
 	apiRouter := router.Group("opLog")
 	{
-		apiRouter.DELETE("delete", h.delete)           // 删除OperationLog
-		apiRouter.DELETE("deleteByIds", h.deleteByIds) // 批量删除OperationLog
-		apiRouter.GET("list", h.list)                  // 获取OperationLog列表
+		apiRouter.DELETE("delete", h.delete)
+		apiRouter.DELETE("deleteByIds", h.deleteByIds)
+		apiRouter.GET("list", h.list)
+	}
+	zvar.RouteMap = map[string]zvar.RouteInfo{
+		"/" + zvar.UrlPrefix + "/opLog/delete":      {Group: "opLog", Name: "删除日志"},
+		"/" + zvar.UrlPrefix + "/opLog/deleteByIds": {Group: "opLog", Name: "批量删除日志"},
+		"/" + zvar.UrlPrefix + "/opLog/list":        {Group: "opLog", Name: "日志列表"},
 	}
 }
 
@@ -35,11 +40,11 @@ func (h *operationRecordHandler) Router(router *gin.RouterGroup) {
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body system.OperationLog true "OperationLog模型"
+// @Param data body entity.OperationLog true "OperationLog模型"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"删除成功"}"
 // @Router /req/delete [delete]
 func (h *operationRecordHandler) delete(c *gin.Context) {
-	var req system.OperationLog
+	var req entity.OperationLog
 	_ = c.ShouldBindJSON(&req)
 	if err := h.opLogService.Delete(req); err != nil {
 		zvar.Log.Error("删除失败!", zap.Any("err", err))

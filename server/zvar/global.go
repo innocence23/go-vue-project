@@ -19,4 +19,10 @@ var (
 	Log                *zap.Logger
 	Timer              timer.Timer = timer.NewTimerTask()
 	ConcurrencyControl             = &singleflight.Group{}
+	RouteMap           map[string]RouteInfo
 )
+
+type RouteInfo struct {
+	Name  string
+	Group string
+}

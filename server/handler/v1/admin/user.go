@@ -3,7 +3,6 @@ package admin
 import (
 	"project/dto/request"
 	"project/dto/response"
-	"project/handler/middleware"
 	"project/model/system"
 	"project/service"
 	"project/utils"
@@ -24,14 +23,22 @@ func NewUserHandler() *userHandler {
 }
 
 func (h *userHandler) Router(router *gin.RouterGroup) {
-	apiRouter := router.Group("user").Use(middleware.OperationRecord())
+	apiRouter := router.Group("user")
 	{
-		apiRouter.POST("register", h.register)             // 用户注册账号
-		apiRouter.POST("changePassword", h.changePassword) // 用户修改密码
-		apiRouter.POST("list", h.list)                     // 分页获取用户列表
-		apiRouter.POST("setRole", h.setRole)               // 设置用户权限
-		apiRouter.DELETE("delete", h.delete)               // 删除用户
-		apiRouter.PUT("update", h.update)                  // 设置用户信息
+		apiRouter.POST("register", h.register)
+		apiRouter.POST("changePassword", h.changePassword)
+		apiRouter.POST("list", h.list)
+		apiRouter.POST("setRole", h.setRole)
+		apiRouter.DELETE("delete", h.delete)
+		apiRouter.PUT("update", h.update)
+	}
+	zvar.RouteMap = map[string]zvar.RouteInfo{
+		"/" + zvar.UrlPrefix + "/user/register":       {Group: "user", Name: "注册账号"},
+		"/" + zvar.UrlPrefix + "/user/changePassword": {Group: "user", Name: "修改密码"},
+		"/" + zvar.UrlPrefix + "/user/list":           {Group: "user", Name: "用户列表"},
+		"/" + zvar.UrlPrefix + "/user/setRole":        {Group: "user", Name: "设置用户权限"},
+		"/" + zvar.UrlPrefix + "/user/delete":         {Group: "user", Name: "删除用户"},
+		"/" + zvar.UrlPrefix + "/user/update":         {Group: "user", Name: "更新用户"},
 	}
 }
 
@@ -48,7 +55,7 @@ func (h *userHandler) register(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	user := &system.User{Username: req.Username, NickName: req.NickName, Password: req.Password, HeaderImg: req.HeaderImg, AuthorityId: req.AuthorityId}
+	user := &system.User{Username: req.Username, NickName: req.NickName, Password: req.Password, HeaderImg: req.HeaderImg, RoleId: req.RoleId}
 	err, userReturn := h.userService.Register(*user)
 	if err != nil {
 		zvar.Log.Error("注册失败!", zap.Any("err", err))
@@ -124,7 +131,7 @@ func (h *userHandler) setRole(c *gin.Context) {
 		response.FailWithMessage(UserVerifyErr.Error(), c)
 		return
 	}
-	if err := h.userService.SetRole(req.UUID, req.AuthorityId); err != nil {
+	if err := h.userService.SetRole(req.UUID, req.RoleId); err != nil {
 		zvar.Log.Error("修改失败!", zap.Any("err", err))
 		response.FailWithMessage("修改失败", c)
 	} else {

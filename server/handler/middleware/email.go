@@ -3,7 +3,7 @@ package middleware
 import (
 	"io/ioutil"
 	"project/dto/request"
-	"project/model/system"
+	"project/entity"
 	"project/service"
 	"project/utils"
 	"project/zvar"
@@ -31,7 +31,7 @@ func ErrorToEmail() gin.HandlerFunc {
 			username = user.Username
 		}
 		body, _ := ioutil.ReadAll(c.Request.Body)
-		record := system.OperationLog{
+		record := entity.OperationLog{
 			Ip:     c.ClientIP(),
 			Method: c.Request.Method,
 			Path:   c.Request.URL.Path,

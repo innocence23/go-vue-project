@@ -379,7 +379,7 @@ definitions:
     type: object
   request.AddMenuAuthorityInfo:
     properties:
-      authorityId:
+      roleId:
         description: 角色ID
         type: string
       menus:
@@ -415,7 +415,7 @@ definitions:
     type: object
   request.CasbinInReceive:
     properties:
-      authorityId:
+      roleId:
         description: 权限id
         type: string
       casbinInfos:
@@ -446,9 +446,9 @@ definitions:
     type: object
   request.Empty:
     type: object
-  request.GetAuthorityId:
+  request.GetRoleId:
     properties:
-      authorityId:
+      roleId:
         description: 角色ID
         type: string
     type: object
@@ -512,7 +512,7 @@ definitions:
     type: object
   request.Register:
     properties:
-      authorityId:
+      roleId:
         type: string
       headerImg:
         type: string
@@ -561,7 +561,7 @@ definitions:
     type: object
   request.SetUserRole:
     properties:
-      authorityId:
+      roleId:
         description: 角色ID
         type: string
       uuid:
@@ -698,7 +698,7 @@ definitions:
     properties:
       authority:
         $ref: '#/definitions/system.Role'
-      oldAuthorityId:
+      oldRoleId:
         description: 旧角色ID
         type: string
     type: object
@@ -792,10 +792,10 @@ definitions:
     type: object
   system.Role:
     properties:
-      authorityId:
+      roleId:
         description: 角色ID
         type: string
-      authorityName:
+      roleName:
         description: 角色名
         type: string
       children:
@@ -805,7 +805,7 @@ definitions:
       createdAt:
         description: 创建时间
         type: string
-      dataAuthorityId:
+      dataRoleId:
         items:
           $ref: '#/definitions/system.Role'
         type: array
@@ -1011,7 +1011,7 @@ definitions:
         type: string
       authority:
         $ref: '#/definitions/system.Role'
-      authorityId:
+      roleId:
         description: 用户角色ID
         type: string
       baseColor:
@@ -1766,7 +1766,7 @@ paths:
       summary: 更新角色api权限
       tags:
       - Casbin
-  /casbin/getPolicyPathByAuthorityId:
+  /casbin/getPolicyPathByRoleId:
     post:
       consumes:
       - application/json
@@ -2181,7 +2181,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.GetAuthorityId'
+          $ref: '#/definitions/request.GetRoleId'
       produces:
       - application/json
       responses:

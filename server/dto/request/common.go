@@ -16,8 +16,8 @@ type IdsReq struct {
 }
 
 // Get role by id structure
-type GetAuthorityId struct {
-	AuthorityId string // 角色ID
+type GetRoleId struct {
+	RoleId string // 角色ID
 }
 
 type Empty struct{}

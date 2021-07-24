@@ -4,11 +4,11 @@ import uuid "github.com/satori/go.uuid"
 
 // User register structure
 type Register struct {
-	Username    string `json:"userName"`
-	Password    string `json:"passWord"`
-	NickName    string `json:"nickName" gorm:"default:'QMPlusUser'"`
-	HeaderImg   string `json:"headerImg" gorm:"default:'http://www.henrongyi.top/avatar/lufu.jpg'"`
-	AuthorityId string `json:"authorityId" gorm:"default:888"`
+	Username  string `json:"userName"`
+	Password  string `json:"passWord"`
+	NickName  string `json:"nickName" gorm:"default:'QMPlusUser'"`
+	HeaderImg string `json:"headerImg" gorm:"default:'http://www.henrongyi.top/avatar/lufu.jpg'"`
+	RoleId    string `json:"roleId" gorm:"default:888"`
 }
 
 // User login structure
@@ -28,6 +28,6 @@ type ChangePasswordStruct struct {
 
 // Modify  user's auth structure
 type SetUserRole struct {
-	UUID        uuid.UUID `json:"uuid"`        // 用户UUID
-	AuthorityId string    `json:"authorityId"` // 角色ID
+	UUID   uuid.UUID `json:"uuid"`   // 用户UUID
+	RoleId string    `json:"roleId"` // 角色ID
 }

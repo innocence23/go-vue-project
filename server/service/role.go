@@ -24,7 +24,7 @@ var AuthorityServiceApp = new(AuthorityService)
 
 func (authorityService *AuthorityService) CreateAuthority(auth system.Role) (err error, authority system.Role) {
 	var authorityBox system.Role
-	if !errors.Is(zvar.DB.Where("authority_id = ?", auth.AuthorityId).First(&authorityBox).Error, gorm.ErrRecordNotFound) {
+	if !errors.Is(zvar.DB.Where("authority_id = ?", auth.RoleId).First(&authorityBox).Error, gorm.ErrRecordNotFound) {
 		return errors.New("存在相同角色id"), auth
 	}
 	err = zvar.DB.Create(&auth).Error
@@ -39,11 +39,11 @@ func (authorityService *AuthorityService) CreateAuthority(auth system.Role) (err
 
 func (authorityService *AuthorityService) CopyAuthority(copyInfo response.RoleCopyResponse) (err error, authority system.Role) {
 	var authorityBox system.Role
-	if !errors.Is(zvar.DB.Where("authority_id = ?", copyInfo.Authority.AuthorityId).First(&authorityBox).Error, gorm.ErrRecordNotFound) {
+	if !errors.Is(zvar.DB.Where("authority_id = ?", copyInfo.Authority.RoleId).First(&authorityBox).Error, gorm.ErrRecordNotFound) {
 		return errors.New("存在相同角色id"), authority
 	}
 	copyInfo.Authority.Children = []system.Role{}
-	err, menus := MenuServiceApp.GetMenuAuthority(&request.GetAuthorityId{AuthorityId: copyInfo.OldAuthorityId})
+	err, menus := MenuServiceApp.GetMenuAuthority(&request.GetRoleId{RoleId: copyInfo.OldRoleId})
 	var baseMenu []system.SysBaseMenu
 	for _, v := range menus {
 		intNum, _ := strconv.Atoi(v.MenuId)
@@ -53,8 +53,8 @@ func (authorityService *AuthorityService) CopyAuthority(copyInfo response.RoleCo
 	copyInfo.Authority.SysBaseMenus = baseMenu
 	err = zvar.DB.Create(&copyInfo.Authority).Error
 
-	paths := (&CasbinService{}).GetPermByRoleId(copyInfo.OldAuthorityId)
-	err = (&CasbinService{}).Update(copyInfo.Authority.AuthorityId, paths)
+	paths := (&CasbinService{}).GetPermByRoleId(copyInfo.OldRoleId)
+	err = (&CasbinService{}).Update(copyInfo.Authority.RoleId, paths)
 	if err != nil {
 		_ = authorityService.DeleteAuthority(&copyInfo.Authority)
 	}
@@ -68,7 +68,7 @@ func (authorityService *AuthorityService) CopyAuthority(copyInfo response.RoleCo
 //@return: err error, authority model.Role
 
 func (authorityService *AuthorityService) UpdateAuthority(auth system.Role) (err error, authority system.Role) {
-	err = zvar.DB.Where("authority_id = ?", auth.AuthorityId).First(&system.Role{}).Updates(&auth).Error
+	err = zvar.DB.Where("authority_id = ?", auth.RoleId).First(&system.Role{}).Updates(&auth).Error
 	return err, auth
 }
 
@@ -79,13 +79,13 @@ func (authorityService *AuthorityService) UpdateAuthority(auth system.Role) (err
 //@return: err error
 
 func (authorityService *AuthorityService) DeleteAuthority(auth *system.Role) (err error) {
-	if !errors.Is(zvar.DB.Where("authority_id = ?", auth.AuthorityId).First(&system.User{}).Error, gorm.ErrRecordNotFound) {
+	if !errors.Is(zvar.DB.Where("authority_id = ?", auth.RoleId).First(&system.User{}).Error, gorm.ErrRecordNotFound) {
 		return errors.New("此角色有用户正在使用禁止删除")
 	}
-	if !errors.Is(zvar.DB.Where("parent_id = ?", auth.AuthorityId).First(&system.Role{}).Error, gorm.ErrRecordNotFound) {
+	if !errors.Is(zvar.DB.Where("parent_id = ?", auth.RoleId).First(&system.Role{}).Error, gorm.ErrRecordNotFound) {
 		return errors.New("此角色存在子角色不允许删除")
 	}
-	db := zvar.DB.Preload("SysBaseMenus").Where("authority_id = ?", auth.AuthorityId).First(auth)
+	db := zvar.DB.Preload("SysBaseMenus").Where("authority_id = ?", auth.RoleId).First(auth)
 	err = db.Unscoped().Delete(auth).Error
 	if len(auth.SysBaseMenus) > 0 {
 		err = zvar.DB.Model(auth).Association("SysBaseMenus").Delete(auth.SysBaseMenus)
@@ -93,7 +93,7 @@ func (authorityService *AuthorityService) DeleteAuthority(auth *system.Role) (er
 	} else {
 		err = db.Error
 	}
-	(&CasbinService{}).ClearCasbin(0, auth.AuthorityId)
+	(&CasbinService{}).ClearCasbin(0, auth.RoleId)
 	return err
 }
 
@@ -108,7 +108,7 @@ func (authorityService *AuthorityService) GetAuthorityInfoList(info request.Page
 	offset := info.PageSize * (info.Page - 1)
 	db := zvar.DB
 	var authority []system.Role
-	err = db.Limit(limit).Offset(offset).Preload("DataAuthorityId").Where("parent_id = 0").Find(&authority).Error
+	err = db.Limit(limit).Offset(offset).Preload("DataRoleId").Where("parent_id = 0").Find(&authority).Error
 	if len(authority) > 0 {
 		for k := range authority {
 			err = authorityService.findChildrenAuthority(&authority[k])
@@ -124,7 +124,7 @@ func (authorityService *AuthorityService) GetAuthorityInfoList(info request.Page
 //@return: err error, sa model.Role
 
 func (authorityService *AuthorityService) GetAuthorityInfo(auth system.Role) (err error, sa system.Role) {
-	err = zvar.DB.Preload("DataAuthorityId").Where("authority_id = ?", auth.AuthorityId).First(&sa).Error
+	err = zvar.DB.Preload("DataRoleId").Where("authority_id = ?", auth.RoleId).First(&sa).Error
 	return err, sa
 }
 
@@ -136,8 +136,8 @@ func (authorityService *AuthorityService) GetAuthorityInfo(auth system.Role) (er
 
 func (authorityService *AuthorityService) SetDataAuthority(auth system.Role) error {
 	var s system.Role
-	zvar.DB.Preload("DataAuthorityId").First(&s, "authority_id = ?", auth.AuthorityId)
-	err := zvar.DB.Model(&s).Association("DataAuthorityId").Replace(&auth.DataAuthorityId)
+	zvar.DB.Preload("DataRoleId").First(&s, "authority_id = ?", auth.RoleId)
+	err := zvar.DB.Model(&s).Association("DataRoleId").Replace(&auth.DataRoleId)
 	return err
 }
 
@@ -149,7 +149,7 @@ func (authorityService *AuthorityService) SetDataAuthority(auth system.Role) err
 
 func (authorityService *AuthorityService) SetMenuAuthority(auth *system.Role) error {
 	var s system.Role
-	zvar.DB.Preload("SysBaseMenus").First(&s, "authority_id = ?", auth.AuthorityId)
+	zvar.DB.Preload("SysBaseMenus").First(&s, "authority_id = ?", auth.RoleId)
 	err := zvar.DB.Model(&s).Association("SysBaseMenus").Replace(&auth.SysBaseMenus)
 	return err
 }
@@ -161,7 +161,7 @@ func (authorityService *AuthorityService) SetMenuAuthority(auth *system.Role) er
 //@return: err error
 
 func (authorityService *AuthorityService) findChildrenAuthority(authority *system.Role) (err error) {
-	err = zvar.DB.Preload("DataAuthorityId").Where("parent_id = ?", authority.AuthorityId).Find(&authority.Children).Error
+	err = zvar.DB.Preload("DataRoleId").Where("parent_id = ?", authority.RoleId).Find(&authority.Children).Error
 	if len(authority.Children) > 0 {
 		for k := range authority.Children {
 			err = authorityService.findChildrenAuthority(&authority.Children[k])

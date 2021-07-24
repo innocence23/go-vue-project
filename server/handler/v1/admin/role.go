@@ -57,8 +57,8 @@ func (h *roleHandler) CreateAuthority(c *gin.Context) {
 		zvar.Log.Error("创建失败!", zap.Any("err", err))
 		response.FailWithMessage("创建失败"+err.Error(), c)
 	} else {
-		_ = h.serviceMenu.AddMenuAuthority(request.DefaultMenu(), req.AuthorityId)
-		_ = h.serviceCasbin.Update(req.AuthorityId, request.DefaultCasbin())
+		_ = h.serviceMenu.AddMenuAuthority(request.DefaultMenu(), req.RoleId)
+		_ = h.serviceCasbin.Update(req.RoleId, request.DefaultCasbin())
 		response.OkWithDetailed(response.RoleResponse{Authority: authBack}, "创建成功", c)
 	}
 }
@@ -101,7 +101,7 @@ func (h *roleHandler) CopyAuthority(c *gin.Context) {
 func (h *roleHandler) DeleteAuthority(c *gin.Context) {
 	var authority system.Role
 	_ = c.ShouldBindJSON(&authority)
-	if err := utils.Verify(authority, utils.AuthorityIdVerify); err != nil {
+	if err := utils.Verify(authority, utils.RoleIdVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
@@ -175,7 +175,7 @@ func (h *roleHandler) GetAuthorityList(c *gin.Context) {
 func (h *roleHandler) SetDataAuthority(c *gin.Context) {
 	var auth system.Role
 	_ = c.ShouldBindJSON(&auth)
-	if err := utils.Verify(auth, utils.AuthorityIdVerify); err != nil {
+	if err := utils.Verify(auth, utils.RoleIdVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}

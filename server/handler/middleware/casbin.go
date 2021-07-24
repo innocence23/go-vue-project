@@ -16,7 +16,7 @@ func CasbinHandler() gin.HandlerFunc {
 		waitUse := claims.(*request.CustomClaims)
 		obj := c.Request.URL.RequestURI()
 		act := c.Request.Method
-		sub := waitUse.AuthorityId
+		sub := waitUse.RoleId
 		e := casbinService.Casbin()
 		// 判断策略中是否存在
 		success, _ := e.Enforce(sub, obj, act)

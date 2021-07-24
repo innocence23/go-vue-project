@@ -7,6 +7,6 @@ type RoleResponse struct {
 }
 
 type RoleCopyResponse struct {
-	Authority      system.Role `json:"authority"`
-	OldAuthorityId string      `json:"oldAuthorityId"` // 旧角色ID
+	Authority system.Role `json:"authority"`
+	OldRoleId string      `json:"oldRoleId"` // 旧角色ID
 }

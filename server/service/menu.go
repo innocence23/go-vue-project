@@ -13,7 +13,7 @@ import (
 //@author: [piexlmax](https://github.com/piexlmax)
 //@function: getMenuTreeMap
 //@description: 获取路由总树map
-//@param: authorityId string
+//@param: roleId string
 //@return: err error, treeMap map[string][]model.SysMenu
 
 type MenuService struct {
@@ -21,10 +21,10 @@ type MenuService struct {
 
 var MenuServiceApp = new(MenuService)
 
-func (menuService *MenuService) getMenuTreeMap(authorityId string) (err error, treeMap map[string][]system.SysMenu) {
+func (menuService *MenuService) getMenuTreeMap(roleId string) (err error, treeMap map[string][]system.SysMenu) {
 	var allMenus []system.SysMenu
 	treeMap = make(map[string][]system.SysMenu)
-	err = zvar.DB.Where("authority_id = ?", authorityId).Order("sort").Preload("Parameters").Find(&allMenus).Error
+	err = zvar.DB.Where("authority_id = ?", roleId).Order("sort").Preload("Parameters").Find(&allMenus).Error
 	for _, v := range allMenus {
 		treeMap[v.ParentId] = append(treeMap[v.ParentId], v)
 	}
@@ -34,11 +34,11 @@ func (menuService *MenuService) getMenuTreeMap(authorityId string) (err error, t
 //@author: [piexlmax](https://github.com/piexlmax)
 //@function: GetMenuTree
 //@description: 获取动态菜单树
-//@param: authorityId string
+//@param: roleId string
 //@return: err error, menus []model.SysMenu
 
-func (menuService *MenuService) GetMenuTree(authorityId string) (err error, menus []system.SysMenu) {
-	err, menuTree := menuService.getMenuTreeMap(authorityId)
+func (menuService *MenuService) GetMenuTree(roleId string) (err error, menus []system.SysMenu) {
+	err, menuTree := menuService.getMenuTreeMap(roleId)
 	menus = menuTree["0"]
 	for i := 0; i < len(menus); i++ {
 		err = menuService.getChildrenList(&menus[i], menuTree)
@@ -134,12 +134,12 @@ func (menuService *MenuService) GetBaseMenuTree() (err error, menus []system.Sys
 //@author: [piexlmax](https://github.com/piexlmax)
 //@function: AddMenuAuthority
 //@description: 为角色增加menu树
-//@param: menus []model.SysBaseMenu, authorityId string
+//@param: menus []model.SysBaseMenu, roleId string
 //@return: err error
 
-func (menuService *MenuService) AddMenuAuthority(menus []system.SysBaseMenu, authorityId string) (err error) {
+func (menuService *MenuService) AddMenuAuthority(menus []system.SysBaseMenu, roleId string) (err error) {
 	var auth system.Role
-	auth.AuthorityId = authorityId
+	auth.RoleId = roleId
 	auth.SysBaseMenus = menus
 	err = AuthorityServiceApp.SetMenuAuthority(&auth)
 	return err
@@ -148,12 +148,12 @@ func (menuService *MenuService) AddMenuAuthority(menus []system.SysBaseMenu, aut
 //@author: [piexlmax](https://github.com/piexlmax)
 //@function: GetMenuAuthority
 //@description: 查看当前角色树
-//@param: info *request.GetAuthorityId
+//@param: info *request.GetRoleId
 //@return: err error, menus []model.SysMenu
 
-func (menuService *MenuService) GetMenuAuthority(info *request.GetAuthorityId) (err error, menus []system.SysMenu) {
-	err = zvar.DB.Where("authority_id = ? ", info.AuthorityId).Order("sort").Find(&menus).Error
+func (menuService *MenuService) GetMenuAuthority(info *request.GetRoleId) (err error, menus []system.SysMenu) {
+	err = zvar.DB.Where("authority_id = ? ", info.RoleId).Order("sort").Find(&menus).Error
 	//sql := "SELECT authority_menu.keep_alive,authority_menu.default_menu,authority_menu.created_at,authority_menu.updated_at,authority_menu.deleted_at,authority_menu.menu_level,authority_menu.parent_id,authority_menu.path,authority_menu.`name`,authority_menu.hidden,authority_menu.component,authority_menu.title,authority_menu.icon,authority_menu.sort,authority_menu.menu_id,authority_menu.authority_id FROM authority_menu WHERE authority_menu.authority_id = ? ORDER BY authority_menu.sort ASC"
-	//err = zvar.DB.Raw(sql, authorityId).Scan(&menus).Error
+	//err = zvar.DB.Raw(sql, roleId).Scan(&menus).Error
 	return err, menus
 }

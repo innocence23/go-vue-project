@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"project/dto/request"
-	"project/model/system"
+	"project/entity"
 	"project/service"
 	"project/zvar"
 	"strconv"
@@ -40,7 +40,7 @@ func OperationRecord() gin.HandlerFunc {
 			}
 			userId = id
 		}
-		record := system.OperationLog{
+		record := entity.OperationLog{
 			Ip:     c.ClientIP(),
 			Method: c.Request.Method,
 			Path:   c.Request.URL.Path,
