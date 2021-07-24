@@ -27,8 +27,7 @@ func (userService *UserService) Register(u system.User) (err error, userInter sy
 
 func (userService *UserService) Login(u *system.User) (err error, userInter *system.User) {
 	var user system.User
-	u.Password = utils.Md5([]byte(u.Password))
-	err = zvar.DB.Where("username = ?", u.Username).Preload("Role").First(&user).Error
+	err = zvar.DB.Where("username = ?", u.Username).First(&user).Error
 	if err != nil {
 		return err, &user
 	}
@@ -37,7 +36,7 @@ func (userService *UserService) Login(u *system.User) (err error, userInter *sys
 		return err, &user
 	}
 	if !match {
-		return errors.New("用户名密码不正确已注册"), &user
+		return errors.New("用户名密码不正确"), &user
 	}
 	return err, &user
 }
@@ -56,7 +55,7 @@ func (userService *UserService) List(info request.PageInfo) (err error, list int
 	db := zvar.DB.Model(&system.User{})
 	var userList []system.User
 	err = db.Count(&total).Error
-	err = db.Limit(limit).Offset(offset).Preload("Authority").Find(&userList).Error
+	err = db.Limit(limit).Offset(offset).Find(&userList).Error
 	return err, userList, total
 }
 

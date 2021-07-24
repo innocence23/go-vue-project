@@ -8,13 +8,6 @@ export const getApiList = (data) => {
   })
 }
 
-export const createApi = (data) => {
-  return service({
-    url: '/permission/create',
-    method: 'post',
-    data
-  })
-}
 
 export const getApiById = (data) => {
   return service({
@@ -24,13 +17,6 @@ export const getApiById = (data) => {
   })
 }
 
-export const updateApi = (data) => {
-  return service({
-    url: '/permission/update',
-    method: 'post',
-    data
-  })
-}
 
 export const getAllApis = (data) => {
   return service({
@@ -40,18 +26,3 @@ export const getAllApis = (data) => {
   })
 }
 
-export const deleteApi = (data) => {
-  return service({
-    url: '/permission/delete',
-    method: 'post',
-    data
-  })
-}
-
-export const deleteApisByIds = (data) => {
-  return service({
-    url: '/permission/deleteByIds',
-    method: 'delete',
-    data
-  })
-}

@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"errors"
-	"project/model/system"
+	"project/entity"
 	"project/zvar"
 	"time"
 
@@ -13,13 +13,13 @@ import (
 type JwtService struct {
 }
 
-func (jwtService *JwtService) InBlacklist(jwtList system.JwtBlacklist) (err error) {
+func (jwtService *JwtService) InBlacklist(jwtList entity.JwtBlacklist) (err error) {
 	err = zvar.DB.Create(&jwtList).Error
 	return
 }
 
 func (jwtService *JwtService) IsBlacklist(jwt string) bool {
-	err := zvar.DB.Where("jwt = ?", jwt).First(&system.JwtBlacklist{}).Error
+	err := zvar.DB.Where("jwt = ?", jwt).First(&entity.JwtBlacklist{}).Error
 	isNotFound := errors.Is(err, gorm.ErrRecordNotFound)
 	return !isNotFound
 }

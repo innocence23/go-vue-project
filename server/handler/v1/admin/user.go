@@ -1,7 +1,6 @@
 package admin
 
 import (
-	"fmt"
 	"project/dto/request"
 	"project/dto/response"
 	"project/model/system"
@@ -40,13 +39,6 @@ func (h *userHandler) Router(router *gin.RouterGroup) {
 	zvar.RouteMap["/"+zvar.UrlPrefix+"/user/setRole"] = zvar.RouteInfo{Group: "user", Name: "设置用户权限"}
 	zvar.RouteMap["/"+zvar.UrlPrefix+"/user/delete"] = zvar.RouteInfo{Group: "user", Name: "删除用户"}
 	zvar.RouteMap["/"+zvar.UrlPrefix+"/user/update"] = zvar.RouteInfo{Group: "user", Name: "更新用户"}
-
-	fmt.Println("==========", zvar.RouteMap)
-
-	for _, v := range  zvar.RouteMap {
-		fmt.Println("==========", v)
-	}
-
 }
 
 // @Tags User

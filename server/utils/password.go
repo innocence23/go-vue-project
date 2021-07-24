@@ -26,6 +26,8 @@ func HashPassword(password string) (string, error) {
 
 func ComparePasswords(storedPassword string, suppliedPassword string) (bool, error) {
 	pwsalt := strings.Split(storedPassword, ".")
+	fmt.Println(pwsalt)
+	fmt.Println(HashPassword("123456"))
 	salt, err := hex.DecodeString(pwsalt[1])
 	if err != nil {
 		return false, fmt.Errorf("无效密码")

@@ -43,8 +43,8 @@ func (permissionService *PermissionService) List(perm entity.Permission, info re
 		db = db.Where("method = ?", perm.Method)
 	}
 
-	if perm.ApiGroup != "" {
-		db = db.Where("api_group = ?", perm.ApiGroup)
+	if perm.Group != "" {
+		db = db.Where("`group` = ?", perm.Group)
 	}
 
 	err = db.Count(&total).Error
@@ -62,7 +62,7 @@ func (permissionService *PermissionService) List(perm entity.Permission, info re
 			}
 			err = db.Order(OrderStr).Find(&permList).Error
 		} else {
-			err = db.Order("api_group").Find(&permList).Error
+			err = db.Order("`group`").Find(&permList).Error
 		}
 	}
 	return err, permList, total

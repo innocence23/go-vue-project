@@ -46,7 +46,7 @@ func Init() {
 		{
 			path: filepath.Join(zvar.Config.AutoCode.Root,
 				zvar.Config.AutoCode.Server, zvar.Config.AutoCode.SApi, "enter.go"),
-			funcName:    "ApiGroup",
+			funcName:    "Group",
 			structNameF: "%sApi",
 		},
 		{
@@ -340,37 +340,37 @@ func (autoCodeService *AutoCodeService) AutoCreateApi(a *system.AutoCodeStruct) 
 		{
 			Path:        "/" + a.Abbreviation + "/" + "create" + a.StructName,
 			Description: "新增" + a.Description,
-			ApiGroup:    a.Abbreviation,
+			Group:    a.Abbreviation,
 			Method:      "POST",
 		},
 		{
 			Path:        "/" + a.Abbreviation + "/" + "delete" + a.StructName,
 			Description: "删除" + a.Description,
-			ApiGroup:    a.Abbreviation,
+			Group:    a.Abbreviation,
 			Method:      "DELETE",
 		},
 		{
 			Path:        "/" + a.Abbreviation + "/" + "delete" + a.StructName + "ByIds",
 			Description: "批量删除" + a.Description,
-			ApiGroup:    a.Abbreviation,
+			Group:    a.Abbreviation,
 			Method:      "DELETE",
 		},
 		{
 			Path:        "/" + a.Abbreviation + "/" + "update" + a.StructName,
 			Description: "更新" + a.Description,
-			ApiGroup:    a.Abbreviation,
+			Group:    a.Abbreviation,
 			Method:      "PUT",
 		},
 		{
 			Path:        "/" + a.Abbreviation + "/" + "find" + a.StructName,
 			Description: "根据ID获取" + a.Description,
-			ApiGroup:    a.Abbreviation,
+			Group:    a.Abbreviation,
 			Method:      "GET",
 		},
 		{
 			Path:        "/" + a.Abbreviation + "/" + "get" + a.StructName + "List",
 			Description: "获取" + a.Description + "列表",
-			ApiGroup:    a.Abbreviation,
+			Group:    a.Abbreviation,
 			Method:      "GET",
 		},
 	}

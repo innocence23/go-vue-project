@@ -15,7 +15,7 @@
       <el-table-column label="用户名" min-width="150" prop="userName" />
       <el-table-column label="昵称" min-width="150" prop="nickName" />
       <el-table-column label="用户角色" min-width="150">
-        <template slot-scope="scope">
+        <!-- <template slot-scope="scope">
           <el-cascader
             v-model="scope.row.authority.authorityId"
             :options="authOptions"
@@ -24,7 +24,7 @@
             filterable
             @change="changeAuthority(scope.row)"
           />
-        </template>
+        </template> -->
       </el-table-column>
       <el-table-column label="操作" min-width="150">
         <template slot-scope="scope">
@@ -67,7 +67,7 @@
             <div v-else class="header-img-box">从媒体库选择</div>
           </div>
         </el-form-item>
-        <el-form-item label="用户角色" label-width="80px" prop="authorityId">
+        <!-- <el-form-item label="用户角色" label-width="80px" prop="authorityId">
           <el-cascader
             v-model="userInfo.authorityId"
             :options="authOptions"
@@ -75,7 +75,7 @@
             :props="{ checkStrictly: true,label:'authorityName',value:'authorityId',disabled:'disabled',emitPath:false}"
             filterable
           />
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="closeAddUserDialog">取 消</el-button>

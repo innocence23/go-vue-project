@@ -3,6 +3,7 @@ package admin
 import (
 	"project/dto/request"
 	"project/dto/response"
+	"project/entity"
 	"project/handler/middleware"
 	"project/model/system"
 	"project/service"
@@ -135,7 +136,7 @@ func (h *baseHandler) tokenNext(c *gin.Context, user system.User) {
 		zvar.Log.Error("设置登录状态失败!", zap.Any("err", err))
 		response.FailWithMessage("设置登录状态失败", c)
 	} else {
-		var blackJWT system.JwtBlacklist
+		var blackJWT entity.JwtBlacklist
 		blackJWT.Jwt = jwtStr
 		if err := h.jwtService.InBlacklist(blackJWT); err != nil {
 			response.FailWithMessage("jwt作废失败", c)

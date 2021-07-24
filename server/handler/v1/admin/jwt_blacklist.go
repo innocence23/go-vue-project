@@ -2,7 +2,7 @@ package admin
 
 import (
 	"project/dto/response"
-	"project/model/system"
+	"project/entity"
 	"project/service"
 	"project/zvar"
 
@@ -34,7 +34,7 @@ func (h *jwtHandler) Router(router *gin.RouterGroup) {
 // @Router /jwt/inBlacklist [post]
 func (h *jwtHandler) inBlacklist(c *gin.Context) {
 	token := c.Request.Header.Get("x-token")
-	jwt := system.JwtBlacklist{Jwt: token}
+	jwt := entity.JwtBlacklist{Jwt: token}
 	if err := h.jwtService.InBlacklist(jwt); err != nil {
 		zvar.Log.Error("jwt作废失败!", zap.Any("err", err))
 		response.FailWithMessage("jwt作废失败", c)

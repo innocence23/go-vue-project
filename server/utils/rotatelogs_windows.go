@@ -5,7 +5,6 @@ import (
 	"go.uber.org/zap/zapcore"
 	"os"
 	"path"
-	"project/glo"
 	"time"
 )
 

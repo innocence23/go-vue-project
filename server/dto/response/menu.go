@@ -1,9 +1,12 @@
 package response
 
-import "project/model/system"
+import (
+	"project/entity"
+	"project/model/system"
+)
 
 type SysMenusResponse struct {
-	Menus []system.SysMenu `json:"menus"`
+	Menus []entity.Menu `json:"menus"`
 }
 
 type SysBaseMenusResponse struct {
@@ -11,5 +14,5 @@ type SysBaseMenusResponse struct {
 }
 
 type SysBaseMenuResponse struct {
-	Menu system.SysBaseMenu `json:"menu"`
+	Menu entity.Menu `json:"menu"`
 }

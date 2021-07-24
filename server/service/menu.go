@@ -2,158 +2,112 @@ package service
 
 import (
 	"errors"
-	"project/dto/request"
-	"project/model/system"
+	"project/entity"
 	"project/zvar"
-	"strconv"
 
+	"github.com/spf13/cast"
 	"gorm.io/gorm"
 )
 
-//@author: [piexlmax](https://github.com/piexlmax)
-//@function: getMenuTreeMap
-//@description: 获取路由总树map
-//@param: roleId string
-//@return: err error, treeMap map[string][]model.SysMenu
-
-type MenuService struct {
+type BaseMenuService struct {
 }
 
-var MenuServiceApp = new(MenuService)
-
-func (menuService *MenuService) getMenuTreeMap(roleId string) (err error, treeMap map[string][]system.SysMenu) {
-	var allMenus []system.SysMenu
-	treeMap = make(map[string][]system.SysMenu)
-	err = zvar.DB.Where("authority_id = ?", roleId).Order("sort").Preload("Parameters").Find(&allMenus).Error
-	for _, v := range allMenus {
-		treeMap[v.ParentId] = append(treeMap[v.ParentId], v)
-	}
-	return err, treeMap
-}
-
-//@author: [piexlmax](https://github.com/piexlmax)
-//@function: GetMenuTree
-//@description: 获取动态菜单树
-//@param: roleId string
-//@return: err error, menus []model.SysMenu
-
-func (menuService *MenuService) GetMenuTree(roleId string) (err error, menus []system.SysMenu) {
-	err, menuTree := menuService.getMenuTreeMap(roleId)
-	menus = menuTree["0"]
-	for i := 0; i < len(menus); i++ {
-		err = menuService.getChildrenList(&menus[i], menuTree)
-	}
-	return err, menus
-}
-
-//@author: [piexlmax](https://github.com/piexlmax)
-//@function: getChildrenList
-//@description: 获取子菜单
-//@param: menu *model.SysMenu, treeMap map[string][]model.SysMenu
-//@return: err error
-
-func (menuService *MenuService) getChildrenList(menu *system.SysMenu, treeMap map[string][]system.SysMenu) (err error) {
-	menu.Children = treeMap[menu.MenuId]
-	for i := 0; i < len(menu.Children); i++ {
-		err = menuService.getChildrenList(&menu.Children[i], treeMap)
-	}
-	return err
-}
-
-//@author: [piexlmax](https://github.com/piexlmax)
-//@function: GetInfoList
-//@description: 获取路由分页
-//@return: err error, list interface{}, total int64
-
-func (menuService *MenuService) GetInfoList() (err error, list interface{}, total int64) {
-	var menuList []system.SysBaseMenu
-	err, treeMap := menuService.getBaseMenuTreeMap()
-	menuList = treeMap["0"]
-	for i := 0; i < len(menuList); i++ {
-		err = menuService.getBaseChildrenList(&menuList[i], treeMap)
-	}
-	return err, menuList, total
-}
-
-//@author: [piexlmax](https://github.com/piexlmax)
-//@function: getBaseChildrenList
-//@description: 获取菜单的子菜单
-//@param: menu *model.SysBaseMenu, treeMap map[string][]model.SysBaseMenu
-//@return: err error
-
-func (menuService *MenuService) getBaseChildrenList(menu *system.SysBaseMenu, treeMap map[string][]system.SysBaseMenu) (err error) {
-	menu.Children = treeMap[strconv.Itoa(int(menu.ID))]
-	for i := 0; i < len(menu.Children); i++ {
-		err = menuService.getBaseChildrenList(&menu.Children[i], treeMap)
-	}
-	return err
-}
-
-//@author: [piexlmax](https://github.com/piexlmax)
-//@function: AddBaseMenu
-//@description: 添加基础路由
-//@param: menu model.SysBaseMenu
-//@return: error
-
-func (menuService *MenuService) AddBaseMenu(menu system.SysBaseMenu) error {
-	if !errors.Is(zvar.DB.Where("name = ?", menu.Name).First(&system.SysBaseMenu{}).Error, gorm.ErrRecordNotFound) {
+func (baseMenuService *BaseMenuService) Create(menu entity.Menu) error {
+	if !errors.Is(zvar.DB.Where("name = ?", menu.Name).First(&entity.Menu{}).Error, gorm.ErrRecordNotFound) {
 		return errors.New("存在重复name，请修改name")
 	}
 	return zvar.DB.Create(&menu).Error
 }
 
-//@author: [piexlmax](https://github.com/piexlmax)
-//@function: getBaseMenuTreeMap
-//@description: 获取路由总树map
-//@return: err error, treeMap map[string][]model.SysBaseMenu
+func (baseMenuService *BaseMenuService) Update(menu entity.Menu) (err error) {
+	upDateMap := make(map[string]interface{})
+	upDateMap["keep_alive"] = menu.KeepAlive
+	upDateMap["close_tab"] = menu.CloseTab
+	upDateMap["default_menu"] = menu.DefaultMenu
+	upDateMap["parent_id"] = menu.ParentId
+	upDateMap["path"] = menu.Path
+	upDateMap["name"] = menu.Name
+	upDateMap["hidden"] = menu.Hidden
+	upDateMap["component"] = menu.Component
+	upDateMap["title"] = menu.Title
+	upDateMap["icon"] = menu.Icon
+	upDateMap["sort"] = menu.Sort
+	err = zvar.DB.Model(&entity.Menu{}).Where("id = ?", menu.ID).Updates(upDateMap).Error
+	return err
+}
 
-func (menuService *MenuService) getBaseMenuTreeMap() (err error, treeMap map[string][]system.SysBaseMenu) {
-	var allMenus []system.SysBaseMenu
-	treeMap = make(map[string][]system.SysBaseMenu)
-	err = zvar.DB.Order("sort").Preload("Parameters").Find(&allMenus).Error
+func (baseMenuService *BaseMenuService) Find(id float64) (err error, menu entity.Menu) {
+	err = zvar.DB.Where("id = ?", id).First(&menu).Error
+	return
+}
+
+func (baseMenuService *BaseMenuService) Hidden(id float64) (err error) {
+	err = zvar.DB.Where("id = ?", id).Update("hidden", true).Error
+	return
+}
+
+func (baseMenuService *BaseMenuService) Display(id float64) (err error) {
+	err = zvar.DB.Where("id = ?", id).Update("hidden", false).Error
+	return
+}
+
+//------ TreeList （列表）
+func (baseMenuService *BaseMenuService) TreeList() (err error, list interface{}, total int64) {
+	var menuList []entity.Menu
+	err, treeMap := baseMenuService.getBaseMenuTreeMap()
+	menuList = treeMap["0"]
+	for i := 0; i < len(menuList); i++ {
+		err = baseMenuService.getBaseChildrenList(&menuList[i], treeMap)
+	}
+	return err, menuList, total
+}
+
+func (baseMenuService *BaseMenuService) getBaseChildrenList(menu *entity.Menu, treeMap map[string][]entity.Menu) (err error) {
+	menu.Children = treeMap[cast.ToString(menu.ID)]
+	for i := 0; i < len(menu.Children); i++ {
+		err = baseMenuService.getBaseChildrenList(&menu.Children[i], treeMap)
+	}
+	return err
+}
+
+func (baseMenuService *BaseMenuService) getMenuTreeMap(roleId string) (err error, treeMap map[string][]entity.Menu) {
+	var allMenus []entity.Menu
+	treeMap = make(map[string][]entity.Menu)
+	err = zvar.DB.Where("role_id = ?", roleId).Order("sort").Find(&allMenus).Error
 	for _, v := range allMenus {
 		treeMap[v.ParentId] = append(treeMap[v.ParentId], v)
 	}
 	return err, treeMap
 }
 
-//@author: [piexlmax](https://github.com/piexlmax)
-//@function: GetBaseMenuTree
-//@description: 获取基础路由树
-//@return: err error, menus []model.SysBaseMenu
+//------ end
 
-func (menuService *MenuService) GetBaseMenuTree() (err error, menus []system.SysBaseMenu) {
-	err, treeMap := menuService.getBaseMenuTreeMap()
-	menus = treeMap["0"]
+//------ GetMenuTree （用户菜单）
+func (baseMenuService *BaseMenuService) GetMenuTree(roleId string) (err error, menus []entity.Menu) {
+	err, menuTree := baseMenuService.getMenuTreeMap(roleId)
+	menus = menuTree["0"]
 	for i := 0; i < len(menus); i++ {
-		err = menuService.getBaseChildrenList(&menus[i], treeMap)
+		err = baseMenuService.getChildrenList(&menus[i], menuTree)
 	}
 	return err, menus
 }
 
-//@author: [piexlmax](https://github.com/piexlmax)
-//@function: AddMenuAuthority
-//@description: 为角色增加menu树
-//@param: menus []model.SysBaseMenu, roleId string
-//@return: err error
+func (baseMenuService *BaseMenuService) getBaseMenuTreeMap() (err error, treeMap map[string][]entity.Menu) {
+	var allMenus []entity.Menu
+	treeMap = make(map[string][]entity.Menu)
+	err = zvar.DB.Order("sort").Find(&allMenus).Error
+	for _, v := range allMenus {
+		treeMap[v.ParentId] = append(treeMap[v.ParentId], v)
+	}
+	return err, treeMap
+}
 
-func (menuService *MenuService) AddMenuAuthority(menus []system.SysBaseMenu, roleId string) (err error) {
-	var auth system.Role
-	auth.RoleId = roleId
-	auth.SysBaseMenus = menus
-	err = AuthorityServiceApp.SetMenuAuthority(&auth)
+func (baseMenuService *BaseMenuService) getChildrenList(menu *entity.Menu, treeMap map[string][]entity.Menu) (err error) {
+	menu.Children = treeMap[cast.ToString(menu.ID)]
+	for i := 0; i < len(menu.Children); i++ {
+		err = baseMenuService.getChildrenList(&menu.Children[i], treeMap)
+	}
 	return err
 }
 
-//@author: [piexlmax](https://github.com/piexlmax)
-//@function: GetMenuAuthority
-//@description: 查看当前角色树
-//@param: info *request.GetRoleId
-//@return: err error, menus []model.SysMenu
-
-func (menuService *MenuService) GetMenuAuthority(info *request.GetRoleId) (err error, menus []system.SysMenu) {
-	err = zvar.DB.Where("authority_id = ? ", info.RoleId).Order("sort").Find(&menus).Error
-	//sql := "SELECT authority_menu.keep_alive,authority_menu.default_menu,authority_menu.created_at,authority_menu.updated_at,authority_menu.deleted_at,authority_menu.menu_level,authority_menu.parent_id,authority_menu.path,authority_menu.`name`,authority_menu.hidden,authority_menu.component,authority_menu.title,authority_menu.icon,authority_menu.sort,authority_menu.menu_id,authority_menu.authority_id FROM authority_menu WHERE authority_menu.authority_id = ? ORDER BY authority_menu.sort ASC"
-	//err = zvar.DB.Raw(sql, roleId).Scan(&menus).Error
-	return err, menus
-}
+//------ end

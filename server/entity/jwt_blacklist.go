@@ -1,4 +1,4 @@
-package system
+package entity
 
 import "project/zvar"
 
