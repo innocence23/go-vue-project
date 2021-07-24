@@ -71,14 +71,14 @@ func (h *baseHandler) captcha(c *gin.Context) {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"登陆成功"}"
 // @Router /base/login [post]
 func (h *baseHandler) login(c *gin.Context) {
-	var l request.Login
-	_ = c.ShouldBindJSON(&l)
-	if err := utils.Verify(l, utils.LoginVerify); err != nil {
+	var req request.Login
+	_ = c.ShouldBindJSON(&req)
+	if err := utils.Verify(req, utils.LoginVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if store.Verify(l.CaptchaId, l.Captcha, true) {
-		u := &system.User{Username: l.Username, Password: l.Password}
+	if store.Verify(req.CaptchaId, req.Captcha, true) {
+		u := &system.User{Username: req.Username, Password: req.Password}
 		if err, user := h.userService.Login(u); err != nil {
 			zvar.Log.Error("登陆失败! 用户名不存在或者密码错误!", zap.Any("err", err))
 			response.FailWithMessage("用户名不存在或者密码错误", c)

@@ -23,7 +23,6 @@ func NewJwtHandler() *jwtHandler {
 func (h *jwtHandler) Router(router *gin.RouterGroup) {
 	apiRouter := router.Group("jwt")
 	apiRouter.POST("inBlacklist", h.inBlacklist) // jwt加入黑名单
-
 }
 
 // @Tags Jwt

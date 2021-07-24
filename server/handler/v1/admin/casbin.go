@@ -26,10 +26,8 @@ func (h *casbinHandler) Router(router *gin.RouterGroup) {
 	apiRouter.POST("update", h.update)
 	apiRouter.POST("getPermByRoleId", h.getPermByRoleId)
 
-	zvar.RouteMap = map[string]zvar.RouteInfo{
-		"/" + zvar.UrlPrefix + "/casbin/update":          {Group: "casbin", Name: "更新角色权限"},
-		"/" + zvar.UrlPrefix + "/casbin/getPermByRoleId": {Group: "casbin", Name: "获取角色权限列表"},
-	}
+	zvar.RouteMap["/"+zvar.UrlPrefix+"/casbin/update"] = zvar.RouteInfo{Group: "casbin", Name: "更新角色权限"}
+	zvar.RouteMap["/"+zvar.UrlPrefix+"/casbin/getPermByRoleId"] = zvar.RouteInfo{Group: "casbin", Name: "获取角色权限列表"}
 }
 
 // @Tags Casbin

@@ -17,9 +17,9 @@ var (
 	Config             config.Server
 	Viper              *viper.Viper
 	Log                *zap.Logger
-	Timer              timer.Timer = timer.NewTimerTask()
-	ConcurrencyControl             = &singleflight.Group{}
-	RouteMap           map[string]RouteInfo
+	Timer              timer.Timer          = timer.NewTimerTask()
+	ConcurrencyControl                      = &singleflight.Group{}
+	RouteMap           map[string]RouteInfo = make(map[string]RouteInfo)
 )
 
 type RouteInfo struct {

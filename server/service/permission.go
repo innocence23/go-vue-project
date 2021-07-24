@@ -3,7 +3,7 @@ package service
 import (
 	"errors"
 	"project/dto/request"
-	"project/model/system"
+	"project/entity"
 	"project/zvar"
 
 	"gorm.io/gorm"
@@ -12,24 +12,24 @@ import (
 type PermissionService struct {
 }
 
-func (permissionService *PermissionService) Create(perm system.Permission) (err error) {
-	if !errors.Is(zvar.DB.Where("path = ? AND method = ?", perm.Path, perm.Method).First(&system.Permission{}).Error, gorm.ErrRecordNotFound) {
+func (permissionService *PermissionService) Create(perm entity.Permission) (err error) {
+	if !errors.Is(zvar.DB.Where("path = ? AND method = ?", perm.Path, perm.Method).First(&entity.Permission{}).Error, gorm.ErrRecordNotFound) {
 		return errors.New("存在相同perm")
 	}
 	return zvar.DB.Create(&perm).Error
 }
 
-func (permissionService *PermissionService) Delete(perm system.Permission) (err error) {
+func (permissionService *PermissionService) Delete(perm entity.Permission) (err error) {
 	err = zvar.DB.Delete(&perm).Error
 	(&CasbinService{}).ClearCasbin(1, perm.Path, perm.Method)
 	return err
 }
 
-func (permissionService *PermissionService) List(perm system.Permission, info request.PageInfo, order string, desc bool) (err error, list interface{}, total int64) {
+func (permissionService *PermissionService) List(perm entity.Permission, info request.PageInfo, order string, desc bool) (err error, list interface{}, total int64) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
-	db := zvar.DB.Model(&system.Permission{})
-	var permList []system.Permission
+	db := zvar.DB.Model(&entity.Permission{})
+	var permList []entity.Permission
 
 	if perm.Path != "" {
 		db = db.Where("path LIKE ?", "%"+perm.Path+"%")
@@ -68,21 +68,21 @@ func (permissionService *PermissionService) List(perm system.Permission, info re
 	return err, permList, total
 }
 
-func (permissionService *PermissionService) ListNoLimit() (err error, perms []system.Permission) {
+func (permissionService *PermissionService) ListNoLimit() (err error, perms []entity.Permission) {
 	err = zvar.DB.Find(&perms).Error
 	return
 }
 
-func (permissionService *PermissionService) Show(id float64) (err error, perm system.Permission) {
+func (permissionService *PermissionService) Show(id float64) (err error, perm entity.Permission) {
 	err = zvar.DB.Where("id = ?", id).First(&perm).Error
 	return
 }
 
-func (permissionService *PermissionService) Update(perm system.Permission) (err error) {
-	var oldA system.Permission
+func (permissionService *PermissionService) Update(perm entity.Permission) (err error) {
+	var oldA entity.Permission
 	err = zvar.DB.Where("id = ?", perm.ID).First(&oldA).Error
 	if oldA.Path != perm.Path || oldA.Method != perm.Method {
-		if !errors.Is(zvar.DB.Where("path = ? AND method = ?", perm.Path, perm.Method).First(&system.Permission{}).Error, gorm.ErrRecordNotFound) {
+		if !errors.Is(zvar.DB.Where("path = ? AND method = ?", perm.Path, perm.Method).First(&entity.Permission{}).Error, gorm.ErrRecordNotFound) {
 			return errors.New("存在相同perm路径")
 		}
 	}
@@ -100,5 +100,5 @@ func (permissionService *PermissionService) Update(perm system.Permission) (err 
 }
 
 func (permissionService *PermissionService) DeleteByIds(ids []int) (err error) {
-	return zvar.DB.Delete(&system.Permission{}, ids).Error
+	return zvar.DB.Delete(&entity.Permission{}, ids).Error
 }

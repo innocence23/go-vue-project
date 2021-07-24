@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"fmt"
 	"project/dto/request"
 	"project/dto/response"
 	"project/model/system"
@@ -32,14 +33,20 @@ func (h *userHandler) Router(router *gin.RouterGroup) {
 		apiRouter.DELETE("delete", h.delete)
 		apiRouter.PUT("update", h.update)
 	}
-	zvar.RouteMap = map[string]zvar.RouteInfo{
-		"/" + zvar.UrlPrefix + "/user/register":       {Group: "user", Name: "注册账号"},
-		"/" + zvar.UrlPrefix + "/user/changePassword": {Group: "user", Name: "修改密码"},
-		"/" + zvar.UrlPrefix + "/user/list":           {Group: "user", Name: "用户列表"},
-		"/" + zvar.UrlPrefix + "/user/setRole":        {Group: "user", Name: "设置用户权限"},
-		"/" + zvar.UrlPrefix + "/user/delete":         {Group: "user", Name: "删除用户"},
-		"/" + zvar.UrlPrefix + "/user/update":         {Group: "user", Name: "更新用户"},
+
+	zvar.RouteMap["/"+zvar.UrlPrefix+"/user/register"] = zvar.RouteInfo{Group: "user", Name: "注册账号"}
+	zvar.RouteMap["/"+zvar.UrlPrefix+"/user/changePassword"] = zvar.RouteInfo{Group: "user", Name: "修改密码"}
+	zvar.RouteMap["/"+zvar.UrlPrefix+"/user/list"] = zvar.RouteInfo{Group: "user", Name: "用户列表"}
+	zvar.RouteMap["/"+zvar.UrlPrefix+"/user/setRole"] = zvar.RouteInfo{Group: "user", Name: "设置用户权限"}
+	zvar.RouteMap["/"+zvar.UrlPrefix+"/user/delete"] = zvar.RouteInfo{Group: "user", Name: "删除用户"}
+	zvar.RouteMap["/"+zvar.UrlPrefix+"/user/update"] = zvar.RouteInfo{Group: "user", Name: "更新用户"}
+
+	fmt.Println("==========", zvar.RouteMap)
+
+	for _, v := range  zvar.RouteMap {
+		fmt.Println("==========", v)
 	}
+
 }
 
 // @Tags User

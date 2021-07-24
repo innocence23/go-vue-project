@@ -28,7 +28,7 @@ func (userService *UserService) Register(u system.User) (err error, userInter sy
 func (userService *UserService) Login(u *system.User) (err error, userInter *system.User) {
 	var user system.User
 	u.Password = utils.Md5([]byte(u.Password))
-	err = zvar.DB.Where("username = ?", u.Username).Preload("Authority").First(&user).Error
+	err = zvar.DB.Where("username = ?", u.Username).Preload("Role").First(&user).Error
 	if err != nil {
 		return err, &user
 	}

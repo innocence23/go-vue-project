@@ -22,9 +22,8 @@ func NewSysHandler() *machineHandler {
 func (h *machineHandler) Router(router *gin.RouterGroup) {
 	apiRouter := router.Group("machine")
 	apiRouter.GET("info", h.info)
-	zvar.RouteMap = map[string]zvar.RouteInfo{
-		"/" + zvar.UrlPrefix + "/machine/info": {Group: "machine", Name: "服务器信息"},
-	}
+
+	zvar.RouteMap["/"+zvar.UrlPrefix+"/machine/info"] = zvar.RouteInfo{Group: "machine", Name: "服务器信息"}
 }
 
 // @Tags System

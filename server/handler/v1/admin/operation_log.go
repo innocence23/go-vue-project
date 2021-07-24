@@ -28,11 +28,10 @@ func (h *operationRecordHandler) Router(router *gin.RouterGroup) {
 		apiRouter.DELETE("deleteByIds", h.deleteByIds)
 		apiRouter.GET("list", h.list)
 	}
-	zvar.RouteMap = map[string]zvar.RouteInfo{
-		"/" + zvar.UrlPrefix + "/opLog/delete":      {Group: "opLog", Name: "删除日志"},
-		"/" + zvar.UrlPrefix + "/opLog/deleteByIds": {Group: "opLog", Name: "批量删除日志"},
-		"/" + zvar.UrlPrefix + "/opLog/list":        {Group: "opLog", Name: "日志列表"},
-	}
+
+	zvar.RouteMap["/"+zvar.UrlPrefix+"/opLog/delete"] = zvar.RouteInfo{Group: "opLog", Name: "删除日志"}
+	zvar.RouteMap["/"+zvar.UrlPrefix+"/opLog/deleteByIds"] = zvar.RouteInfo{Group: "opLog", Name: "批量删除日志"}
+	zvar.RouteMap["/"+zvar.UrlPrefix+"/opLog/list"] = zvar.RouteInfo{Group: "opLog", Name: "日志列表"}
 }
 
 // @Tags OperationLog

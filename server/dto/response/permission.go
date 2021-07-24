@@ -1,11 +1,13 @@
 package response
 
-import "project/model/system"
+import (
+	"project/entity"
+)
 
 type PermissionResponse struct {
-	Permission system.Permission `json:"permission"`
+	Permission entity.Permission `json:"permission"`
 }
 
 type PermissionListResponse struct {
-	Permissions []system.Permission `json:"permissions"`
+	Permissions []entity.Permission `json:"permissions"`
 }

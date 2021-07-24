@@ -28,8 +28,8 @@ func NewMenuHandler() *menuHandler {
 func (h *menuHandler) Router(router *gin.RouterGroup) {
 	apiRouter := router.Group("menu").Use(middleware.OperationRecord())
 	{
-		apiRouter.POST("getMenu", h.GetMenu)                   // 获取菜单树
-		apiRouter.POST("getMenuList", h.GetMenuList)           // 分页获取基础menu列表
+		apiRouter.POST("tree", h.GetMenu)
+		apiRouter.POST("list", h.GetMenuList)                  // 分页获取基础menu列表
 		apiRouter.POST("addBaseMenu", h.AddBaseMenu)           // 新增菜单
 		apiRouter.POST("getBaseMenuTree", h.GetBaseMenuTree)   // 获取用户动态路由
 		apiRouter.POST("addMenuAuthority", h.AddMenuAuthority) //	增加menu和角色关联关系
@@ -38,6 +38,8 @@ func (h *menuHandler) Router(router *gin.RouterGroup) {
 		apiRouter.POST("updateBaseMenu", h.UpdateBaseMenu)     // 更新菜单
 		apiRouter.POST("getBaseMenuById", h.GetBaseMenuById)   // 根据id获取菜单
 	}
+
+	zvar.RouteMap["/"+zvar.UrlPrefix+"/menu/tree"] = zvar.RouteInfo{Group: "menu", Name: "菜单树"}
 }
 
 // @Tags AuthorityMenu
