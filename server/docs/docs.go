@@ -3048,7 +3048,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.SetUserAuth"
+                            "$ref": "#/definitions/request.SetUserRole"
                         }
                     }
                 ],
@@ -3901,7 +3901,7 @@ var doc = `{
                 }
             }
         },
-        "request.SetUserAuth": {
+        "request.SetUserRole": {
             "type": "object",
             "properties": {
                 "authorityId": {

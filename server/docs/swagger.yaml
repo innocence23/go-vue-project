@@ -559,7 +559,7 @@ definitions:
         description: 更新时间
         type: string
     type: object
-  request.SetUserAuth:
+  request.SetUserRole:
     properties:
       authorityId:
         description: 角色ID
@@ -2878,7 +2878,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.SetUserAuth'
+          $ref: '#/definitions/request.SetUserRole'
       produces:
       - application/json
       responses:

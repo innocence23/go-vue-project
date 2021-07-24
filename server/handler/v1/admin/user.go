@@ -42,13 +42,13 @@ func (h *userHandler) Router(router *gin.RouterGroup) {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"注册成功"}"
 // @Router /user/register [post]
 func (h *userHandler) register(c *gin.Context) {
-	var r request.Register
-	_ = c.ShouldBindJSON(&r)
-	if err := utils.Verify(r, utils.RegisterVerify); err != nil {
+	var req request.Register
+	_ = c.ShouldBindJSON(&req)
+	if err := utils.Verify(req, utils.RegisterVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	user := &system.User{Username: r.Username, NickName: r.NickName, Password: r.Password, HeaderImg: r.HeaderImg, AuthorityId: r.AuthorityId}
+	user := &system.User{Username: req.Username, NickName: req.NickName, Password: req.Password, HeaderImg: req.HeaderImg, AuthorityId: req.AuthorityId}
 	err, userReturn := h.userService.Register(*user)
 	if err != nil {
 		zvar.Log.Error("注册失败!", zap.Any("err", err))
@@ -66,14 +66,14 @@ func (h *userHandler) register(c *gin.Context) {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"修改成功"}"
 // @Router /user/changePassword [put]
 func (h *userHandler) changePassword(c *gin.Context) {
-	var user request.ChangePasswordStruct
-	_ = c.ShouldBindJSON(&user)
-	if err := utils.Verify(user, utils.ChangePasswordVerify); err != nil {
+	var req request.ChangePasswordStruct
+	_ = c.ShouldBindJSON(&req)
+	if err := utils.Verify(req, utils.ChangePasswordVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	u := &system.User{Username: user.Username, Password: user.Password}
-	if err, _ := h.userService.ChangePassword(u, user.NewPassword); err != nil {
+	u := &system.User{Username: req.Username, Password: req.Password}
+	if err, _ := h.userService.ChangePassword(u, req.NewPassword); err != nil {
 		zvar.Log.Error("修改失败!", zap.Any("err", err))
 		response.FailWithMessage("修改失败，原密码与当前账户不符", c)
 	} else {
@@ -96,7 +96,7 @@ func (h *userHandler) list(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err, list, total := h.userService.GetUserInfoList(pageInfo); err != nil {
+	if err, list, total := h.userService.List(pageInfo); err != nil {
 		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败", c)
 	} else {
@@ -114,17 +114,17 @@ func (h *userHandler) list(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body request.SetUserAuth true "用户UUID, 角色ID"
+// @Param data body request.SetUserRole true "用户UUID, 角色ID"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"修改成功"}"
 // @Router /user/setRole [post]
 func (h *userHandler) setRole(c *gin.Context) {
-	var sua request.SetUserAuth
-	_ = c.ShouldBindJSON(&sua)
-	if UserVerifyErr := utils.Verify(sua, utils.SetUserAuthorityVerify); UserVerifyErr != nil {
+	var req request.SetUserRole
+	_ = c.ShouldBindJSON(&req)
+	if UserVerifyErr := utils.Verify(req, utils.SetUserRoleorityVerify); UserVerifyErr != nil {
 		response.FailWithMessage(UserVerifyErr.Error(), c)
 		return
 	}
-	if err := h.userService.SetUserAuthority(sua.UUID, sua.AuthorityId); err != nil {
+	if err := h.userService.SetRole(req.UUID, req.AuthorityId); err != nil {
 		zvar.Log.Error("修改失败!", zap.Any("err", err))
 		response.FailWithMessage("修改失败", c)
 	} else {
@@ -141,18 +141,18 @@ func (h *userHandler) setRole(c *gin.Context) {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"删除成功"}"
 // @Router /user/delete [delete]
 func (h *userHandler) delete(c *gin.Context) {
-	var reqId request.GetById
-	_ = c.ShouldBindJSON(&reqId)
-	if err := utils.Verify(reqId, utils.IdVerify); err != nil {
+	var req request.GetById
+	_ = c.ShouldBindJSON(&req)
+	if err := utils.Verify(req, utils.IdVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
 	jwtId := utils.GetUserID(c)
-	if jwtId == uint(reqId.ID) {
+	if jwtId == uint(req.ID) {
 		response.FailWithMessage("删除失败, 自杀失败", c)
 		return
 	}
-	if err := h.userService.DeleteUser(reqId.ID); err != nil {
+	if err := h.userService.Delete(req.ID); err != nil {
 		zvar.Log.Error("删除失败!", zap.Any("err", err))
 		response.FailWithMessage("删除失败", c)
 	} else {
@@ -169,13 +169,13 @@ func (h *userHandler) delete(c *gin.Context) {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"设置成功"}"
 // @Router /user/update [put]
 func (h *userHandler) update(c *gin.Context) {
-	var user system.User
-	_ = c.ShouldBindJSON(&user)
-	if err := utils.Verify(user, utils.IdVerify); err != nil {
+	var req system.User
+	_ = c.ShouldBindJSON(&req)
+	if err := utils.Verify(req, utils.IdVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err, ReqUser := h.userService.SetUserInfo(user); err != nil {
+	if err, ReqUser := h.userService.Update(req); err != nil {
 		zvar.Log.Error("设置失败!", zap.Any("err", err))
 		response.FailWithMessage("设置失败", c)
 	} else {

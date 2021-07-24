@@ -27,7 +27,7 @@ type ChangePasswordStruct struct {
 }
 
 // Modify  user's auth structure
-type SetUserAuth struct {
+type SetUserRole struct {
 	UUID        uuid.UUID `json:"uuid"`        // 用户UUID
 	AuthorityId string    `json:"authorityId"` // 角色ID
 }
