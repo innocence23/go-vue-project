@@ -1,5 +1,21 @@
 import service from '@/utils/request'
 
+export const getRoleList = (data) => {
+  return service({
+    url: '/role/list',
+    method: 'post',
+    data
+  })
+}
+
+export const setUserRole = (data) => {
+  return service({
+    url: '/role/setUserRole',
+    method: 'post',
+    data
+  })
+}
+
 // @Router /authority/getAuthorityList [post]
 export const getAuthorityList = (data) => {
   return service({

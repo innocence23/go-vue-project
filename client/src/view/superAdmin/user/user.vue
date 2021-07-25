@@ -15,16 +15,16 @@
       <el-table-column label="用户名" min-width="150" prop="userName" />
       <el-table-column label="昵称" min-width="150" prop="nickName" />
       <el-table-column label="用户角色" min-width="150">
-        <!-- <template slot-scope="scope">
+        <template slot-scope="scope">
           <el-cascader
-            v-model="scope.row.authority.authorityId"
+            v-model="scope.row.authorityId"
             :options="authOptions"
             :show-all-levels="false"
             :props="{ checkStrictly: true,label:'authorityName',value:'authorityId',disabled:'disabled',emitPath:false}"
             filterable
-            @change="changeAuthority(scope.row)"
+            @change="changeRole(scope.row)"
           />
-        </template> -->
+        </template>
       </el-table-column>
       <el-table-column label="操作" min-width="150">
         <template slot-scope="scope">
@@ -67,7 +67,7 @@
             <div v-else class="header-img-box">从媒体库选择</div>
           </div>
         </el-form-item>
-        <!-- <el-form-item label="用户角色" label-width="80px" prop="authorityId">
+        <el-form-item label="用户角色" label-width="80px" prop="authorityId">
           <el-cascader
             v-model="userInfo.authorityId"
             :options="authOptions"
@@ -75,7 +75,7 @@
             :props="{ checkStrictly: true,label:'authorityName',value:'authorityId',disabled:'disabled',emitPath:false}"
             filterable
           />
-        </el-form-item> -->
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="closeAddUserDialog">取 消</el-button>
@@ -95,7 +95,10 @@ import {
   register,
   deleteUser
 } from '@/api/user'
-import { getAuthorityList } from '@/api/role'
+import { 
+  getRoleList,
+  setUserRole
+} from '@/api/role'
 import infoList from '@/mixins/infoList'
 import { mapGetters } from 'vuex'
 import CustomPic from '@/components/customPic'
@@ -140,7 +143,7 @@ export default {
   },
   async created() {
     this.getTableData()
-    const res = await getAuthorityList({ page: 1, pageSize: 999 })
+    const res = await getRoleList({ page: 1, pageSize: 999 })
     this.setOptions(res.data.list)
   },
   methods: {
@@ -200,10 +203,10 @@ export default {
     addUser() {
       this.addUserDialog = true
     },
-    async changeAuthority(row) {
-      const res = await setUserAuthority({
-        uuid: row.uuid,
-        authorityId: row.authority.authorityId
+    async changeRole(row) {
+      const res = await setUserRole({
+        id: row.ID,
+        roleId: row.authorityId
       })
       if (res.code === 0) {
         this.$message({ type: 'success', message: '角色设置成功' })

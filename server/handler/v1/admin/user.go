@@ -10,6 +10,7 @@ import (
 	"project/zvar"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
 	"go.uber.org/zap"
 )
 
@@ -33,7 +34,6 @@ func (h *userHandler) Router(router *gin.RouterGroup) {
 		apiRouter.POST("register", h.register)
 		apiRouter.POST("changePassword", h.changePassword)
 		apiRouter.POST("list", h.list)
-		apiRouter.POST("setRole", h.setRole)
 		apiRouter.DELETE("delete", h.delete)
 		apiRouter.PUT("update", h.update)
 	}
@@ -41,7 +41,6 @@ func (h *userHandler) Router(router *gin.RouterGroup) {
 	zvar.RouteMap["/"+zvar.UrlPrefix+"/user/register"] = zvar.RouteInfo{Group: "user", Name: "注册账号"}
 	zvar.RouteMap["/"+zvar.UrlPrefix+"/user/changePassword"] = zvar.RouteInfo{Group: "user", Name: "修改密码"}
 	zvar.RouteMap["/"+zvar.UrlPrefix+"/user/list"] = zvar.RouteInfo{Group: "user", Name: "用户列表"}
-	zvar.RouteMap["/"+zvar.UrlPrefix+"/user/setRole"] = zvar.RouteInfo{Group: "user", Name: "设置用户权限"}
 	zvar.RouteMap["/"+zvar.UrlPrefix+"/user/delete"] = zvar.RouteInfo{Group: "user", Name: "删除用户"}
 	zvar.RouteMap["/"+zvar.UrlPrefix+"/user/update"] = zvar.RouteInfo{Group: "user", Name: "更新用户"}
 }
@@ -113,7 +112,7 @@ func (h *userHandler) list(c *gin.Context) {
 	} else {
 		var newList []system.User
 		for _, v := range list {
-			roleIds, _ := h.rbacService.GetRolesForUser(v.Username)
+			roleIds, _ := h.rbacService.GetRolesForUser(cast.ToString(v.ID))
 			v.Roles, err = h.roleService.FindByIds(roleIds)
 			fmt.Println("--------", roleIds, v.Roles, err)
 			newList = append(newList, v)
@@ -125,29 +124,6 @@ func (h *userHandler) list(c *gin.Context) {
 			Page:     pageInfo.Page,
 			PageSize: pageInfo.PageSize,
 		}, "获取成功", c)
-	}
-}
-
-// @Tags User
-// @Summary 设置用户权限
-// @Security ApiKeyAuth
-// @accept application/json
-// @Produce application/json
-// @Param data body request.SetUserRole true "用户UUID, 角色ID"
-// @Success 200 {string} string "{"success":true,"data":{},"msg":"修改成功"}"
-// @Router /user/setRole [post]
-func (h *userHandler) setRole(c *gin.Context) {
-	var req request.SetUserRole
-	_ = c.ShouldBindJSON(&req)
-	if UserVerifyErr := utils.Verify(req, utils.SetUserRoleorityVerify); UserVerifyErr != nil {
-		response.FailWithMessage(UserVerifyErr.Error(), c)
-		return
-	}
-	if err := h.userService.SetRole(req.UUID, req.RoleId); err != nil {
-		zvar.Log.Error("修改失败!", zap.Any("err", err))
-		response.FailWithMessage("修改失败", c)
-	} else {
-		response.OkWithMessage("修改成功", c)
 	}
 }
 

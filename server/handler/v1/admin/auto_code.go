@@ -31,10 +31,7 @@ package admin
 // func (h *autoHandler) Router(router *gin.RouterGroup) {
 // 	apiRouter := router.Group("autoCode")
 // 	{
-// 		apiRouter.POST("delSysHistory", h.DelSysHistory) // 删除回滚记录
 // 		apiRouter.POST("getMeta", h.GetMeta)             // 根据id获取meta信息
-// 		apiRouter.POST("getSysHistory", h.GetSysHistory) // 获取回滚记录分页
-// 		apiRouter.POST("rollback", h.RollBack)           // 回滚
 // 		apiRouter.POST("preview", h.PreviewTemp)         // 获取自动创建代码预览
 // 		apiRouter.POST("createTemp", h.CreateTemp)       // 创建自动化代码
 // 		apiRouter.GET("getTables", h.GetTables)          // 获取对应数据库的表
@@ -43,68 +40,6 @@ package admin
 // 	}
 // }
 
-// // @Tags AutoCode
-// // @Summary 删除回滚记录
-// // @Security ApiKeyAuth
-// // @accept application/json
-// // @Produce application/json
-// // @Param data body request.AutoHistoryByID true "删除回滚记录"
-// // @Success 200 {string} string "{"success":true,"data":{},"msg":"删除成功"}"
-// // @Router /autoCode/delSysHistory [post]
-// func (h *autoHandler) DelSysHistory(c *gin.Context) {
-// 	var id request.AutoHistoryByID
-// 	_ = c.ShouldBindJSON(&id)
-// 	err := h.serviceHistory.DeletePage(id.ID)
-// 	if err != nil {
-// 		zvar.Log.Error("获取失败!", zap.Any("err", err))
-// 		response.FailWithMessage("获取失败", c)
-// 	}
-// 	response.OkWithMessage("删除成功", c)
-
-// }
-
-// // @Tags AutoCode
-// // @Summary 查询回滚记录
-// // @Security ApiKeyAuth
-// // @accept application/json
-// // @Produce application/json
-// // @Param data body request.SysAutoHistory true "查询回滚记录"
-// // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
-// // @Router /autoCode/getSysHistory [post]
-// func (h *autoHandler) GetSysHistory(c *gin.Context) {
-// 	var search request.SysAutoHistory
-// 	_ = c.ShouldBindJSON(&search)
-// 	err, list, total := h.serviceHistory.GetSysHistoryPage(search.PageInfo)
-// 	if err != nil {
-// 		zvar.Log.Error("获取失败!", zap.Any("err", err))
-// 		response.FailWithMessage("获取失败", c)
-// 	} else {
-// 		response.OkWithDetailed(response.PageResult{
-// 			List:     list,
-// 			Total:    total,
-// 			Page:     search.Page,
-// 			PageSize: search.PageSize,
-// 		}, "获取成功", c)
-// 	}
-// }
-
-// // @Tags AutoCode
-// // @Summary 回滚
-// // @Security ApiKeyAuth
-// // @accept application/json
-// // @Produce application/json
-// // @Param data body request.AutoHistoryByID true "回滚自动生成代码"
-// // @Success 200 {string} string "{"success":true,"data":{},"msg":"回滚成功"}"
-// // @Router /autoCode/rollback [post]
-// func (h *autoHandler) RollBack(c *gin.Context) {
-// 	var id request.AutoHistoryByID
-// 	_ = c.ShouldBindJSON(&id)
-// 	if err := h.serviceHistory.RollBack(id.ID); err != nil {
-// 		response.FailWithMessage(err.Error(), c)
-// 		return
-// 	}
-// 	response.OkWithMessage("回滚成功", c)
-// }
 
 // // @Tags AutoCode
 // // @Summary 回滚

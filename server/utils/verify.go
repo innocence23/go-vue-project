@@ -14,5 +14,5 @@ var (
 	RoleIdVerify           = Rules{"RoleId": {NotEmpty()}}
 	OldAuthorityVerify     = Rules{"OldRoleId": {NotEmpty()}}
 	ChangePasswordVerify   = Rules{"Username": {NotEmpty()}, "Password": {NotEmpty()}, "NewPassword": {NotEmpty()}}
-	SetUserRoleorityVerify = Rules{"UUID": {NotEmpty()}, "RoleId": {NotEmpty()}}
+	SetUserRoleorityVerify = Rules{"ID": {NotEmpty()}, "RoleId": {NotEmpty()}}
 )

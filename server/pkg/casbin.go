@@ -16,6 +16,6 @@ func InitCasbin(db *gorm.DB) *casbin.Enforcer {
 		panic(err)
 	}
 	// 日志记录
-	enforcer.EnableLog(true)
+	//enforcer.EnableLog(true)
 	return enforcer
 }

@@ -5,11 +5,11 @@
         <el-form-item label="路径">
           <el-input v-model="searchInfo.path" placeholder="路径" />
         </el-form-item>
-        <el-form-item label="描述">
+        <el-form-item label="简介">
           <el-input v-model="searchInfo.description" placeholder="描述" />
         </el-form-item>
         <el-form-item label="组">
-          <el-input v-model="searchInfo.apiGroup" placeholder="组" />
+          <el-input v-model="searchInfo.group" placeholder="组" />
         </el-form-item>
         <el-form-item label="请求">
           <el-select v-model="searchInfo.method" clearable placeholder="请选择">

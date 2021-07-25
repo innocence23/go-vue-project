@@ -21,7 +21,7 @@ func main() {
 	zvar.Enforcer = pkg.InitCasbin(zvar.DB) // 初始化casbin
 
 	router := handler.InitRouter()
-	router.Static("/form-generator", "./resource/page")
+	router.Static("/api/form-generator", "./resource/page")
 	address := fmt.Sprintf(":%d", zvar.Config.System.Addr)
 
 	s := endless.NewServer(address, router)
