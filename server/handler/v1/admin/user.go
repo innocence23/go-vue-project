@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"fmt"
 	"project/dto/request"
 	"project/dto/response"
 	"project/model/system"
@@ -14,11 +15,15 @@ import (
 
 type userHandler struct {
 	userService *service.UserService
+	rbacService *service.RbacService
+	roleService *service.RoleService
 }
 
 func NewUserHandler() *userHandler {
 	return &userHandler{
 		userService: &service.UserService{},
+		rbacService: &service.RbacService{},
+		roleService: &service.RoleService{},
 	}
 }
 
@@ -106,8 +111,16 @@ func (h *userHandler) list(c *gin.Context) {
 		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败", c)
 	} else {
+		var newList []system.User
+		for _, v := range list {
+			roleIds, _ := h.rbacService.GetRolesForUser(v.Username)
+			v.Roles, err = h.roleService.FindByIds(roleIds)
+			fmt.Println("--------", roleIds, v.Roles, err)
+			newList = append(newList, v)
+		}
+
 		response.OkWithDetailed(response.PageResult{
-			List:     list,
+			List:     newList,
 			Total:    total,
 			Page:     pageInfo.Page,
 			PageSize: pageInfo.PageSize,

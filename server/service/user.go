@@ -49,7 +49,7 @@ func (userService *UserService) ChangePassword(u *system.User, newPassword strin
 	return err, u
 }
 
-func (userService *UserService) List(info request.PageInfo) (err error, list interface{}, total int64) {
+func (userService *UserService) List(info request.PageInfo) (err error, list []system.User, total int64) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
 	db := zvar.DB.Model(&system.User{})

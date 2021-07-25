@@ -36,9 +36,9 @@ func InitRouter() *gin.Engine {
 		admin.NewJwtHandler().Router(gRouter)        // jwt相关路由
 		admin.NewRoleHandler().Router(gRouter)       // 注册角色路由
 		admin.NewMenuHandler().Router(gRouter)       // 注册menu路由
-		admin.NewCasbinHandler().Router(gRouter)     // 权限相关路由
-		admin.NewSysHandler().Router(gRouter)        // system相关路由
-		admin.NewEmailHandler().Router(gRouter)      // 邮件相关路由
+		//admin.NewCasbinHandler().Router(gRouter)     // 权限相关路由
+		admin.NewSysHandler().Router(gRouter)   // system相关路由
+		admin.NewEmailHandler().Router(gRouter) // 邮件相关路由
 		//admin.NewAutoHandler().Router(gRouter)             // 创建自动化代码
 		admin.NewDictionaryHandler().Router(gRouter)       // 字典管理
 		admin.NewDictionaryDetailHandler().Router(gRouter) // 字典详情管理

@@ -14,10 +14,11 @@ import (
 func main() {
 	configFile := "./config.yaml"
 
-	zvar.Viper = pkg.InitViper(configFile) // 初始化Viper
-	zvar.Log = pkg.InitZap()               // 初始化zap日志库
-	zvar.DB = pkg.InitDB()                 // gorm连接数据库
-	zvar.Redis = pkg.InitRedis()           // 初始化redis
+	zvar.Viper = pkg.InitViper(configFile)  // 初始化Viper
+	zvar.Log = pkg.InitZap()                // 初始化zap日志库
+	zvar.DB = pkg.InitDB()                  // gorm连接数据库
+	zvar.Redis = pkg.InitRedis()            // 初始化redis
+	zvar.Enforcer = pkg.InitCasbin(zvar.DB) // 初始化casbin
 
 	router := handler.InitRouter()
 	router.Static("/form-generator", "./resource/page")

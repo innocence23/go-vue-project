@@ -25,12 +25,16 @@ var store = base64Captcha.DefaultMemStore
 type baseHandler struct {
 	userService *service.UserService
 	jwtService  *service.JwtService
+	rbacService *service.RbacService
+	roleService *service.RoleService
 }
 
 func NewBaseHandler() *baseHandler {
 	return &baseHandler{
 		userService: &service.UserService{},
+		rbacService: &service.RbacService{},
 		jwtService:  &service.JwtService{},
+		roleService: &service.RoleService{},
 	}
 }
 
@@ -84,6 +88,8 @@ func (h *baseHandler) login(c *gin.Context) {
 			zvar.Log.Error("登陆失败! 用户名不存在或者密码错误!", zap.Any("err", err))
 			response.FailWithMessage("用户名不存在或者密码错误", c)
 		} else {
+			roleIds, _ := h.rbacService.GetRolesForUser(user.Username)
+			user.Role, _ = h.roleService.FindByIds(roleIds)
 			h.tokenNext(c, *user)
 		}
 	} else {

@@ -13,16 +13,16 @@ import (
 )
 
 type roleHandler struct {
-	service       *service.AuthorityService
-	serviceMenu   *service.MenuService
-	serviceCasbin *service.CasbinService
+	service     *service.AuthorityService
+	serviceMenu *service.MenuService
+	//serviceCasbin *service.CasbinService
 }
 
 func NewRoleHandler() *roleHandler {
 	return &roleHandler{
-		service:       &service.AuthorityService{},
-		serviceMenu:   &service.MenuService{},
-		serviceCasbin: &service.CasbinService{},
+		service:     &service.AuthorityService{},
+		serviceMenu: &service.MenuService{},
+		//serviceCasbin: &service.CasbinService{},
 	}
 }
 
@@ -57,8 +57,8 @@ func (h *roleHandler) CreateAuthority(c *gin.Context) {
 		zvar.Log.Error("创建失败!", zap.Any("err", err))
 		response.FailWithMessage("创建失败"+err.Error(), c)
 	} else {
-		_ = h.serviceMenu.AddMenuAuthority(request.DefaultMenu(), req.RoleId)
-		_ = h.serviceCasbin.Update(req.RoleId, request.DefaultCasbin())
+		_ = h.serviceMenu.AddMenuAuthority(request.DefaultMenu(), req.AuthorityId)
+		//_ = h.serviceCasbin.Update(req.RoleId, request.DefaultCasbin())
 		response.OkWithDetailed(response.RoleResponse{Authority: authBack}, "创建成功", c)
 	}
 }
