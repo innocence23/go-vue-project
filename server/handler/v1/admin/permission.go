@@ -67,11 +67,11 @@ func (h *permissionHandler) list(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body request.GetById true "根据id获取api"
+// @Param data body request.IdReq true "根据id获取api"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /api/getApiById [post]
 func (h *permissionHandler) show(c *gin.Context) {
-	var req request.GetById
+	var req request.IdReq
 	_ = c.ShouldBindJSON(&req)
 	if err := utils.Verify(req, utils.IdVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)

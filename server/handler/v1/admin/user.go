@@ -3,27 +3,22 @@ package admin
 import (
 	"project/dto/request"
 	"project/dto/response"
-	"project/model/system"
+	"project/entity"
 	"project/service"
 	"project/utils"
 	"project/zvar"
 
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/cast"
 	"go.uber.org/zap"
 )
 
 type userHandler struct {
 	userService *service.UserService
-	rbacService *service.RbacService
-	roleService *service.RoleService
 }
 
 func NewUserHandler() *userHandler {
 	return &userHandler{
 		userService: &service.UserService{},
-		rbacService: &service.RbacService{},
-		roleService: &service.RoleService{},
 	}
 }
 
@@ -57,8 +52,8 @@ func (h *userHandler) register(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	user := &system.User{Username: req.Username, NickName: req.NickName, Password: req.Password, HeaderImg: req.HeaderImg, RoleId: req.RoleId}
-	err, userReturn := h.userService.Register(*user)
+	user := &entity.User{Username: req.Username, NickName: req.NickName, Password: req.Password, HeaderImg: req.HeaderImg, RoleId: req.RoleId}
+	userReturn, err := h.userService.Register(*user)
 	if err != nil {
 		zvar.Log.Error("注册失败!", zap.Any("err", err))
 		response.FailWithDetailed(response.UserResponse{User: userReturn}, "注册失败", c)
@@ -81,7 +76,7 @@ func (h *userHandler) changePassword(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	u := &system.User{Username: req.Username, Password: req.Password}
+	u := &entity.User{Username: req.Username, Password: req.Password}
 	if err, _ := h.userService.ChangePassword(u, req.NewPassword); err != nil {
 		zvar.Log.Error("修改失败!", zap.Any("err", err))
 		response.FailWithMessage("修改失败，原密码与当前账户不符", c)
@@ -105,19 +100,12 @@ func (h *userHandler) list(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err, list, total := h.userService.List(pageInfo); err != nil {
+	if list, total, err := h.userService.List(pageInfo); err != nil {
 		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败", c)
 	} else {
-		var newList []system.User
-		for _, v := range list {
-			roleIds, _ := h.rbacService.GetRolesForUser(cast.ToString(v.ID))
-			v.Roles, err = h.roleService.FindByIds(roleIds)
-			newList = append(newList, v)
-		}
-
 		response.OkWithDetailed(response.PageResult{
-			List:     newList,
+			List:     list,
 			Total:    total,
 			Page:     pageInfo.Page,
 			PageSize: pageInfo.PageSize,
@@ -130,18 +118,18 @@ func (h *userHandler) list(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body request.GetById true "用户ID"
+// @Param data body request.IdReq true "用户ID"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"删除成功"}"
 // @Router /user/delete [delete]
 func (h *userHandler) delete(c *gin.Context) {
-	var req request.GetById
+	var req request.IdReq
 	_ = c.ShouldBindJSON(&req)
 	if err := utils.Verify(req, utils.IdVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
 	jwtId := utils.GetUserID(c)
-	if jwtId == uint(req.ID) {
+	if jwtId == int(req.ID) {
 		response.FailWithMessage("删除失败, 自杀失败", c)
 		return
 	}
@@ -158,17 +146,17 @@ func (h *userHandler) delete(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body system.User true "ID, 用户名, 昵称, 头像链接"
+// @Param data body entity.User true "ID, 用户名, 昵称, 头像链接"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"设置成功"}"
 // @Router /user/update [put]
 func (h *userHandler) update(c *gin.Context) {
-	var req system.User
+	var req entity.User
 	_ = c.ShouldBindJSON(&req)
 	if err := utils.Verify(req, utils.IdVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err, ReqUser := h.userService.Update(req); err != nil {
+	if ReqUser, err := h.userService.Update(req); err != nil {
 		zvar.Log.Error("设置失败!", zap.Any("err", err))
 		response.FailWithMessage("设置失败", c)
 	} else {

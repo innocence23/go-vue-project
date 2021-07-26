@@ -1,15 +1,15 @@
 package response
 
 import (
-	"project/model/system"
+	"project/entity"
 )
 
 type UserResponse struct {
-	User system.User `json:"user"`
+	User entity.User `json:"user"`
 }
 
 type LoginResponse struct {
-	User      system.User `json:"user"`
+	User      entity.User `json:"user"`
 	Token     string      `json:"token"`
 	ExpiresAt int64       `json:"expiresAt"`
 }

@@ -5,8 +5,8 @@ type PageInfo struct {
 	PageSize int `json:"pageSize" form:"pageSize"` // 每页大小
 }
 
-type GetById struct {
-	ID float64 `json:"id" form:"id"` // 主键ID
+type IdReq struct {
+	ID int `json:"id" form:"id"` // 主键ID
 }
 
 type IdsReq struct {

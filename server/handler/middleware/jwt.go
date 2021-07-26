@@ -42,7 +42,7 @@ func JWTAuth() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		if err, _ = userService.FindByUuid(claims.UUID.String()); err != nil {
+		if _, err = userService.FindById(claims.ID); err != nil {
 			_ = jwtService.InBlacklist(entity.JwtBlacklist{Jwt: token})
 			response.FailWithDetailed(gin.H{"reload": true}, err.Error(), c)
 			c.Abort()
@@ -54,7 +54,7 @@ func JWTAuth() gin.HandlerFunc {
 			c.Header("new-token", newToken)
 			c.Header("new-expires-at", strconv.FormatInt(newClaims.ExpiresAt, 10))
 			if zvar.Config.System.UseMultipoint {
-				err, RedisJwtToken := jwtService.GetRedisJWT(newClaims.Username)
+				RedisJwtToken, err := jwtService.GetRedisJWT(newClaims.Username)
 				if err != nil {
 					zvar.Log.Error("get redis jwt failed", zap.Any("err", err))
 				} else { // 当之前的取成功时才进行拉黑操作

@@ -14,12 +14,12 @@ import (
 )
 
 type menuHandler struct {
-	menuService *service.BaseMenuService
+	menuService *service.MenuService
 }
 
 func NewMenuHandler() *menuHandler {
 	return &menuHandler{
-		menuService: &service.BaseMenuService{},
+		menuService: &service.MenuService{},
 	}
 }
 
@@ -36,12 +36,18 @@ func (h *menuHandler) Router(router *gin.RouterGroup) {
 		apiRouter.POST("treeList", h.treeList)
 	}
 
+	//todo
+	// zvar.RouteMap["/"+zvar.UrlPrefix+"/menu/getUidMenu"] = zvar.RouteInfo{Group: "menu", Name: "用户菜单"}
+	// zvar.RouteMap["/"+zvar.UrlPrefix+"/menu/getRoleMenu"] = zvar.RouteInfo{Group: "menu", Name: "角色菜单"}
+	// zvar.RouteMap["/"+zvar.UrlPrefix+"/menu/addRoleMenu"] = zvar.RouteInfo{Group: "menu", Name: "角色添加菜单"}
+
 	zvar.RouteMap["/"+zvar.UrlPrefix+"/menu/list"] = zvar.RouteInfo{Group: "menu", Name: "菜单列表"}
 	zvar.RouteMap["/"+zvar.UrlPrefix+"/menu/show"] = zvar.RouteInfo{Group: "menu", Name: "菜单详情"}
 	zvar.RouteMap["/"+zvar.UrlPrefix+"/menu/create"] = zvar.RouteInfo{Group: "menu", Name: "新增菜单"}
 	zvar.RouteMap["/"+zvar.UrlPrefix+"/menu/update"] = zvar.RouteInfo{Group: "menu", Name: "更新菜单"}
 	zvar.RouteMap["/"+zvar.UrlPrefix+"/menu/hidden"] = zvar.RouteInfo{Group: "menu", Name: "隐藏菜单"}
 	zvar.RouteMap["/"+zvar.UrlPrefix+"/menu/display"] = zvar.RouteInfo{Group: "menu", Name: "显示菜单"}
+	zvar.RouteMap["/"+zvar.UrlPrefix+"/menu/treeList"] = zvar.RouteInfo{Group: "menu", Name: "菜单树"}
 }
 
 // @Tags AuthorityMenu    //todo 待改进 []存储 不用中间表）
@@ -103,11 +109,11 @@ func (h *menuHandler) list(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body request.GetById true "菜单id"
+// @Param data body request.IdReq true "菜单id"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /menu/show [post]
 func (h *menuHandler) show(c *gin.Context) {
-	var req request.GetById
+	var req request.IdReq
 	_ = c.ShouldBindJSON(&req)
 	if err := utils.Verify(req, utils.IdVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
@@ -181,11 +187,11 @@ func (h *menuHandler) update(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body request.GetById true "菜单id"
+// @Param data body request.IdReq true "菜单id"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"删除成功"}"
 // @Router /menu/hidden [post]
 func (h *menuHandler) hidden(c *gin.Context) {
-	var req request.GetById
+	var req request.IdReq
 	_ = c.ShouldBindJSON(&req)
 	if err := utils.Verify(req, utils.IdVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
@@ -204,11 +210,11 @@ func (h *menuHandler) hidden(c *gin.Context) {
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body request.GetById true "菜单id"
+// @Param data body request.IdReq true "菜单id"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"删除成功"}"
 // @Router /menu/display [post]
 func (h *menuHandler) display(c *gin.Context) {
-	var req request.GetById
+	var req request.IdReq
 	_ = c.ShouldBindJSON(&req)
 	if err := utils.Verify(req, utils.IdVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)

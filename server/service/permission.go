@@ -68,7 +68,7 @@ func (permissionService *PermissionService) ListNoLimit() (perms []entity.Permis
 	return
 }
 
-func (permissionService *PermissionService) Show(id float64) (perm entity.Permission, err error) {
-	err = zvar.DB.Where("id = ?", id).First(&perm).Error
+func (permissionService *PermissionService) Show(id int) (perm entity.Permission, err error) {
+	err = zvar.DB.First(&perm, id).Error
 	return
 }

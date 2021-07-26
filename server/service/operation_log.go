@@ -24,8 +24,8 @@ func (operationRecordService *OperationLogService) Delete(opLog entity.Operation
 	return err
 }
 
-func (operationRecordService *OperationLogService) Show(id uint) (opLog entity.OperationLog, err error) {
-	err = zvar.DB.Where("id = ?", id).First(&opLog).Error
+func (operationRecordService *OperationLogService) Show(id int) (opLog entity.OperationLog, err error) {
+	err = zvar.DB.First(&opLog, id).Error
 	return
 }
 

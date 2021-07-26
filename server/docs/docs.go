@@ -291,7 +291,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.GetById"
+                            "$ref": "#/definitions/request.IdReq"
                         }
                     }
                 ],
@@ -2008,7 +2008,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.GetById"
+                            "$ref": "#/definitions/request.IdReq"
                         }
                     }
                 ],
@@ -2046,7 +2046,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.GetById"
+                            "$ref": "#/definitions/request.IdReq"
                         }
                     }
                 ],
@@ -2942,7 +2942,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.GetById"
+                            "$ref": "#/definitions/request.IdReq"
                         }
                     }
                 ],
@@ -3749,7 +3749,7 @@ var doc = `{
                 }
             }
         },
-        "request.GetById": {
+        "request.IdReq": {
             "type": "object",
             "properties": {
                 "id": {

@@ -275,7 +275,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.GetById"
+                            "$ref": "#/definitions/request.IdReq"
                         }
                     }
                 ],
@@ -1992,7 +1992,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.GetById"
+                            "$ref": "#/definitions/request.IdReq"
                         }
                     }
                 ],
@@ -2030,7 +2030,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.GetById"
+                            "$ref": "#/definitions/request.IdReq"
                         }
                     }
                 ],
@@ -2926,7 +2926,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.GetById"
+                            "$ref": "#/definitions/request.IdReq"
                         }
                     }
                 ],
@@ -3733,7 +3733,7 @@
                 }
             }
         },
-        "request.GetById": {
+        "request.IdReq": {
             "type": "object",
             "properties": {
                 "id": {

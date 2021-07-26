@@ -452,7 +452,7 @@ definitions:
         description: 角色ID
         type: string
     type: object
-  request.GetById:
+  request.IdReq:
     properties:
       id:
         description: 主键ID
@@ -1210,7 +1210,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.GetById'
+          $ref: '#/definitions/request.IdReq'
       produces:
       - application/json
       responses:
@@ -2250,7 +2250,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.GetById'
+          $ref: '#/definitions/request.IdReq'
       produces:
       - application/json
       responses:
@@ -2273,7 +2273,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.GetById'
+          $ref: '#/definitions/request.IdReq'
       produces:
       - application/json
       responses:
@@ -2813,7 +2813,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.GetById'
+          $ref: '#/definitions/request.IdReq'
       produces:
       - application/json
       responses:

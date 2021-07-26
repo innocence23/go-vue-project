@@ -5,7 +5,6 @@ import (
 	"project/dto/response"
 	"project/entity"
 	"project/handler/middleware"
-	"project/model/system"
 	"project/service"
 	"project/utils"
 	"project/zvar"
@@ -25,16 +24,12 @@ var store = base64Captcha.DefaultMemStore
 type baseHandler struct {
 	userService *service.UserService
 	jwtService  *service.JwtService
-	rbacService *service.RbacService
-	roleService *service.RoleService
 }
 
 func NewBaseHandler() *baseHandler {
 	return &baseHandler{
 		userService: &service.UserService{},
-		rbacService: &service.RbacService{},
 		jwtService:  &service.JwtService{},
-		roleService: &service.RoleService{},
 	}
 }
 
@@ -83,13 +78,13 @@ func (h *baseHandler) login(c *gin.Context) {
 		return
 	}
 	if store.Verify(req.CaptchaId, req.Captcha, true) {
-		u := &system.User{Username: req.Username, Password: req.Password}
-		if err, user := h.userService.Login(u); err != nil {
+		u := &entity.User{Username: req.Username, Password: req.Password}
+		if user, err := h.userService.Login(u); err != nil {
 			zvar.Log.Error("登陆失败! 用户名不存在或者密码错误!", zap.Any("err", err))
 			response.FailWithMessage("用户名不存在或者密码错误", c)
 		} else {
-			roleIds, _ := h.rbacService.GetRolesForUser(user.Username)
-			user.Role, _ = h.roleService.FindByIds(roleIds)
+			// roleIds, _ := h.rbacService.GetRolesForUser(user.Username)
+			// user.Role, _ = h.roleService.FindByIds(roleIds)
 			h.tokenNext(c, *user)
 		}
 	} else {
@@ -98,10 +93,9 @@ func (h *baseHandler) login(c *gin.Context) {
 }
 
 // 登录以后签发jwt
-func (h *baseHandler) tokenNext(c *gin.Context, user system.User) {
+func (h *baseHandler) tokenNext(c *gin.Context, user entity.User) {
 	j := &middleware.JWT{SigningKey: []byte(zvar.Config.JWT.SigningKey)} // 唯一签名
 	claims := request.CustomClaims{
-		UUID:       user.UUID,
 		ID:         user.ID,
 		NickName:   user.NickName,
 		Username:   user.Username,
@@ -127,7 +121,7 @@ func (h *baseHandler) tokenNext(c *gin.Context, user system.User) {
 		}, "登录成功", c)
 		return
 	}
-	if err, jwtStr := h.jwtService.GetRedisJWT(user.Username); err == redis.Nil {
+	if jwtStr, err := h.jwtService.GetRedisJWT(user.Username); err == redis.Nil {
 		if err := h.jwtService.SetRedisJWT(token, user.Username); err != nil {
 			zvar.Log.Error("设置登录状态失败!", zap.Any("err", err))
 			response.FailWithMessage("设置登录状态失败", c)

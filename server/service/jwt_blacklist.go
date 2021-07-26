@@ -24,13 +24,13 @@ func (jwtService *JwtService) IsBlacklist(jwt string) bool {
 	return !isNotFound
 }
 
-func (jwtService *JwtService) GetRedisJWT(userName string) (err error, redisJWT string) {
+func (jwtService *JwtService) GetRedisJWT(userName string) (redisJWT string, err error) {
 	redisJWT, err = zvar.Redis.Get(context.Background(), userName).Result()
-	return err, redisJWT
+	return
 }
 
-func (jwtService *JwtService) SetRedisJWT(jwt string, userName string) (err error) {
+func (jwtService *JwtService) SetRedisJWT(jwt, userName string) (err error) {
 	timer := time.Duration(zvar.Config.JWT.ExpiresTime) * time.Second
 	err = zvar.Redis.Set(context.Background(), userName, jwt, timer).Err()
-	return err
+	return
 }
