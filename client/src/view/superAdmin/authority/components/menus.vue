@@ -78,10 +78,9 @@ export default {
   },
   methods: {
     async setDefault(data) {
-      const res = await updateAuthority({ authorityId: this.row.authorityId, AuthorityName: this.row.authorityName, parentId: this.row.parentId, defaultRouter: data.name })
+      const res = await updateAuthority({ authorityId: this.row.authorityId, AuthorityName: this.row.authorityName, parentId: this.row.parentId })
       if (res.code === 0) {
         this.$message({ type: 'success', message: '设置成功' })
-        this.row.defaultRouter = res.data.authority.defaultRouter
       }
     },
     nodeChange() {

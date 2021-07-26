@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"project/dto/request"
 	"project/entity"
 	"project/utils"
@@ -25,8 +26,12 @@ func (userService *UserService) Register(u entity.User) (user entity.User, err e
 	return
 }
 
-func (userService *UserService) Login(u *entity.User) (user *entity.User, err error) {
+func (userService *UserService) Login(u *entity.User) (user entity.User, err error) {
+	fmt.Println(u)
+	fmt.Println(user)
 	err = zvar.DB.Where("username = ?", u.Username).First(&user).Error
+	fmt.Println("====", err)
+
 	if err != nil {
 		return
 	}
@@ -65,8 +70,7 @@ func (userService *UserService) List(info request.PageInfo) (userList []entity.U
 	}
 	var newList []entity.User
 	for _, v := range userList {
-		roleIds, _ := (&RbacService{}).GetRolesForUser(cast.ToString(v.ID))
-		v.Roles, err = (&RoleService{}).FindByIds(cast.ToIntSlice(roleIds))
+		v.RoleIds, _ = (&RbacService{}).GetRolesForUser(cast.ToString(v.ID))
 		newList = append(newList, v)
 	}
 	userList = newList

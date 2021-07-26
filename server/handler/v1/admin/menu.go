@@ -65,7 +65,7 @@ func (h *menuHandler) treeList(c *gin.Context) {
 	response.OkWithDetailed(data, "获取成功", c)
 	return
 	//todo
-	if err, menus := h.menuService.GetMenuTree(utils.GetUserRoleId(c)); err != nil {
+	if err, menus := h.menuService.GetMenuTree(utils.GetUserRoleId(c)[0]); err != nil {
 		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败", c)
 	} else {

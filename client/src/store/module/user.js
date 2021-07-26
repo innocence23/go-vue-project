@@ -69,7 +69,7 @@ export const user = {
         // if (redirect) {
         //     router.push({ path: redirect })
         // } else {
-        router.push({ name: getters['userInfo'].authority.defaultRouter })
+        router.push({ name: 'dashboard' })
         // }
         return true
       }

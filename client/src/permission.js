@@ -12,7 +12,7 @@ router.beforeEach(async(to, from, next) => {
   document.title = getPageTitle(to.meta.title)
   if (whiteList.indexOf(to.name) > -1) {
     if (token) {
-      next({ name: store.getters['user/userInfo'].authority.defaultRouter })
+      next({ name: 'dashboard' })
     } else {
       next()
     }

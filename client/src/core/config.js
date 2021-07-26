@@ -4,7 +4,7 @@
 
 const config = {
   appName: 'project',
-  appLogo: 'https://www.project.com/img/logo.png'
+  appLogo: 'http://project.test/img/logo.png'
 }
 
 export default config

@@ -9,7 +9,7 @@ type CustomClaims struct {
 	ID         int
 	Username   string
 	NickName   string
-	RoleId     string
+	RoleId     []string
 	BufferTime int64
 	jwt.StandardClaims
 }

@@ -85,7 +85,7 @@ func (h *baseHandler) login(c *gin.Context) {
 		} else {
 			// roleIds, _ := h.rbacService.GetRolesForUser(user.Username)
 			// user.Role, _ = h.roleService.FindByIds(roleIds)
-			h.tokenNext(c, *user)
+			h.tokenNext(c, user)
 		}
 	} else {
 		response.FailWithMessage("验证码错误", c)
@@ -99,7 +99,7 @@ func (h *baseHandler) tokenNext(c *gin.Context, user entity.User) {
 		ID:         user.ID,
 		NickName:   user.NickName,
 		Username:   user.Username,
-		RoleId:     user.RoleId,
+		RoleId:     user.RoleIds,
 		BufferTime: zvar.Config.JWT.BufferTime, // 缓冲时间1天 缓冲时间内会获得新的token刷新令牌 此时一个用户会存在两个有效令牌 但是前端只留一个 另一个会丢失
 		StandardClaims: jwt.StandardClaims{
 			NotBefore: time.Now().Unix() - 1000,                        // 签名生效时间

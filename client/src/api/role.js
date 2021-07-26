@@ -8,9 +8,9 @@ export const getRoleList = (data) => {
   })
 }
 
-export const setUserRole = (data) => {
+export const setRoleUser = (data) => {
   return service({
-    url: '/role/setUserRole',
+    url: '/role/setRoleUser',
     method: 'post',
     data
   })

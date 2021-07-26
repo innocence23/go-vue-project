@@ -52,7 +52,7 @@ func (h *userHandler) register(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	user := &entity.User{Username: req.Username, NickName: req.NickName, Password: req.Password, HeaderImg: req.HeaderImg, RoleId: req.RoleId}
+	user := &entity.User{Username: req.Username, NickName: req.NickName, Password: req.Password, HeaderImg: req.HeaderImg}
 	userReturn, err := h.userService.Register(*user)
 	if err != nil {
 		zvar.Log.Error("注册失败!", zap.Any("err", err))

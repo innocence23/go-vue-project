@@ -160,7 +160,7 @@ func (h *roleHandler) setRoleUser(c *gin.Context) {
 		response.FailWithMessage(UserVerifyErr.Error(), c)
 		return
 	}
-	if _, err := h.rbacService.AddRoleForUser(cast.ToString(req.UserID), cast.ToString(req.RoleID)); err != nil {
+	if _, err := h.rbacService.AddRolesForUser(cast.ToString(req.UserID), cast.ToStringSlice(req.RoleID)); err != nil {
 		zvar.Log.Error("修改失败!", zap.Any("err", err))
 		response.FailWithMessage("修改失败", c)
 	} else {

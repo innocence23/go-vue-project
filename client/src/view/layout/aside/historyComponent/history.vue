@@ -54,7 +54,7 @@ export default {
   computed: {
     ...mapGetters('user', ['userInfo', 'activeColor']),
     defaultRouter() {
-      return this.userInfo.authority.defaultRouter
+      return 'dashboard'
     }
   },
   watch: {

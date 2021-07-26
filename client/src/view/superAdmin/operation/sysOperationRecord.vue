@@ -36,7 +36,7 @@
       <el-table-column type="selection" width="55" />
       <el-table-column label="操作人" width="140">
         <template slot-scope="scope">
-          <div>{{ scope.row.user.userName }}({{ scope.row.user.nickName }})</div>
+          <div>{{ scope.row.user_id }}</div>
         </template>
       </el-table-column>
       <el-table-column label="日期" width="180">

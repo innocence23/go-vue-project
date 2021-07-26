@@ -11,16 +11,15 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="uuid" min-width="250" prop="uuid" />
       <el-table-column label="用户名" min-width="150" prop="userName" />
       <el-table-column label="昵称" min-width="150" prop="nickName" />
       <el-table-column label="用户角色" min-width="150">
         <template slot-scope="scope">
           <el-cascader
-            v-model="scope.row.authorityId"
+            v-model="scope.row.roleIds"
             :options="authOptions"
             :show-all-levels="false"
-            :props="{ checkStrictly: true,label:'authorityName',value:'authorityId',disabled:'disabled',emitPath:false}"
+            :props="{ multiple: true, checkStrictly: true,label:'name',value:'ID',disabled:'disabled',emitPath:false}"
             filterable
             @change="changeRole(scope.row)"
           />
@@ -67,12 +66,12 @@
             <div v-else class="header-img-box">从媒体库选择</div>
           </div>
         </el-form-item>
-        <el-form-item label="用户角色" label-width="80px" prop="authorityId">
+        <el-form-item label="用户角色" label-width="80px" prop="roleId">
           <el-cascader
-            v-model="userInfo.authorityId"
+            v-model="userInfo.roleId"
             :options="authOptions"
             :show-all-levels="false"
-            :props="{ checkStrictly: true,label:'authorityName',value:'authorityId',disabled:'disabled',emitPath:false}"
+            :props="{multiple: true, checkStrictly: true,label:'name',value:'ID',disabled:'disabled',emitPath:false}"
             filterable
           />
         </el-form-item>
@@ -91,13 +90,12 @@
 const path = process.env.VUE_APP_BASE_API
 import {
   getUserList,
-  setUserAuthority,
   register,
   deleteUser
 } from '@/api/user'
-import { 
+import {
   getRoleList,
-  setUserRole
+  setRoleUser
 } from '@/api/role'
 import infoList from '@/mixins/infoList'
 import { mapGetters } from 'vuex'
@@ -118,7 +116,7 @@ export default {
         password: '',
         nickName: '',
         headerImg: '',
-        authorityId: ''
+        roleId: ''
       },
       rules: {
         username: [
@@ -132,7 +130,7 @@ export default {
         nickName: [
           { required: true, message: '请输入用户昵称', trigger: 'blur' }
         ],
-        authorityId: [
+        roleId: [
           { required: true, message: '请选择用户角色', trigger: 'blur' }
         ]
       }
@@ -159,16 +157,16 @@ export default {
         AuthorityData.map(item => {
           if (item.children && item.children.length) {
             const option = {
-              authorityId: item.authorityId,
-              authorityName: item.authorityName,
+              ID: item.ID,
+              name: item.name,
               children: []
             }
             this.setAuthorityOptions(item.children, option.children)
             optionsData.push(option)
           } else {
             const option = {
-              authorityId: item.authorityId,
-              authorityName: item.authorityName
+              ID: item.ID,
+              name: item.name
             }
             optionsData.push(option)
           }
@@ -204,9 +202,9 @@ export default {
       this.addUserDialog = true
     },
     async changeRole(row) {
-      const res = await setUserRole({
-        id: row.ID,
-        roleId: row.authorityId
+      const res = await setRoleUser({
+        UserId: row.ID,
+        roleId: row.roleId
       })
       if (res.code === 0) {
         this.$message({ type: 'success', message: '角色设置成功' })

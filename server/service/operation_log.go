@@ -43,6 +43,6 @@ func (operationRecordService *OperationLogService) List(info request.OperationLo
 		db = db.Where("status = ?", info.Status)
 	}
 	err = db.Count(&total).Error
-	err = db.Order("id desc").Limit(limit).Offset(offset).Preload("User").Find(&opLogs).Error
+	err = db.Order("id desc").Limit(limit).Offset(offset).Find(&opLogs).Error
 	return
 }

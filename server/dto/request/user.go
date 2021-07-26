@@ -6,7 +6,6 @@ type Register struct {
 	Password  string `json:"passWord"`
 	NickName  string `json:"nickName" gorm:"default:'QMPlusUser'"`
 	HeaderImg string `json:"headerImg" gorm:"default:'http://www.henrongyi.top/avatar/lufu.jpg'"`
-	RoleId    string `json:"roleId" gorm:"default:888"`
 }
 
 // User login structure
@@ -26,6 +25,6 @@ type ChangePasswordStruct struct {
 
 // Modify  user's auth structure
 type SetUserRole struct {
-	UserID int `json:"userId"` // 用户ID
-	RoleID int `json:"roleId"` // 角色ID
+	UserID int   `json:"userId"` // 用户ID
+	RoleID []int `json:"roleId"` // 角色ID
 }
