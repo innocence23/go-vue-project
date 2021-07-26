@@ -25,6 +25,5 @@ func (ms *MachineService) GetServerInfo() (server *utils.Server, err error) {
 		zvar.Log.Error("func utils.InitDisk() Failed", zap.String("err", err.Error()))
 		return &s, err
 	}
-
 	return &s, nil
 }

@@ -1,7 +1,6 @@
 package admin
 
 import (
-	"fmt"
 	"project/dto/request"
 	"project/dto/response"
 	"project/model/system"
@@ -114,7 +113,6 @@ func (h *userHandler) list(c *gin.Context) {
 		for _, v := range list {
 			roleIds, _ := h.rbacService.GetRolesForUser(cast.ToString(v.ID))
 			v.Roles, err = h.roleService.FindByIds(roleIds)
-			fmt.Println("--------", roleIds, v.Roles, err)
 			newList = append(newList, v)
 		}
 

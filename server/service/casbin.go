@@ -1,91 +1,91 @@
 package service
 
 import (
-	"errors"
-	"project/dto/request"
-	"project/model/system"
+	"log"
 	"project/zvar"
-	"strings"
-	"sync"
-
-	"github.com/casbin/casbin/v2"
-	"github.com/casbin/casbin/v2/util"
-	gormadapter "github.com/casbin/gorm-adapter/v3"
-	_ "github.com/go-sql-driver/mysql"
 )
 
-type CasbinService struct {
+type RbacService struct {
 }
 
-func (casbinService *CasbinService) Update(roleId string, casbinInfos []request.CasbinInfo) error {
-	casbinService.ClearCasbin(0, roleId)
-	rules := [][]string{}
-	for _, v := range casbinInfos {
-		cm := system.CasbinModel{
-			Ptype:  "p",
-			RoleId: roleId,
-			Path:   v.Path,
-			Method: v.Method,
+func (rbacService *RbacService) CheckPermission(account string, permission string, method string) bool {
+	if account == "admin" {
+		return true
+	}
+	roles, _ := zvar.Enforcer.GetRolesForUser(account)
+	for _, role := range roles {
+		ok := zvar.Enforcer.HasPermissionForUser(role, permission, method)
+		if ok {
+			return ok
 		}
-		rules = append(rules, []string{cm.RoleId, cm.Path, cm.Method})
 	}
-	e := casbinService.Casbin()
-	success, _ := e.AddPolicies(rules)
-	if success == false {
-		return errors.New("存在相同api,添加失败,请联系管理员")
-	}
-	return nil
+	return false
 }
 
-func (casbinService *CasbinService) UpdateCasbinApi(oldPath string, newPath string, oldMethod string, newMethod string) error {
-	err := zvar.DB.Table("casbin_rule").Model(&system.CasbinModel{}).Where("v1 = ? AND v2 = ?", oldPath, oldMethod).Updates(map[string]interface{}{
-		"v1": newPath,
-		"v2": newMethod,
-	}).Error
-	return err
+// 授权用户到角色
+func (rbacService *RbacService) AddRoleForUser(account string, role string) (bool, error) {
+	return zvar.Enforcer.AddRoleForUser(account, role)
 }
 
-func (casbinService *CasbinService) GetPermByRoleId(roleId string) (pathMaps []request.CasbinInfo) {
-	e := casbinService.Casbin()
-	list := e.GetFilteredPolicy(0, roleId)
-	for _, v := range list {
-		pathMaps = append(pathMaps, request.CasbinInfo{
-			Path:   v[1],
-			Method: v[2],
+// 授权用户到角色 批量
+func (rbacService *RbacService) AddRolesForUser(account string, role []string) (bool, error) {
+	return zvar.Enforcer.AddRolesForUser(account, role)
+}
+
+//  添加权限到角色
+func (rbacService *RbacService) AddPermissionForUser(permission string, method string, role string) (bool, error) {
+	return zvar.Enforcer.AddPermissionForUser(role, permission, method)
+}
+
+// 获取用户角色
+func (rbacService *RbacService) GetRolesForUser(account string) ([]string, error) {
+	return zvar.Enforcer.GetRolesForUser(account)
+}
+
+// 获取用户（角色）权限
+func (rbacService *RbacService) GetPermissionsForRole(role string) []map[string]string {
+	var permissions []map[string]string
+	currentPermissions := zvar.Enforcer.GetPermissionsForUser(role)
+	for _, currentPermission := range currentPermissions {
+		permissions = append(permissions, map[string]string{
+			"method":     currentPermission[2],
+			"permission": currentPermission[1],
 		})
 	}
-	return pathMaps
+	return permissions
 }
 
-func (casbinService *CasbinService) ClearCasbin(v int, p ...string) bool {
-	e := casbinService.Casbin()
-	success, _ := e.RemoveFilteredPolicy(v, p...)
-	return success
-
+// 获取用户权限
+func (rbacService *RbacService) GetPermissionsForUser(account string) []map[string]string {
+	var permissions []map[string]string
+	roles, _ := rbacService.GetRolesForUser(account)
+	for _, role := range roles {
+		rolePermissions := rbacService.GetPermissionsForRole(role)
+		for _, rolePermission := range rolePermissions {
+			permissions = append(permissions, rolePermission)
+		}
+	}
+	return permissions
 }
 
-var (
-	syncedEnforcer *casbin.SyncedEnforcer
-	once           sync.Once
-)
-
-func (casbinService *CasbinService) Casbin() *casbin.SyncedEnforcer {
-	once.Do(func() {
-		a, _ := gormadapter.NewAdapterByDB(zvar.DB)
-		syncedEnforcer, _ = casbin.NewSyncedEnforcer(zvar.Config.Casbin.ModelPath, a)
-		syncedEnforcer.AddFunction("ParamsMatch", casbinService.ParamsMatchFunc)
-	})
-	_ = syncedEnforcer.LoadPolicy()
-	return syncedEnforcer
+// 删除用户的所有角色
+func (rbacService *RbacService) DeleteRolesForUser(account string) (bool, error) {
+	return zvar.Enforcer.DeleteRolesForUser(account)
 }
 
-func (casbinService *CasbinService) ParamsMatch(fullNameKey1 string, key2 string) bool {
-	key1 := strings.Split(fullNameKey1, "?")[0]
-	return util.KeyMatch2(key1, key2)
+// 删除角色的权限
+func (rbacService *RbacService) DeletePermissionsForUser(role string) (bool, error) {
+	return zvar.Enforcer.DeletePermissionsForUser(role)
 }
 
-func (casbinService *CasbinService) ParamsMatchFunc(args ...interface{}) (interface{}, error) {
-	name1 := args[0].(string)
-	name2 := args[1].(string)
-	return casbinService.ParamsMatch(name1, name2), nil
+// 删除拥有对应角色的(用户角色权限)
+func (rbacService *RbacService) DeleteRoleForUsers(role string) bool {
+	users, err := zvar.Enforcer.GetUsersForRole(role)
+	if err != nil {
+		log.Fatal("获取具有角色的用户")
+	}
+	for _, user := range users {
+		_, _ = zvar.Enforcer.DeleteRoleForUser(user, role)
+	}
+	return true
 }

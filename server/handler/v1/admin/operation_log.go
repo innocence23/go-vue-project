@@ -62,9 +62,9 @@ func (h *operationRecordHandler) delete(c *gin.Context) {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"批量删除成功"}"
 // @Router /req/deleteByIds [delete]
 func (h *operationRecordHandler) deleteByIds(c *gin.Context) {
-	var IDS request.IdsReq
-	_ = c.ShouldBindJSON(&IDS)
-	if err := h.opLogService.DeleteByIds(IDS); err != nil {
+	var req request.IdsReq
+	_ = c.ShouldBindJSON(&req)
+	if err := h.opLogService.DeleteByIds(req.Ids); err != nil {
 		zvar.Log.Error("批量删除失败!", zap.Any("err", err))
 		response.FailWithMessage("批量删除失败", c)
 	} else {
@@ -83,7 +83,7 @@ func (h *operationRecordHandler) deleteByIds(c *gin.Context) {
 func (h *operationRecordHandler) list(c *gin.Context) {
 	var pageInfo request.OperationLogSearch
 	_ = c.ShouldBindQuery(&pageInfo)
-	if err, list, total := h.opLogService.List(pageInfo); err != nil {
+	if list, total, err := h.opLogService.List(pageInfo); err != nil {
 		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败", c)
 	} else {

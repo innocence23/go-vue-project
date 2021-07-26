@@ -49,7 +49,7 @@ func (h *permissionHandler) list(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err, list, total := h.permService.List(pageInfo.Permission, pageInfo.PageInfo, pageInfo.OrderKey, pageInfo.Desc); err != nil {
+	if list, total, err := h.permService.List(pageInfo.Permission, pageInfo.PageInfo, pageInfo.OrderKey, pageInfo.Desc); err != nil {
 		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败", c)
 	} else {
@@ -77,7 +77,7 @@ func (h *permissionHandler) show(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	err, permission := h.permService.Show(req.ID)
+	permission, err := h.permService.Show(req.ID)
 	if err != nil {
 		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败", c)
@@ -94,7 +94,7 @@ func (h *permissionHandler) show(c *gin.Context) {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /api/getAllApis [post]
 func (h *permissionHandler) listAll(c *gin.Context) {
-	if err, Permissions := h.permService.ListNoLimit(); err != nil {
+	if Permissions, err := h.permService.ListNoLimit(); err != nil {
 		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败", c)
 	} else {
