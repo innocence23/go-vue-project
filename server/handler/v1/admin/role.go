@@ -3,155 +3,67 @@ package admin
 import (
 	"project/dto/request"
 	"project/dto/response"
-	"project/model/system"
+	"project/entity"
 	"project/service"
 	"project/utils"
 	"project/zvar"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
 	"go.uber.org/zap"
 )
 
 type roleHandler struct {
-	service     *service.AuthorityService
-	serviceMenu *service.MenuService
-	//serviceCasbin *service.CasbinService
+	roleService *service.RoleService
+	rbacService *service.RbacService
 }
 
 func NewRoleHandler() *roleHandler {
 	return &roleHandler{
-		service:     &service.AuthorityService{},
-		serviceMenu: &service.MenuService{},
-		//serviceCasbin: &service.CasbinService{},
+		roleService: &service.RoleService{},
+		rbacService: &service.RbacService{},
 	}
 }
 
 func (h *roleHandler) Router(router *gin.RouterGroup) {
-	apiRouter := router.Group("authority")
+	apiRouter := router.Group("role")
 	{
-		apiRouter.POST("createAuthority", h.CreateAuthority)   // 创建角色
-		apiRouter.POST("deleteAuthority", h.DeleteAuthority)   // 删除角色
-		apiRouter.PUT("updateAuthority", h.UpdateAuthority)    // 更新角色
-		apiRouter.POST("copyAuthority", h.CopyAuthority)       // 更新角色
-		apiRouter.POST("getAuthorityList", h.GetAuthorityList) // 获取角色列表
-		apiRouter.POST("setDataAuthority", h.SetDataAuthority) // 设置角色资源权限
+		apiRouter.POST("list", h.list)
+		apiRouter.POST("create", h.create)
+		apiRouter.PUT("update", h.update)
+		apiRouter.POST("delete", h.delete)
+
+		apiRouter.POST("setRoleUser", h.setRoleUser)       // 设置角色资源权限
+		apiRouter.POST("setRolePermission", h.setRoleUser) // 设置角色资源权限
+		apiRouter.POST("setRoleMenu", h.setRoleUser)       // 设置角色资源权限
 	}
+
+	zvar.RouteMap["/"+zvar.UrlPrefix+"/role/list"] = zvar.RouteInfo{Group: "role", Name: "角色列表"}
+	zvar.RouteMap["/"+zvar.UrlPrefix+"/role/create"] = zvar.RouteInfo{Group: "role", Name: "创建角色"}
+	zvar.RouteMap["/"+zvar.UrlPrefix+"/role/create"] = zvar.RouteInfo{Group: "role", Name: "更新角色"}
+	zvar.RouteMap["/"+zvar.UrlPrefix+"/role/delete"] = zvar.RouteInfo{Group: "role", Name: "删除角色"}
+
+	zvar.RouteMap["/"+zvar.UrlPrefix+"/role/setRoleUser"] = zvar.RouteInfo{Group: "role", Name: "用户添加角色"}
+	zvar.RouteMap["/"+zvar.UrlPrefix+"/role/setRolePermission"] = zvar.RouteInfo{Group: "role", Name: "显示菜单"}
+	zvar.RouteMap["/"+zvar.UrlPrefix+"/role/setRoleMenu"] = zvar.RouteInfo{Group: "role", Name: "菜单树"}
 }
 
-// @Tags Authority
-// @Summary 创建角色
-// @Security ApiKeyAuth
-// @accept application/json
-// @Produce application/json
-// @Param data body system.Role true "权限id, 权限名, 父角色id"
-// @Success 200 {string} string "{"success":true,"data":{},"msg":"创建成功"}"
-// @Router /authority/createAuthority [post]
-func (h *roleHandler) CreateAuthority(c *gin.Context) {
-	var req system.Role
-	_ = c.ShouldBindJSON(&req)
-	if err := utils.Verify(req, utils.AuthorityVerify); err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
-	if err, authBack := h.service.CreateAuthority(req); err != nil {
-		zvar.Log.Error("创建失败!", zap.Any("err", err))
-		response.FailWithMessage("创建失败"+err.Error(), c)
-	} else {
-		_ = h.serviceMenu.AddMenuAuthority(request.DefaultMenu(), req.AuthorityId)
-		//_ = h.serviceCasbin.Update(req.RoleId, request.DefaultCasbin())
-		response.OkWithDetailed(response.RoleResponse{Authority: authBack}, "创建成功", c)
-	}
-}
-
-// @Tags Authority
-// @Summary 拷贝角色
-// @Security ApiKeyAuth
-// @accept application/json
-// @Produce application/json
-// @Param data body response.RoleCopyResponse true "旧角色id, 新权限id, 新权限名, 新父角色id"
-// @Success 200 {string} string "{"success":true,"data":{},"msg":"拷贝成功"}"
-// @Router /authority/copyAuthority [post]
-func (h *roleHandler) CopyAuthority(c *gin.Context) {
-	var copyInfo response.RoleCopyResponse
-	_ = c.ShouldBindJSON(&copyInfo)
-	if err := utils.Verify(copyInfo, utils.OldAuthorityVerify); err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
-	if err := utils.Verify(copyInfo.Authority, utils.AuthorityVerify); err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
-	if err, authBack := h.service.CopyAuthority(copyInfo); err != nil {
-		zvar.Log.Error("拷贝失败!", zap.Any("err", err))
-		response.FailWithMessage("拷贝失败"+err.Error(), c)
-	} else {
-		response.OkWithDetailed(response.RoleResponse{Authority: authBack}, "拷贝成功", c)
-	}
-}
-
-// @Tags Authority
-// @Summary 删除角色
-// @Security ApiKeyAuth
-// @accept application/json
-// @Produce application/json
-// @Param data body system.Role true "删除角色"
-// @Success 200 {string} string "{"success":true,"data":{},"msg":"删除成功"}"
-// @Router /authority/deleteAuthority [post]
-func (h *roleHandler) DeleteAuthority(c *gin.Context) {
-	var authority system.Role
-	_ = c.ShouldBindJSON(&authority)
-	if err := utils.Verify(authority, utils.RoleIdVerify); err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
-	if err := h.service.DeleteAuthority(&authority); err != nil { // 删除角色之前需要判断是否有用户正在使用此角色
-		zvar.Log.Error("删除失败!", zap.Any("err", err))
-		response.FailWithMessage("删除失败"+err.Error(), c)
-	} else {
-		response.OkWithMessage("删除成功", c)
-	}
-}
-
-// @Tags Authority
-// @Summary 更新角色信息
-// @Security ApiKeyAuth
-// @accept application/json
-// @Produce application/json
-// @Param data body system.Role true "权限id, 权限名, 父角色id"
-// @Success 200 {string} string "{"success":true,"data":{},"msg":"更新成功"}"
-// @Router /authority/updateAuthority [post]
-func (h *roleHandler) UpdateAuthority(c *gin.Context) {
-	var auth system.Role
-	_ = c.ShouldBindJSON(&auth)
-	if err := utils.Verify(auth, utils.AuthorityVerify); err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
-	if err, authority := h.service.UpdateAuthority(auth); err != nil {
-		zvar.Log.Error("更新失败!", zap.Any("err", err))
-		response.FailWithMessage("更新失败"+err.Error(), c)
-	} else {
-		response.OkWithDetailed(response.RoleResponse{Authority: authority}, "更新成功", c)
-	}
-}
-
-// @Tags Authority
+// @Tags Role
 // @Summary 分页获取角色列表
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
 // @Param data body request.PageInfo true "页码, 每页大小"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
-// @Router /authority/getAuthorityList [post]
-func (h *roleHandler) GetAuthorityList(c *gin.Context) {
+// @Router /role/list [post]
+func (h *roleHandler) list(c *gin.Context) {
 	var pageInfo request.PageInfo
 	_ = c.ShouldBindJSON(&pageInfo)
 	if err := utils.Verify(pageInfo, utils.PageInfoVerify); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err, list, total := h.service.GetAuthorityInfoList(pageInfo); err != nil {
+	if list, total, err := h.roleService.List(pageInfo); err != nil {
 		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败"+err.Error(), c)
 	} else {
@@ -164,25 +76,117 @@ func (h *roleHandler) GetAuthorityList(c *gin.Context) {
 	}
 }
 
-// @Tags Authority
+// @Tags Role
+// @Summary 创建角色
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Param data body entity.Role true "权限id, 权限名, 父角色id"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"创建成功"}"
+// @Router /role/create [post]
+func (h *roleHandler) create(c *gin.Context) {
+	var req entity.Role
+	_ = c.ShouldBindJSON(&req)
+	if err := utils.Verify(req, utils.RoleVerify); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if err := h.roleService.Create(req); err != nil {
+		zvar.Log.Error("创建失败!", zap.Any("err", err))
+		response.FailWithMessage("创建失败"+err.Error(), c)
+	} else {
+		response.OkWithMessage("创建成功", c)
+	}
+}
+
+// @Tags Role
+// @Summary 更新角色信息
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Param data body entity.Role true "权限id, 权限名, 父角色id"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"更新成功"}"
+// @Router /role/update [post]
+func (h *roleHandler) update(c *gin.Context) {
+	var req entity.Role
+	_ = c.ShouldBindJSON(&req)
+	if err := utils.Verify(req, utils.RoleVerify); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if err := h.roleService.Update(req); err != nil {
+		zvar.Log.Error("更新失败!", zap.Any("err", err))
+		response.FailWithMessage("更新失败"+err.Error(), c)
+	} else {
+		response.OkWithMessage("更新成功", c)
+	}
+}
+
+// @Tags Role
+// @Summary 删除角色
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Param data body entity.Role true "删除角色"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"删除成功"}"
+// @Router /role/delete [post]
+func (h *roleHandler) delete(c *gin.Context) {
+	var req request.IdReq
+	_ = c.ShouldBindJSON(&req)
+	if err := utils.Verify(req, utils.IdVerify); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if err := h.roleService.Delete(req.ID); err != nil {
+		zvar.Log.Error("删除失败!", zap.Any("err", err))
+		response.FailWithMessage("删除失败"+err.Error(), c)
+	} else {
+		response.OkWithMessage("删除成功", c)
+	}
+}
+
+// @Tags Role
 // @Summary 设置角色资源权限
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body system.Role true "设置角色资源权限"
+// @Param data body entity.Role true "设置角色资源权限"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"设置成功"}"
-// @Router /authority/setDataAuthority [post]
-func (h *roleHandler) SetDataAuthority(c *gin.Context) {
-	var auth system.Role
-	_ = c.ShouldBindJSON(&auth)
-	if err := utils.Verify(auth, utils.RoleIdVerify); err != nil {
-		response.FailWithMessage(err.Error(), c)
+// @Router /role/setRoleUser [post]
+func (h *roleHandler) setRoleUser(c *gin.Context) {
+	var req request.SetUserRole
+	_ = c.ShouldBindJSON(&req)
+	if UserVerifyErr := utils.Verify(req, utils.SetUserRoleorityVerify); UserVerifyErr != nil {
+		response.FailWithMessage(UserVerifyErr.Error(), c)
 		return
 	}
-	if err := h.service.SetDataAuthority(auth); err != nil {
-		zvar.Log.Error("设置失败!", zap.Any("err", err))
-		response.FailWithMessage("设置失败"+err.Error(), c)
+	if _, err := h.rbacService.AddRoleForUser(cast.ToString(req.UserID), cast.ToString(req.RoleID)); err != nil {
+		zvar.Log.Error("修改失败!", zap.Any("err", err))
+		response.FailWithMessage("修改失败", c)
 	} else {
-		response.OkWithMessage("设置成功", c)
+		response.OkWithMessage("修改成功", c)
 	}
 }
+
+// // @Tags Authority
+// // @Summary 设置角色资源权限
+// // @Security ApiKeyAuth
+// // @accept application/json
+// // @Produce application/json
+// // @Param data body system.Role true "设置角色资源权限"
+// // @Success 200 {string} string "{"success":true,"data":{},"msg":"设置成功"}"
+// // @Router /authority/setDataAuthority [post]
+// func (h *rolexxxHandler) SetDataAuthority(c *gin.Context) {
+// 	var auth system.Role
+// 	_ = c.ShouldBindJSON(&auth)
+// 	if err := utils.Verify(auth, utils.RoleIdVerify); err != nil {
+// 		response.FailWithMessage(err.Error(), c)
+// 		return
+// 	}
+// 	if err := h.service.SetDataAuthority(auth); err != nil {
+// 		zvar.Log.Error("设置失败!", zap.Any("err", err))
+// 		response.FailWithMessage("设置失败"+err.Error(), c)
+// 	} else {
+// 		response.OkWithMessage("设置成功", c)
+// 	}
+// }

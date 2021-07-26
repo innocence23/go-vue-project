@@ -45,7 +45,7 @@ func (permissionService *PermissionService) List(perm entity.Permission, info re
 	err = db.Count(&total).Error
 
 	if err != nil {
-		return permList, total, err
+		return
 	} else {
 		db = db.Limit(limit).Offset(offset)
 		if order != "" {
@@ -60,7 +60,7 @@ func (permissionService *PermissionService) List(perm entity.Permission, info re
 			err = db.Order("`group`").Find(&permList).Error
 		}
 	}
-	return permList, total, err
+	return
 }
 
 func (permissionService *PermissionService) ListNoLimit() (perms []entity.Permission, err error) {

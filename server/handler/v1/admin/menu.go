@@ -91,13 +91,12 @@ func (h *menuHandler) list(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err, menuList, total := h.menuService.TreeList(); err != nil {
+	if menuList, err := h.menuService.TreeList(); err != nil {
 		zvar.Log.Error("获取失败!", zap.Any("err", err))
 		response.FailWithMessage("获取失败", c)
 	} else {
 		response.OkWithDetailed(response.PageResult{
 			List:     menuList,
-			Total:    total,
 			Page:     pageInfo.Page,
 			PageSize: pageInfo.PageSize,
 		}, "获取成功", c)

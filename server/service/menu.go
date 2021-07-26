@@ -52,14 +52,13 @@ func (menuService *MenuService) Display(id int) (err error) {
 }
 
 //------ TreeList （列表）
-func (menuService *MenuService) TreeList() (err error, list interface{}, total int64) {
-	var menuList []entity.Menu
+func (menuService *MenuService) TreeList() (menuList []entity.Menu, err error) {
 	err, treeMap := menuService.getBaseMenuTreeMap()
 	menuList = treeMap["0"]
 	for i := 0; i < len(menuList); i++ {
 		err = menuService.getBaseChildrenList(&menuList[i], treeMap)
 	}
-	return err, menuList, total
+	return
 }
 
 func (menuService *MenuService) getBaseChildrenList(menu *entity.Menu, treeMap map[string][]entity.Menu) (err error) {
@@ -70,21 +69,20 @@ func (menuService *MenuService) getBaseChildrenList(menu *entity.Menu, treeMap m
 	return err
 }
 
-func (menuService *MenuService) getMenuTreeMap(roleId string) (err error, treeMap map[string][]entity.Menu) {
+func (menuService *MenuService) getMenuTreeMap(roleId string) (treeMap map[string][]entity.Menu, err error) {
 	var allMenus []entity.Menu
-	treeMap = make(map[string][]entity.Menu)
 	err = zvar.DB.Where("role_id = ?", roleId).Order("sort").Find(&allMenus).Error
 	for _, v := range allMenus {
 		treeMap[v.ParentId] = append(treeMap[v.ParentId], v)
 	}
-	return err, treeMap
+	return
 }
 
 //------ end
 
 //------ GetMenuTree （用户菜单）
 func (menuService *MenuService) GetMenuTree(roleId string) (err error, menus []entity.Menu) {
-	err, menuTree := menuService.getMenuTreeMap(roleId)
+	menuTree, err := menuService.getMenuTreeMap(roleId)
 	menus = menuTree["0"]
 	for i := 0; i < len(menus); i++ {
 		err = menuService.getChildrenList(&menus[i], menuTree)

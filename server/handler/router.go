@@ -30,20 +30,18 @@ func InitRouter() *gin.Engine {
 	gRouter.Use(middleware.JWTAuth()).Use(middleware.CasbinHandler())
 	//.Use(middleware.OperationRecord())
 	{
-		admin.NewRolexxxHandler().Router(gRouter) // 用户路由
-
 		admin.NewUserHandler().Router(gRouter)       // 用户路由
 		admin.NewPermissionHandler().Router(gRouter) // 注册功能api路由
 		admin.NewJwtHandler().Router(gRouter)        // jwt相关路由
 		admin.NewRoleHandler().Router(gRouter)       // 注册角色路由
 		admin.NewMenuHandler().Router(gRouter)       // 注册menu路由
+		admin.NewSysHandler().Router(gRouter)        // system相关路由
+		admin.NewEmailHandler().Router(gRouter)      // 邮件相关路由
 		//admin.NewCasbinHandler().Router(gRouter)     // 权限相关路由
-		admin.NewSysHandler().Router(gRouter)   // system相关路由
-		admin.NewEmailHandler().Router(gRouter) // 邮件相关路由
 		//admin.NewAutoHandler().Router(gRouter)             // 创建自动化代码
-		admin.NewDictionaryHandler().Router(gRouter)       // 字典管理
-		admin.NewDictionaryDetailHandler().Router(gRouter) // 字典详情管理
-		admin.OperationRecordHandler().Router(gRouter)     // 操作记录
+		// admin.NewDictionaryHandler().Router(gRouter)       // 字典管理
+		// admin.NewDictionaryDetailHandler().Router(gRouter) // 字典详情管理
+		admin.OperationRecordHandler().Router(gRouter) // 操作记录
 
 	}
 

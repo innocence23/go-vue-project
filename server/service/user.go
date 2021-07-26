@@ -56,11 +56,17 @@ func (userService *UserService) List(info request.PageInfo) (userList []entity.U
 	offset := info.PageSize * (info.Page - 1)
 	db := zvar.DB.Model(&entity.User{})
 	err = db.Count(&total).Error
+	if err != nil {
+		return
+	}
 	err = db.Limit(limit).Offset(offset).Find(&userList).Error
+	if err != nil {
+		return
+	}
 	var newList []entity.User
 	for _, v := range userList {
 		roleIds, _ := (&RbacService{}).GetRolesForUser(cast.ToString(v.ID))
-		v.Roles, err = (&RoleService{}).FindByIds(roleIds)
+		v.Roles, err = (&RoleService{}).FindByIds(cast.ToIntSlice(roleIds))
 		newList = append(newList, v)
 	}
 	userList = newList
@@ -80,6 +86,6 @@ func (userService *UserService) Update(reqUser entity.User) (user entity.User, e
 }
 
 func (userService *UserService) FindById(id int) (user *entity.User, err error) {
-	err = zvar.DB.Where("`id` = ?", id).First(&user).Error
+	err = zvar.DB.First(&user, id).Error
 	return
 }
