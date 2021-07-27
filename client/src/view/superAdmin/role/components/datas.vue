@@ -6,14 +6,14 @@
       <el-button class="fl-left" size="small" type="primary" @click="self">本角色</el-button>
       <el-button class="fl-left" size="small" type="primary" @click="selfAndChildren">本角色及子角色</el-button>
     </div>
-    <el-checkbox-group v-model="dataAuthorityId" @change="selectAuthority">
-      <el-checkbox v-for="(item,key) in authoritys" :key="key" :label="item">{{ item.authorityName }}</el-checkbox>
+    <el-checkbox-group v-model="dataRoleId" @change="selectRole">
+      <el-checkbox v-for="(item,key) in roles" :key="key" :label="item">{{ item.roleName }}</el-checkbox>
     </el-checkbox-group>
   </div>
 </template>
 
 <script>
-import { setDataAuthority } from '@/api/role'
+import { setDataRole } from '@/api/role'
 export default {
   name: 'Datas',
   props: {
@@ -23,7 +23,7 @@ export default {
       },
       type: Object
     },
-    authority: {
+    role: {
       default: function() {
         return {}
       },
@@ -32,18 +32,18 @@ export default {
   },
   data() {
     return {
-      authoritys: [],
-      dataAuthorityId: [],
+      roles: [],
+      dataRoleId: [],
       needConfirm: false
     }
   },
   created() {
-    this.authoritys = []
-    this.dataAuthorityId = []
-    this.roundAuthority(this.authority)
-    this.row.dataAuthorityId && this.row.dataAuthorityId.map(item => {
-      const obj = this.authoritys && this.authoritys.filter(au => au.authorityId === item.authorityId) && this.authoritys.filter(au => au.authorityId === item.authorityId)[0]
-      this.dataAuthorityId.push(obj)
+    this.roles = []
+    this.dataRoleId = []
+    this.roundRole(this.role)
+    this.row.dataRoleId && this.row.dataRoleId.map(item => {
+      const obj = this.roles && this.roles.filter(au => au.roleId === item.roleId) && this.roles.filter(au => au.roleId === item.roleId)[0]
+      this.dataRoleId.push(obj)
     })
   },
   methods: {
@@ -52,50 +52,50 @@ export default {
       this.authDataEnter()
     },
     all() {
-      this.dataAuthorityId = [...this.authoritys]
-      this.row.dataAuthorityId = this.dataAuthorityId
+      this.dataRoleId = [...this.roles]
+      this.row.dataRoleId = this.dataRoleId
       this.needConfirm = true
     },
     self() {
-      this.dataAuthorityId = this.authoritys.filter(item => item.authorityId === this.row.authorityId)
-      this.row.dataAuthorityId = this.dataAuthorityId
+      this.dataRoleId = this.roles.filter(item => item.roleId === this.row.roleId)
+      this.row.dataRoleId = this.dataRoleId
       this.needConfirm = true
     },
     selfAndChildren() {
       const arrBox = []
       this.getChildrenId(this.row, arrBox)
-      this.dataAuthorityId = this.authoritys.filter(item => arrBox.indexOf(item.authorityId) > -1)
-      this.row.dataAuthorityId = this.dataAuthorityId
+      this.dataRoleId = this.roles.filter(item => arrBox.indexOf(item.roleId) > -1)
+      this.row.dataRoleId = this.dataRoleId
       this.needConfirm = true
     },
     getChildrenId(row, arrBox) {
-      arrBox.push(row.authorityId)
+      arrBox.push(row.roleId)
       row.children && row.children.map(item => {
         this.getChildrenId(item, arrBox)
       })
     },
     // 提交
     async authDataEnter() {
-      const res = await setDataAuthority(this.row)
+      const res = await setDataRole(this.row)
       if (res.code === 0) {
         this.$message({ type: 'success', message: '资源设置成功' })
       }
     },
     //   平铺角色
-    roundAuthority(authoritys) {
-      authoritys && authoritys.map(item => {
+    roundRole(roles) {
+      roles && roles.map(item => {
         const obj = {}
-        obj.authorityId = item.authorityId
-        obj.authorityName = item.authorityName
-        this.authoritys.push(obj)
+        obj.roleId = item.roleId
+        obj.roleName = item.roleName
+        this.roles.push(obj)
         if (item.children && item.children.length) {
-          this.roundAuthority(item.children)
+          this.roundRole(item.children)
         }
       })
     },
     //   选择
-    selectAuthority() {
-      this.row.dataAuthorityId = this.dataAuthorityId
+    selectRole() {
+      this.row.dataRoleId = this.dataRoleId
       this.needConfirm = true
     }
   }

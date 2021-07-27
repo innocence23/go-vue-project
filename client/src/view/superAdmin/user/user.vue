@@ -66,9 +66,9 @@
             <div v-else class="header-img-box">从媒体库选择</div>
           </div>
         </el-form-item>
-        <el-form-item label="用户角色" label-width="80px" prop="roleId">
+        <el-form-item label="用户角色" label-width="80px" prop="roleIds">
           <el-cascader
-            v-model="userInfo.roleId"
+            v-model="userInfo.roleIds"
             :options="authOptions"
             :show-all-levels="false"
             :props="{multiple: true, checkStrictly: true,label:'name',value:'ID',disabled:'disabled',emitPath:false}"
@@ -116,7 +116,7 @@ export default {
         password: '',
         nickName: '',
         headerImg: '',
-        roleId: ''
+        roleIds: ''
       },
       rules: {
         username: [
@@ -130,7 +130,7 @@ export default {
         nickName: [
           { required: true, message: '请输入用户昵称', trigger: 'blur' }
         ],
-        roleId: [
+        roleIds: [
           { required: true, message: '请选择用户角色', trigger: 'blur' }
         ]
       }
@@ -203,8 +203,8 @@ export default {
     },
     async changeRole(row) {
       const res = await setRoleUser({
-        UserId: row.ID,
-        roleId: row.roleId
+        userId: row.ID,
+        roleId: row.roleIds
       })
       if (res.code === 0) {
         this.$message({ type: 'success', message: '角色设置成功' })

@@ -53,12 +53,22 @@ func (menuService *MenuService) Display(id int) (err error) {
 
 //------ TreeList （列表）
 func (menuService *MenuService) TreeList() (menuList []entity.Menu, err error) {
-	err, treeMap := menuService.getBaseMenuTreeMap()
+	treeMap, err := menuService.getBaseMenuTreeMap()
 	menuList = treeMap["0"]
 	for i := 0; i < len(menuList); i++ {
 		err = menuService.getBaseChildrenList(&menuList[i], treeMap)
 	}
 	return
+}
+
+func (menuService *MenuService) getBaseMenuTreeMap() (treeMap map[string][]entity.Menu, err error) {
+	var allMenus []entity.Menu
+	treeMap = make(map[string][]entity.Menu)
+	err = zvar.DB.Order("sort").Find(&allMenus).Error
+	for _, v := range allMenus {
+		treeMap[v.ParentId] = append(treeMap[v.ParentId], v)
+	}
+	return treeMap, err
 }
 
 func (menuService *MenuService) getBaseChildrenList(menu *entity.Menu, treeMap map[string][]entity.Menu) (err error) {
@@ -67,15 +77,6 @@ func (menuService *MenuService) getBaseChildrenList(menu *entity.Menu, treeMap m
 		err = menuService.getBaseChildrenList(&menu.Children[i], treeMap)
 	}
 	return err
-}
-
-func (menuService *MenuService) getMenuTreeMap(roleId string) (treeMap map[string][]entity.Menu, err error) {
-	var allMenus []entity.Menu
-	err = zvar.DB.Where("role_id = ?", roleId).Order("sort").Find(&allMenus).Error
-	for _, v := range allMenus {
-		treeMap[v.ParentId] = append(treeMap[v.ParentId], v)
-	}
-	return
 }
 
 //------ end
@@ -90,14 +91,13 @@ func (menuService *MenuService) GetMenuTree(roleId string) (err error, menus []e
 	return err, menus
 }
 
-func (menuService *MenuService) getBaseMenuTreeMap() (err error, treeMap map[string][]entity.Menu) {
+func (menuService *MenuService) getMenuTreeMap(roleId string) (treeMap map[string][]entity.Menu, err error) {
 	var allMenus []entity.Menu
-	treeMap = make(map[string][]entity.Menu)
-	err = zvar.DB.Order("sort").Find(&allMenus).Error
+	err = zvar.DB.Where("role_id = ?", roleId).Order("sort").Find(&allMenus).Error
 	for _, v := range allMenus {
 		treeMap[v.ParentId] = append(treeMap[v.ParentId], v)
 	}
-	return err, treeMap
+	return
 }
 
 func (menuService *MenuService) getChildrenList(menu *entity.Menu, treeMap map[string][]entity.Menu) (err error) {

@@ -1,18 +1,18 @@
 <template>
-  <div class="authority">
+  <div class="role">
     <div class="button-box clearflex">
-      <el-button size="mini" type="primary" icon="el-icon-plus" @click="addAuthority('0')">新增角色</el-button>
+      <el-button size="mini" type="primary" icon="el-icon-plus" @click="addRole('0')">新增角色</el-button>
     </div>
     <el-table
       :data="tableData"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
       border
-      row-key="authorityId"
+      row-key="roleId"
       stripe
       style="width: 100%"
     >
-      <el-table-column label="角色id" min-width="180" prop="authorityId" />
-      <el-table-column label="角色名称" min-width="180" prop="authorityName" />
+      <el-table-column label="角色id" min-width="180" prop="roleId" />
+      <el-table-column label="角色名称" min-width="180" prop="roleName" />
       <el-table-column fixed="right" label="操作" width="460">
         <template slot-scope="scope">
           <el-button size="mini" type="primary" @click="opdendrawer(scope.row)">设置权限</el-button>
@@ -20,19 +20,13 @@
             icon="el-icon-plus"
             size="mini"
             type="primary"
-            @click="addAuthority(scope.row.authorityId)"
+            @click="addRole(scope.row.roleId)"
           >新增子角色</el-button>
-          <el-button
-            icon="el-icon-copy-document"
-            size="mini"
-            type="primary"
-            @click="copyAuthority(scope.row)"
-          >拷贝</el-button>
           <el-button
             icon="el-icon-edit"
             size="mini"
             type="primary"
-            @click="editAuthority(scope.row)"
+            @click="editRole(scope.row)"
           >编辑</el-button>
           <el-button
             icon="el-icon-delete"
@@ -45,22 +39,22 @@
     </el-table>
     <!-- 新增角色弹窗 -->
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
-      <el-form ref="authorityForm" :model="form" :rules="rules">
+      <el-form ref="roleForm" :model="form" :rules="rules">
         <el-form-item label="父级角色" prop="parentId">
           <el-cascader
             v-model="form.parentId"
             :disabled="dialogType=='add'"
-            :options="AuthorityOption"
-            :props="{ checkStrictly: true,label:'authorityName',value:'authorityId',disabled:'disabled',emitPath:false}"
+            :options="RoleOption"
+            :props="{ checkStrictly: true,label:'roleName',value:'roleId',disabled:'disabled',emitPath:false}"
             :show-all-levels="false"
             filterable
           />
         </el-form-item>
-        <el-form-item label="角色ID" prop="authorityId">
-          <el-input v-model="form.authorityId" :disabled="dialogType=='edit'" autocomplete="off" />
+        <el-form-item label="角色ID" prop="roleId">
+          <el-input v-model="form.roleId" :disabled="dialogType=='edit'" autocomplete="off" />
         </el-form-item>
-        <el-form-item label="角色姓名" prop="authorityName">
-          <el-input v-model="form.authorityName" autocomplete="off" />
+        <el-form-item label="角色姓名" prop="roleName">
+          <el-input v-model="form.roleName" autocomplete="off" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -78,7 +72,7 @@
           <apis ref="apis" :row="activeRow" />
         </el-tab-pane>
         <el-tab-pane label="资源权限">
-          <Datas ref="datas" :authority="tableData" :row="activeRow" />
+          <Datas ref="datas" :role="tableData" :row="activeRow" />
         </el-tab-pane>
       </el-tabs>
     </el-drawer>
@@ -89,20 +83,19 @@
 // 获取列表内容封装在mixins内部  getTableData方法 初始化已封装完成
 
 import {
-  getAuthorityList,
-  deleteAuthority,
-  createAuthority,
-  updateAuthority,
-  copyAuthority
+  getRoleList,
+  deleteRole,
+  createRole,
+  updateRole,
 } from '@/api/role'
 
-import Menus from '@/view/superAdmin/authority/components/menus'
-import Apis from '@/view/superAdmin/authority/components/apis'
-import Datas from '@/view/superAdmin/authority/components/datas'
+import Menus from '@/view/superAdmin/role/components/menus'
+import Apis from '@/view/superAdmin/role/components/apis'
+import Datas from '@/view/superAdmin/role/components/datas'
 
 import infoList from '@/mixins/infoList'
 export default {
-  name: 'Authority',
+  name: 'Role',
   components: {
     Menus,
     Apis,
@@ -118,13 +111,13 @@ export default {
     }
 
     return {
-      AuthorityOption: [
+      RoleOption: [
         {
-          authorityId: '0',
-          authorityName: '根角色'
+          roleId: '0',
+          roleName: '根角色'
         }
       ],
-      listApi: getAuthorityList,
+      listApi: getRoleList,
       drawer: false,
       dialogType: 'add',
       activeRow: {},
@@ -134,16 +127,16 @@ export default {
       apiDialogFlag: false,
       copyForm: {},
       form: {
-        authorityId: '',
-        authorityName: '',
+        roleId: '',
+        roleName: '',
         parentId: '0'
       },
       rules: {
-        authorityId: [
+        roleId: [
           { required: true, message: '请输入角色ID', trigger: 'blur' },
           { validator: mustUint, trigger: 'blur' }
         ],
-        authorityName: [
+        roleName: [
           { required: true, message: '请输入角色名', trigger: 'blur' }
         ],
         parentId: [
@@ -167,7 +160,7 @@ export default {
       }
     },
     // 拷贝角色
-    copyAuthority(row) {
+    copyRole(row) {
       this.setOptions()
       this.dialogTitle = '拷贝角色'
       this.dialogType = 'copy'
@@ -189,7 +182,7 @@ export default {
         type: 'warning'
       })
         .then(async() => {
-          const res = await deleteAuthority({ authorityId: row.authorityId })
+          const res = await deleteRole({ roleId: row.roleId })
           if (res.code === 0) {
             this.$message({
               type: 'success',
@@ -210,12 +203,12 @@ export default {
     },
     // 初始化表单
     initForm() {
-      if (this.$refs.authorityForm) {
-        this.$refs.authorityForm.resetFields()
+      if (this.$refs.roleForm) {
+        this.$refs.roleForm.resetFields()
       }
       this.form = {
-        authorityId: '',
-        authorityName: '',
+        roleId: '',
+        roleName: '',
         parentId: '0'
       }
     },
@@ -228,19 +221,19 @@ export default {
     // 确定弹窗
 
     async enterDialog() {
-      if (this.form.authorityId === '0') {
+      if (this.form.roleId === '0') {
         this.$message({
           type: 'error',
           message: '角色id不能为0'
         })
         return false
       }
-      this.$refs.authorityForm.validate(async valid => {
+      this.$refs.roleForm.validate(async valid => {
         if (valid) {
           switch (this.dialogType) {
             case 'add':
               {
-                const res = await createAuthority(this.form)
+                const res = await createRole(this.form)
                 if (res.code === 0) {
                   this.$message({
                     type: 'success',
@@ -253,7 +246,7 @@ export default {
               break
             case 'edit':
               {
-                const res = await updateAuthority(this.form)
+                const res = await updateRole(this.form)
                 if (res.code === 0) {
                   this.$message({
                     type: 'success',
@@ -266,20 +259,20 @@ export default {
               break
             case 'copy': {
               const data = {
-                authority: {
-                  authorityId: 'string',
-                  authorityName: 'string',
-                  datauthorityId: [],
+                role: {
+                  roleId: 'string',
+                  roleName: 'string',
+                  datroleId: [],
                   parentId: 'string'
                 },
-                oldAuthorityId: 0
+                oldRoleId: 0
               }
-              data.authority.authorityId = this.form.authorityId
-              data.authority.authorityName = this.form.authorityName
-              data.authority.parentId = this.form.parentId
-              data.authority.dataAuthorityId = this.copyForm.dataAuthorityId
-              data.oldAuthorityId = this.copyForm.authorityId
-              const res = await copyAuthority(data)
+              data.role.roleId = this.form.roleId
+              data.role.roleName = this.form.roleName
+              data.role.parentId = this.form.parentId
+              data.role.dataRoleId = this.copyForm.dataRoleId
+              data.oldRoleId = this.copyForm.roleId
+              const res = await copyRole(data)
               if (res.code === 0) {
                 this.$message({
                   type: 'success',
@@ -296,43 +289,43 @@ export default {
       })
     },
     setOptions() {
-      this.AuthorityOption = [
+      this.RoleOption = [
         {
-          authorityId: '0',
-          authorityName: '根角色'
+          roleId: '0',
+          roleName: '根角色'
         }
       ]
-      this.setAuthorityOptions(this.tableData, this.AuthorityOption, false)
+      this.setRoleOptions(this.tableData, this.RoleOption, false)
     },
-    setAuthorityOptions(AuthorityData, optionsData, disabled) {
-      this.form.authorityId = String(this.form.authorityId)
-      AuthorityData &&
-        AuthorityData.map(item => {
+    setRoleOptions(RoleData, optionsData, disabled) {
+      this.form.roleId = String(this.form.roleId)
+      RoleData &&
+        RoleData.map(item => {
           if (item.children && item.children.length) {
             const option = {
-              authorityId: item.authorityId,
-              authorityName: item.authorityName,
-              disabled: disabled || item.authorityId === this.form.authorityId,
+              roleId: item.roleId,
+              roleName: item.roleName,
+              disabled: disabled || item.roleId === this.form.roleId,
               children: []
             }
-            this.setAuthorityOptions(
+            this.setRoleOptions(
               item.children,
               option.children,
-              disabled || item.authorityId === this.form.authorityId
+              disabled || item.roleId === this.form.roleId
             )
             optionsData.push(option)
           } else {
             const option = {
-              authorityId: item.authorityId,
-              authorityName: item.authorityName,
-              disabled: disabled || item.authorityId === this.form.authorityId
+              roleId: item.roleId,
+              roleName: item.roleName,
+              disabled: disabled || item.roleId === this.form.roleId
             }
             optionsData.push(option)
           }
         })
     },
     // 增加角色
-    addAuthority(parentId) {
+    addRole(parentId) {
       this.initForm()
       this.dialogTitle = '新增角色'
       this.dialogType = 'add'
@@ -341,7 +334,7 @@ export default {
       this.dialogFormVisible = true
     },
     // 编辑角色
-    editAuthority(row) {
+    editRole(row) {
       this.setOptions()
       this.dialogTitle = '编辑角色'
       this.dialogType = 'edit'
@@ -356,7 +349,7 @@ export default {
 </script>
 
 <style lang="scss">
-.authority {
+.ro le {
   .el-input-number {
     margin-left: 15px;
     span {

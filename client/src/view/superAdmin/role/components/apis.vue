@@ -19,7 +19,7 @@
 
 <script>
 import { getAllApis } from '@/api/permission'
-import { UpdateCasbin, getPolicyPathByAuthorityId } from '@/api/casbin'
+import { UpdateCasbin, getPolicyPathByRoleId } from '@/api/casbin'
 export default {
   name: 'Apis',
   props: {
@@ -47,10 +47,10 @@ export default {
     const apis = res2.data.apis
 
     this.apiTreeData = this.buildApiTree(apis)
-    const res = await getPolicyPathByAuthorityId({
-      authorityId: this.row.authorityId
+    const res = await getPolicyPathByRoleId({
+      roleId: this.row.roleId
     })
-    this.activeUserId = this.row.authorityId
+    this.activeUserId = this.row.roleId
     this.apiTreeIds = []
     res.data.paths && res.data.paths.map(item => {
       this.apiTreeIds.push('p:' + item.path + 'm:' + item.method)
@@ -99,7 +99,7 @@ export default {
         casbinInfos.push(casbinInfo)
       })
       const res = await UpdateCasbin({
-        authorityId: this.activeUserId,
+        roleId: this.activeUserId,
         casbinInfos
       })
       if (res.code === 0) {

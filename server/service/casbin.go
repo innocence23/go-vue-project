@@ -29,6 +29,7 @@ func (rbacService *RbacService) AddRoleForUser(account string, role string) (boo
 
 // 授权用户到角色 批量
 func (rbacService *RbacService) AddRolesForUser(account string, role []string) (bool, error) {
+	rbacService.DeleteRolesForUser(account)
 	return zvar.Enforcer.AddRolesForUser(account, role)
 }
 

@@ -44,3 +44,8 @@
 ```
 
 + https://github.com/silenceper/wechat  (go 微信包)
+
+
+
+todo：
+- 后台添加用户 （后台注册，角色字段没处理）

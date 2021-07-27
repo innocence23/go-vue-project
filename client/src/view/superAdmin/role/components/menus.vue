@@ -33,9 +33,9 @@
 </template>
 
 <script>
-import { getBaseMenuTree, getMenuAuthority, addMenuAuthority } from '@/api/menu'
+import { getBaseMenuTree, getMenuRole, addMenuRole } from '@/api/menu'
 import {
-  updateAuthority
+  updateRole
 } from '@/api/role'
 export default {
   name: 'Menus',
@@ -65,7 +65,7 @@ export default {
     const res = await getBaseMenuTree()
     this.menuTreeData = res.data.menus
 
-    const res1 = await getMenuAuthority({ authorityId: this.row.authorityId })
+    const res1 = await getMenuRole({ roleId: this.row.roleId })
     const menus = res1.data.menus
     const arr = []
     menus.map(item => {
@@ -78,7 +78,7 @@ export default {
   },
   methods: {
     async setDefault(data) {
-      const res = await updateAuthority({ authorityId: this.row.authorityId, AuthorityName: this.row.authorityName, parentId: this.row.parentId })
+      const res = await updateRole({ roleId: this.row.roleId, RoleName: this.row.roleName, parentId: this.row.parentId })
       if (res.code === 0) {
         this.$message({ type: 'success', message: '设置成功' })
       }
@@ -93,9 +93,9 @@ export default {
     // 关联树 确认方法
     async relation() {
       const checkArr = this.$refs.menuTree.getCheckedNodes(false, true)
-      const res = await addMenuAuthority({
+      const res = await addMenuRole({
         menus: checkArr,
-        authorityId: this.row.authorityId
+        roleId: this.row.roleId
       })
       if (res.code === 0) {
         this.$message({

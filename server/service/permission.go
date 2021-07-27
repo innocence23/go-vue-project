@@ -24,12 +24,10 @@ func (permissionService *PermissionService) Delete(perm entity.Permission) (err 
 	return err
 }
 
-func (permissionService *PermissionService) List(perm entity.Permission, info request.PageInfo, order string, desc bool) (list interface{}, total int64, err error) {
+func (permissionService *PermissionService) List(perm entity.Permission, info request.PageInfo, order string, desc bool) (permList []entity.Permission, total int64, err error) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
 	db := zvar.DB.Model(&entity.Permission{})
-	var permList []entity.Permission
-
 	if perm.Path != "" {
 		db = db.Where("path LIKE ?", "%"+perm.Path+"%")
 	}
