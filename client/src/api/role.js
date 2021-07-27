@@ -9,6 +9,7 @@ export const setRoleUser = (data) => {
   })
 }
 
+//todo
 export const setDataRole = (data) => {
   return service({
     url: '/authority/setDataRole',
@@ -16,7 +17,6 @@ export const setDataRole = (data) => {
     data
   })
 }
-
 
 export const getRoleList = (data) => {
   return service({
@@ -28,19 +28,15 @@ export const getRoleList = (data) => {
 
 export const createRole = (data) => {
   return service({
-    url: '/authority/createRole',
+    url: '/role/create',
     method: 'post',
     data
   })
 }
 
-
-
-
-
 export const updateRole = (data) => {
   return service({
-    url: '/authority/updateRole',
+    url: '/role/update',
     method: 'put',
     data
   })
@@ -48,7 +44,7 @@ export const updateRole = (data) => {
 
 export const deleteRole = (data) => {
   return service({
-    url: '/authority/deleteRole',
+    url: '/role/delete',
     method: 'post',
     data
   })

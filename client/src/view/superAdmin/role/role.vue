@@ -7,12 +7,12 @@
       :data="tableData"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
       border
-      row-key="roleId"
+      row-key="ID"
       stripe
       style="width: 100%"
     >
-      <el-table-column label="角色id" min-width="180" prop="roleId" />
-      <el-table-column label="角色名称" min-width="180" prop="roleName" />
+      <el-table-column label="角色id" min-width="180" prop="ID" />
+      <el-table-column label="角色名称" min-width="180" prop="name" />
       <el-table-column fixed="right" label="操作" width="460">
         <template slot-scope="scope">
           <el-button size="mini" type="primary" @click="opdendrawer(scope.row)">设置权限</el-button>
@@ -20,7 +20,7 @@
             icon="el-icon-plus"
             size="mini"
             type="primary"
-            @click="addRole(scope.row.roleId)"
+            @click="addRole(scope.row.id)"
           >新增子角色</el-button>
           <el-button
             icon="el-icon-edit"
@@ -45,16 +45,13 @@
             v-model="form.parentId"
             :disabled="dialogType=='add'"
             :options="RoleOption"
-            :props="{ checkStrictly: true,label:'roleName',value:'roleId',disabled:'disabled',emitPath:false}"
+            :props="{ checkStrictly: true,label:'name',value:'ID',disabled:'disabled',emitPath:false}"
             :show-all-levels="false"
             filterable
           />
         </el-form-item>
-        <el-form-item label="角色ID" prop="roleId">
-          <el-input v-model="form.roleId" :disabled="dialogType=='edit'" autocomplete="off" />
-        </el-form-item>
-        <el-form-item label="角色姓名" prop="roleName">
-          <el-input v-model="form.roleName" autocomplete="off" />
+        <el-form-item label="角色姓名" prop="name">
+          <el-input v-model="form.name" autocomplete="off" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -68,11 +65,8 @@
         <el-tab-pane label="角色菜单">
           <Menus ref="menus" :row="activeRow" />
         </el-tab-pane>
-        <el-tab-pane label="角色api">
+        <el-tab-pane label="角色权限">
           <apis ref="apis" :row="activeRow" />
-        </el-tab-pane>
-        <el-tab-pane label="资源权限">
-          <Datas ref="datas" :role="tableData" :row="activeRow" />
         </el-tab-pane>
       </el-tabs>
     </el-drawer>
@@ -86,20 +80,18 @@ import {
   getRoleList,
   deleteRole,
   createRole,
-  updateRole,
+  updateRole
 } from '@/api/role'
 
 import Menus from '@/view/superAdmin/role/components/menus'
-import Apis from '@/view/superAdmin/role/components/apis'
-import Datas from '@/view/superAdmin/role/components/datas'
+import Apis from '@/view/superAdmin/role/components/permissions'
 
 import infoList from '@/mixins/infoList'
 export default {
   name: 'Role',
   components: {
     Menus,
-    Apis,
-    Datas
+    Apis
   },
   mixins: [infoList],
   data() {
@@ -113,8 +105,8 @@ export default {
     return {
       RoleOption: [
         {
-          roleId: '0',
-          roleName: '根角色'
+          ID: '0',
+          name: '根角色'
         }
       ],
       listApi: getRoleList,
@@ -127,20 +119,16 @@ export default {
       apiDialogFlag: false,
       copyForm: {},
       form: {
-        roleId: '',
-        roleName: '',
+        ID: '',
+        name: '',
         parentId: '0'
       },
       rules: {
-        roleId: [
-          { required: true, message: '请输入角色ID', trigger: 'blur' },
-          { validator: mustUint, trigger: 'blur' }
-        ],
-        roleName: [
+        name: [
           { required: true, message: '请输入角色名', trigger: 'blur' }
         ],
         parentId: [
-          { required: true, message: '请选择请求方式', trigger: 'blur' }
+          { required: true, message: '请输入父级ID', trigger: 'blur' }
         ]
       }
     }
@@ -182,7 +170,7 @@ export default {
         type: 'warning'
       })
         .then(async() => {
-          const res = await deleteRole({ roleId: row.roleId })
+          const res = await deleteRole({ ID: row.ID })
           if (res.code === 0) {
             this.$message({
               type: 'success',
@@ -207,8 +195,8 @@ export default {
         this.$refs.roleForm.resetFields()
       }
       this.form = {
-        roleId: '',
-        roleName: '',
+        ID: '',
+        name: '',
         parentId: '0'
       }
     },
@@ -221,7 +209,7 @@ export default {
     // 确定弹窗
 
     async enterDialog() {
-      if (this.form.roleId === '0') {
+      if (this.form.ID === '0') {
         this.$message({
           type: 'error',
           message: '角色id不能为0'
@@ -257,30 +245,6 @@ export default {
                 }
               }
               break
-            case 'copy': {
-              const data = {
-                role: {
-                  roleId: 'string',
-                  roleName: 'string',
-                  datroleId: [],
-                  parentId: 'string'
-                },
-                oldRoleId: 0
-              }
-              data.role.roleId = this.form.roleId
-              data.role.roleName = this.form.roleName
-              data.role.parentId = this.form.parentId
-              data.role.dataRoleId = this.copyForm.dataRoleId
-              data.oldRoleId = this.copyForm.roleId
-              const res = await copyRole(data)
-              if (res.code === 0) {
-                this.$message({
-                  type: 'success',
-                  message: '复制成功！'
-                })
-                this.getTableData()
-              }
-            }
           }
 
           this.initForm()
@@ -291,34 +255,34 @@ export default {
     setOptions() {
       this.RoleOption = [
         {
-          roleId: '0',
-          roleName: '根角色'
+          ID: '0',
+          name: '根角色'
         }
       ]
       this.setRoleOptions(this.tableData, this.RoleOption, false)
     },
     setRoleOptions(RoleData, optionsData, disabled) {
-      this.form.roleId = String(this.form.roleId)
+      this.form.ID = String(this.form.ID)
       RoleData &&
         RoleData.map(item => {
           if (item.children && item.children.length) {
             const option = {
-              roleId: item.roleId,
-              roleName: item.roleName,
-              disabled: disabled || item.roleId === this.form.roleId,
+              ID: item.ID,
+              name: item.name,
+              disabled: disabled || item.ID === this.form.ID,
               children: []
             }
             this.setRoleOptions(
               item.children,
               option.children,
-              disabled || item.roleId === this.form.roleId
+              disabled || item.ID === this.form.ID
             )
             optionsData.push(option)
           } else {
             const option = {
-              roleId: item.roleId,
-              roleName: item.roleName,
-              disabled: disabled || item.roleId === this.form.roleId
+              ID: item.ID,
+              name: item.name,
+              disabled: disabled || item.ID === this.form.ID
             }
             optionsData.push(option)
           }
