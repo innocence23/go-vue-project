@@ -16,6 +16,7 @@ func InitRouter() *gin.Engine {
 	var Router = gin.Default()
 	Router.StaticFS(zvar.Config.Local.Path, http.Dir(zvar.Config.Local.Path)) // 为用户头像和文件提供静态地址
 	zvar.Log.Info("use middleware logger")
+
 	// 跨域
 	//Router.Use(middleware.Cors()) // 如需跨域可以打开
 	zvar.Log.Info("use middleware cors")

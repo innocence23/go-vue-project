@@ -1,7 +1,7 @@
 <template>
   <div class="role">
     <div class="button-box clearflex">
-      <el-button size="mini" type="primary" icon="el-icon-plus" @click="addRole('0')">新增角色</el-button>
+      <el-button size="mini" type="primary" icon="el-icon-plus" @click="addRole(0)">新增角色</el-button>
     </div>
     <el-table
       :data="tableData"
@@ -105,7 +105,7 @@ export default {
     return {
       RoleOption: [
         {
-          ID: '0',
+          ID: 0,
           name: '根角色'
         }
       ],
@@ -117,11 +117,10 @@ export default {
       dialogTitle: '新增角色',
       dialogFormVisible: false,
       apiDialogFlag: false,
-      copyForm: {},
       form: {
-        ID: '',
+        ID: 0,
         name: '',
-        parentId: '0'
+        parentId: 0
       },
       rules: {
         name: [
@@ -146,17 +145,6 @@ export default {
           this.$refs[paneArr[oldActiveName]].needConfirm = false
         }
       }
-    },
-    // 拷贝角色
-    copyRole(row) {
-      this.setOptions()
-      this.dialogTitle = '拷贝角色'
-      this.dialogType = 'copy'
-      for (const k in this.form) {
-        this.form[k] = row[k]
-      }
-      this.copyForm = row
-      this.dialogFormVisible = true
     },
     opdendrawer(row) {
       this.drawer = true
@@ -195,9 +183,9 @@ export default {
         this.$refs.roleForm.resetFields()
       }
       this.form = {
-        ID: '',
+        ID: 0,
         name: '',
-        parentId: '0'
+        parentId: 0
       }
     },
     // 关闭窗口
@@ -209,7 +197,7 @@ export default {
     // 确定弹窗
 
     async enterDialog() {
-      if (this.form.ID === '0') {
+      if (this.form.ID === 0) {
         this.$message({
           type: 'error',
           message: '角色id不能为0'
@@ -255,14 +243,13 @@ export default {
     setOptions() {
       this.RoleOption = [
         {
-          ID: '0',
+          ID: 0,
           name: '根角色'
         }
       ]
       this.setRoleOptions(this.tableData, this.RoleOption, false)
     },
     setRoleOptions(RoleData, optionsData, disabled) {
-      this.form.ID = String(this.form.ID)
       RoleData &&
         RoleData.map(item => {
           if (item.children && item.children.length) {
