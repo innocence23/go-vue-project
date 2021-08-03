@@ -108,7 +108,7 @@
 <script>
 import { getDict } from '@/utils/dictionary'
 import { toLowerCase, toSQLLine } from '@/utils/stringFun'
-import { getSysDictionaryList } from '@/api/sysDictionary'
+import { getDictList } from '@/api/dict'
 
 export default {
   name: 'FieldDialog',
@@ -188,7 +188,7 @@ export default {
     }
   },
   async created() {
-    const dictRes = await getSysDictionaryList({
+    const dictRes = await getDictList({
       page: 1,
       pageSize: 999999
     })

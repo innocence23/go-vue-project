@@ -14,19 +14,8 @@
       show-checkbox
       @check="nodeChange"
     >
-      <span slot-scope="{ node , data }" class="custom-tree-node">
+      <span slot-scope="{ node }" class="custom-tree-node">
         <span>{{ node.label }}</span>
-        <span>
-          <el-button
-            type="text"
-            size="mini"
-            :style="{color:row.defaultRouter === data.name?'#E6A23C':'#85ce61'}"
-            :disabled="!node.checked"
-            @click="() => setDefault(data)"
-          >
-            {{ row.defaultRouter === data.name?"首页":"设为首页" }}
-          </el-button>
-        </span>
       </span>
     </el-tree>
   </div>
@@ -77,12 +66,6 @@ export default {
     this.menuTreeIds = arr
   },
   methods: {
-    async setDefault(data) {
-      const res = await updateRole({ roleId: this.row.roleId, RoleName: this.row.roleName, parentId: this.row.parentId })
-      if (res.code === 0) {
-        this.$message({ type: 'success', message: '设置成功' })
-      }
-    },
     nodeChange() {
       this.needConfirm = true
     },

@@ -49,7 +49,7 @@ export const updateBaseMenu = (data) => {
 
 export const getBaseMenuTree = () => {
   return service({
-    url: '/menu/getUidMenu',
+    url: '/menu/treeList',
     method: 'post'
   })
 }

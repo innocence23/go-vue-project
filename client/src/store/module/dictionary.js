@@ -1,4 +1,4 @@
-import { findSysDictionary } from '@/api/sysDictionary'
+import { findDict } from '@/api/dict'
 
 export const dictionary = {
   namespaced: true,
@@ -17,7 +17,7 @@ export const dictionary = {
       if (state.dictionaryMap[type]) {
         return state.dictionaryMap[type]
       } else {
-        const res = await findSysDictionary({ type })
+        const res = await findDict({ type })
         if (res.code === 0) {
           const dictionaryMap = {}
           const dict = []

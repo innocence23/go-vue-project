@@ -1,7 +1,7 @@
 <template>
   <div class="role">
     <div class="button-box clearflex">
-      <el-button size="mini" type="primary" icon="el-icon-plus" @click="addRole(0)">新增角色</el-button>
+      <el-button size="mini" type="primary" icon="el-icon-plus" @click="addRole()">新增角色</el-button>
     </div>
     <el-table
       :data="tableData"
@@ -16,12 +16,6 @@
       <el-table-column fixed="right" label="操作" width="460">
         <template slot-scope="scope">
           <el-button size="mini" type="primary" @click="opdendrawer(scope.row)">设置权限</el-button>
-          <el-button
-            icon="el-icon-plus"
-            size="mini"
-            type="primary"
-            @click="addRole(scope.row.id)"
-          >新增子角色</el-button>
           <el-button
             icon="el-icon-edit"
             size="mini"
@@ -40,16 +34,6 @@
     <!-- 新增角色弹窗 -->
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
       <el-form ref="roleForm" :model="form" :rules="rules">
-        <el-form-item label="父级角色" prop="parentId">
-          <el-cascader
-            v-model="form.parentId"
-            :disabled="dialogType=='add'"
-            :options="RoleOption"
-            :props="{ checkStrictly: true,label:'name',value:'ID',disabled:'disabled',emitPath:false}"
-            :show-all-levels="false"
-            filterable
-          />
-        </el-form-item>
         <el-form-item label="角色姓名" prop="name">
           <el-input v-model="form.name" autocomplete="off" />
         </el-form-item>
@@ -120,14 +104,10 @@ export default {
       form: {
         ID: 0,
         name: '',
-        parentId: 0
       },
       rules: {
         name: [
           { required: true, message: '请输入角色名', trigger: 'blur' }
-        ],
-        parentId: [
-          { required: true, message: '请输入父级ID', trigger: 'blur' }
         ]
       }
     }
@@ -184,8 +164,7 @@ export default {
       }
       this.form = {
         ID: 0,
-        name: '',
-        parentId: 0
+        name: ''
       }
     },
     // 关闭窗口
@@ -197,13 +176,6 @@ export default {
     // 确定弹窗
 
     async enterDialog() {
-      if (this.form.ID === 0) {
-        this.$message({
-          type: 'error',
-          message: '角色id不能为0'
-        })
-        return false
-      }
       this.$refs.roleForm.validate(async valid => {
         if (valid) {
           switch (this.dialogType) {
@@ -276,11 +248,10 @@ export default {
         })
     },
     // 增加角色
-    addRole(parentId) {
+    addRole() {
       this.initForm()
       this.dialogTitle = '新增角色'
       this.dialogType = 'add'
-      this.form.parentId = parentId
       this.setOptions()
       this.dialogFormVisible = true
     },
@@ -300,7 +271,7 @@ export default {
 </script>
 
 <style lang="scss">
-.ro le {
+.role {
   .el-input-number {
     margin-left: 15px;
     span {

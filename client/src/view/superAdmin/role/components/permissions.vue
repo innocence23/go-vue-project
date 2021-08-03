@@ -21,7 +21,7 @@
 import { getAllApis } from '@/api/permission'
 import { UpdateCasbin, getPolicyPathByRoleId } from '@/api/casbin'
 export default {
-  name: 'Apis',
+  name: 'Permissions',
   props: {
     row: {
       default: function() {
@@ -44,9 +44,9 @@ export default {
   async created() {
     // 获取api并整理成树结构
     const res2 = await getAllApis()
-    const apis = res2.data.apis
+    const permissions = res2.data.permissions
 
-    this.apiTreeData = this.buildApiTree(apis)
+    this.apiTreeData = this.buildApiTree(permissions)
     const res = await getPolicyPathByRoleId({
       roleId: this.row.roleId
     })
@@ -65,15 +65,15 @@ export default {
       this.authApiEnter()
     },
     // 创建api树方法
-    buildApiTree(apis) {
+    buildApiTree(permissions) {
       const apiObj = {}
-      apis &&
-        apis.map(item => {
+      permissions &&
+        permissions.map(item => {
           item.onlyId = 'p:' + item.path + 'm:' + item.method
-          if (Object.prototype.hasOwnProperty.call(apiObj, item.apiGroup)) {
-            apiObj[item.apiGroup].push(item)
+          if (Object.prototype.hasOwnProperty.call(apiObj, item.group)) {
+            apiObj[item.group].push(item)
           } else {
-            Object.assign(apiObj, { [item.apiGroup]: [item] })
+            Object.assign(apiObj, { [item.group]: [item] })
           }
         })
       const apiTree = []
