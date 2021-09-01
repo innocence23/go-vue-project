@@ -8,7 +8,7 @@
               <div>
                 <el-col :xs="4" :md="3" :lg="3">
                   <span class="card-img">
-                    <img :src="userInfo.headerImg" alt="">
+                    <img :src="userInfo.avatar" alt="">
                   </span>
                 </el-col>
                 <el-col :xs="20" :lg="12" :md="12">

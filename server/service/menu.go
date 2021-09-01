@@ -93,7 +93,7 @@ func (menuService *MenuService) GetMenuTree(roleId string) (err error, menus []e
 
 func (menuService *MenuService) getMenuTreeMap(roleId string) (treeMap map[string][]entity.Menu, err error) {
 	var allMenus []entity.Menu
-	err = zvar.DB.Where("role_id = ?", roleId).Order("sort").Find(&allMenus).Error
+	err = zvar.DB.Where("id = ?", roleId).Order("sort").Find(&allMenus).Error
 	for _, v := range allMenus {
 		treeMap[v.ParentId] = append(treeMap[v.ParentId], v)
 	}

@@ -4,7 +4,7 @@
       <el-col :span="6">
         <div class="fl-left avatar-box">
           <div class="user-card">
-            <div class="user-headpic-update" :style="{ 'background-image': `url(${(userInfo.headerImg && userInfo.headerImg.slice(0, 4) !== 'http')?path+userInfo.headerImg:userInfo.headerImg})`,'background-repeat':'no-repeat','background-size':'cover' }">
+            <div class="user-headpic-update" :style="{ 'background-image': `url(${(userInfo.avatar && userInfo.avatar.slice(0, 4) !== 'http')?path+userInfo.avatar:userInfo.avatar})`,'background-repeat':'no-repeat','background-size':'cover' }">
               <span class="update" @click="openChooseImg">
                 <i class="el-icon-edit" />
                 重新上传</span>
@@ -177,9 +177,9 @@ export default {
       this.$refs.chooseImg.open()
     },
     async enterImg(url) {
-      const res = await setUserInfo({ headerImg: url, ID: this.userInfo.ID })
+      const res = await setUserInfo({ avatar: url, ID: this.userInfo.ID })
       if (res.code === 0) {
-        this.ResetUserInfo({ headerImg: url })
+        this.ResetUserInfo({ avatar: url })
         this.$message({
           type: 'success',
           message: '设置成功'

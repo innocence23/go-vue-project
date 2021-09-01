@@ -14,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	"github.com/mojocn/base64Captcha"
+	"github.com/spf13/cast"
 	"go.uber.org/zap"
 )
 
@@ -83,8 +84,7 @@ func (h *baseHandler) login(c *gin.Context) {
 			zvar.Log.Error("登陆失败! 用户名不存在或者密码错误!", zap.Any("err", err))
 			response.FailWithMessage("用户名不存在或者密码错误", c)
 		} else {
-			// roleIds, _ := h.rbacService.GetRolesForUser(user.Username)
-			// user.Role, _ = h.roleService.FindByIds(roleIds)
+			user.RoleIds, _ = (&service.RbacService{}).GetRolesForUser(cast.ToString(user.ID))
 			h.tokenNext(c, user)
 		}
 	} else {
@@ -104,7 +104,7 @@ func (h *baseHandler) tokenNext(c *gin.Context, user entity.User) {
 		StandardClaims: jwt.StandardClaims{
 			NotBefore: time.Now().Unix() - 1000,                        // 签名生效时间
 			ExpiresAt: time.Now().Unix() + zvar.Config.JWT.ExpiresTime, // 过期时间 7天  配置文件
-			Issuer:    "qmPlus",                                        // 签名的发行者
+			Issuer:    "",                                              // 签名的发行者
 		},
 	}
 	token, err := j.CreateToken(claims)

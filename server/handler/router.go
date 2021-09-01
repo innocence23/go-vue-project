@@ -24,6 +24,12 @@ func InitRouter() *gin.Engine {
 	zvar.Log.Info("register swagger handler")
 	// 方便统一添加路由组前缀 多服务器上线使用
 
+	Router.GET("/api/test", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"hello": "world",
+		})
+	})
+
 	//获取路由组实例
 	gRouter := Router.Group(zvar.UrlPrefix)
 	admin.NewBaseHandler().Router(gRouter) // 登陆及验证码
@@ -39,11 +45,10 @@ func InitRouter() *gin.Engine {
 		admin.NewSysHandler().Router(gRouter)        // system相关路由
 		admin.NewEmailHandler().Router(gRouter)      // 邮件相关路由
 		admin.NewDictHandler().Router(gRouter)       // 字典管理
+		admin.NewDictDetailHandler().Router(gRouter) // 字典详情管理
 
 		//admin.NewCasbinHandler().Router(gRouter)     // 权限相关路由
 		//admin.NewAutoHandler().Router(gRouter)             // 创建自动化代码
-		// admin.NewDictionaryHandler().Router(gRouter)       // 字典管理
-		// admin.NewDictionaryDetailHandler().Router(gRouter) // 字典详情管理
 		admin.OperationRecordHandler().Router(gRouter) // 操作记录
 
 	}

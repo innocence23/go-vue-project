@@ -1,11 +1,11 @@
 <template>
   <span class="headerAvatar">
     <template v-if="picType === 'avatar'">
-      <el-avatar v-if="userInfo.headerImg" :size="30" :src="avatar" />
+      <el-avatar v-if="userInfo.avatar" :size="30" :src="avatar" />
       <el-avatar v-else :size="30" :src="require('@/assets/noBody.png')" />
     </template>
     <template v-if="picType === 'img'">
-      <img v-if="userInfo.headerImg" :src="avatar" class="avatar">
+      <img v-if="userInfo.avatar" :src="avatar" class="avatar">
       <img v-else :src="require('@/assets/noBody.png')" class="avatar">
     </template>
     <template v-if="picType === 'file'">
@@ -40,10 +40,10 @@ export default {
     ...mapGetters('user', ['userInfo']),
     avatar() {
       if (this.picSrc === '') {
-        if (this.userInfo.headerImg !== '' && this.userInfo.headerImg.slice(0, 4) === 'http') {
-          return this.userInfo.headerImg
+        if (this.userInfo.avatar !== '' && this.userInfo.avatar.slice(0, 4) === 'http') {
+          return this.userInfo.avatar
         }
-        return this.path + this.userInfo.headerImg
+        return this.path + this.userInfo.avatar
       } else {
         if (this.picSrc !== '' && this.picSrc.slice(0, 4) === 'http') {
           return this.picSrc

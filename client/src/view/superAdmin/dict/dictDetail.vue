@@ -54,7 +54,7 @@
               <el-button size="mini" type="text" @click="scope.row.visible = false">取消</el-button>
               <el-button type="primary" size="mini" @click="deleteDictDetail(scope.row)">确定</el-button>
             </div>
-            <el-button slot="reference" type="danger" icon="el-icon-delete" size="mini">删除</el-button>
+            <el-button slot="reference" type="danger" icon="el-icon-delete" size="mini" style="margin-left:10px">删除</el-button>
           </el-popover>
         </template>
       </el-table-column>
@@ -174,7 +174,7 @@ export default {
     }
   },
   created() {
-    this.searchInfo.sysDictionaryID = Number(this.$route.params.id)
+    this.searchInfo.DictID = Number(this.$route.params.id)
     this.getTableData()
   },
   methods: {
@@ -191,7 +191,7 @@ export default {
       const res = await findDictDetail({ ID: row.ID })
       this.type = 'update'
       if (res.code === 0) {
-        this.formData = res.data.resysDictionaryDetail
+        this.formData = res.data.dictDetail
         this.dialogFormVisible = true
       }
     },
@@ -202,7 +202,7 @@ export default {
         value: null,
         status: true,
         sort: null,
-        sysDictionaryID: ''
+        DictID: ''
       }
     },
     async deleteDictDetail(row) {
@@ -220,7 +220,7 @@ export default {
       }
     },
     async enterDialog() {
-      this.formData.sysDictionaryID = Number(this.$route.params.id)
+      this.formData.DictID = Number(this.$route.params.id)
       this.$refs['elForm'].validate(async valid => {
         if (!valid) return
         let res

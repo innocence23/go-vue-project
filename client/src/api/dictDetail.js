@@ -2,7 +2,7 @@ import service from '@/utils/request'
 
 export const createDictDetail = (data) => {
   return service({
-    url: '/dictDetail/createdictDetail',
+    url: '/dict-detail/create',
     method: 'post',
     data
   })
@@ -10,7 +10,7 @@ export const createDictDetail = (data) => {
 
 export const deleteDictDetail = (data) => {
   return service({
-    url: '/dictDetail/deleteDictDetail',
+    url: '/dict-detail/delete',
     method: 'delete',
     data
   })
@@ -18,7 +18,7 @@ export const deleteDictDetail = (data) => {
 
 export const updateDictDetail = (data) => {
   return service({
-    url: '/dictDetail/updateDictDetail',
+    url: '/dict-detail/update',
     method: 'put',
     data
   })
@@ -26,7 +26,7 @@ export const updateDictDetail = (data) => {
 
 export const findDictDetail = (params) => {
   return service({
-    url: '/dictDetail/findDictDetail',
+    url: '/dict-detail/show',
     method: 'get',
     params
   })
@@ -34,7 +34,7 @@ export const findDictDetail = (params) => {
 
 export const getDictDetailList = (params) => {
   return service({
-    url: '/dictDetail/getDictDetailList',
+    url: '/dict-detail/list',
     method: 'get',
     params
   })

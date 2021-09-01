@@ -39,7 +39,7 @@ func (h *permissionHandler) Router(router *gin.RouterGroup) {
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body request.SearchApiParams true "分页获取API列表"
+// @Param data body request.SearchPermissionParams true "分页获取API列表"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /api/getApiList [post]
 func (h *permissionHandler) list(c *gin.Context) {

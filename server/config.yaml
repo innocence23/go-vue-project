@@ -37,7 +37,7 @@ email:
 excel:
   dir: ./resource/excel/
 jwt:
-  signing-key: qmPlus
+  signing-key: zyf
   expires-time: 604800
   buffer-time: 86400
 local:

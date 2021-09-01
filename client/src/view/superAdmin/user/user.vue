@@ -7,7 +7,7 @@
       <el-table-column label="头像" min-width="50">
         <template slot-scope="scope">
           <div :style="{'textAlign':'center'}">
-            <CustomPic :pic-src="scope.row.headerImg" />
+            <CustomPic :pic-src="scope.row.avatar" />
           </div>
         </template>
       </el-table-column>
@@ -62,7 +62,7 @@
         </el-form-item>
         <el-form-item label="头像" label-width="80px">
           <div style="display:inline-block" @click="openHeaderChange">
-            <img v-if="userInfo.headerImg" class="header-img-box" :src="userInfo.headerImg">
+            <img v-if="userInfo.avatar" class="header-img-box" :src="userInfo.avatar">
             <div v-else class="header-img-box">从媒体库选择</div>
           </div>
         </el-form-item>
@@ -81,7 +81,7 @@
         <el-button type="primary" @click="enterAddUserDialog">确 定</el-button>
       </div>
     </el-dialog>
-    <ChooseImg ref="chooseImg" :target="userInfo" :target-key="`headerImg`" />
+    <ChooseImg ref="chooseImg" :target="userInfo" :target-key="`avatar`" />
   </div>
 </template>
 
@@ -115,7 +115,7 @@ export default {
         username: '',
         password: '',
         nickName: '',
-        headerImg: '',
+        avatar: '',
         roleIds: ''
       },
       rules: {
@@ -196,7 +196,7 @@ export default {
       this.addUserDialog = false
     },
     handleAvatarSuccess(res) {
-      this.userInfo.headerImg = res.data.file.url
+      this.userInfo.avatar = res.data.file.url
     },
     addUser() {
       this.addUserDialog = true

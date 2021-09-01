@@ -8,9 +8,8 @@ export const user = {
   namespaced: true,
   state: {
     userInfo: {
-      uuid: '',
       nickName: '',
-      headerImg: '',
+      avatar: '',
       authority: '',
       sideMode: 'dark',
       activeColor: '#1890ff',
