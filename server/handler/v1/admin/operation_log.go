@@ -41,7 +41,7 @@ func (h *operationRecordHandler) Router(router *gin.RouterGroup) {
 // @Produce application/json
 // @Param data body entity.OperationLog true "OperationLog模型"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"删除成功"}"
-// @Router /req/delete [delete]
+// @Router /api/opLog/delete [delete]
 func (h *operationRecordHandler) delete(c *gin.Context) {
 	var req entity.OperationLog
 	_ = c.ShouldBindJSON(&req)
@@ -60,7 +60,7 @@ func (h *operationRecordHandler) delete(c *gin.Context) {
 // @Produce application/json
 // @Param data body request.IdsReq true "批量删除OperationLog"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"批量删除成功"}"
-// @Router /req/deleteByIds [delete]
+// @Router /api/opLog/deleteByIds [delete]
 func (h *operationRecordHandler) deleteByIds(c *gin.Context) {
 	var req request.IdsReq
 	_ = c.ShouldBindJSON(&req)
@@ -72,14 +72,14 @@ func (h *operationRecordHandler) deleteByIds(c *gin.Context) {
 	}
 }
 
-// @Tags OperationLogSearch
+// @Tags OperationLog
 // @Summary 分页获取OperationLog列表
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
 // @Param data body request.OperationLogSearch true "页码, 每页大小, 搜索条件"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
-// @Router /req/list [get]
+// @Router /api/opLog/list [get]
 func (h *operationRecordHandler) list(c *gin.Context) {
 	var pageInfo request.OperationLogSearch
 	_ = c.ShouldBindQuery(&pageInfo)

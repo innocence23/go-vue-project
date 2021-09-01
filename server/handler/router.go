@@ -15,20 +15,14 @@ import (
 func InitRouter() *gin.Engine {
 	var Router = gin.Default()
 	Router.StaticFS(zvar.Config.Local.Path, http.Dir(zvar.Config.Local.Path)) // 为用户头像和文件提供静态地址
-	zvar.Log.Info("use middleware logger")
-
-	// 跨域
-	//Router.Use(middleware.Cors()) // 如需跨域可以打开
-	zvar.Log.Info("use middleware cors")
-	Router.GET("/api/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	zvar.Log.Info("register swagger handler")
-	// 方便统一添加路由组前缀 多服务器上线使用
-
-	Router.GET("/api/test", func(c *gin.Context) {
+	Router.GET(zvar.UrlPrefix+"/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	Router.GET(zvar.UrlPrefix+"/test", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"hello": "world",
 		})
 	})
+
+	//Router.Use(middleware.Cors()) // 如需跨域可以打开
 
 	//获取路由组实例
 	gRouter := Router.Group(zvar.UrlPrefix)
